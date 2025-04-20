@@ -1,4 +1,4 @@
-package com.lime.plume.plume
+package com.grodi.grodi
 
 import io.flutter.embedding.android.FlutterActivity
 
