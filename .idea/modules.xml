@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/plume.iml" filepath="$PROJECT_DIR$/plume.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tium.iml" filepath="$PROJECT_DIR$/tium.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android/tium_android.iml" filepath="$PROJECT_DIR$/android/tium_android.iml" />
     </modules>
   </component>
 </project>

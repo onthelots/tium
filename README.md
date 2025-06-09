@@ -1,6 +1,16 @@
-# Tium 티움 - 식물과 함께 숨 쉬는 일상
-> “당신의 일상에 초록의 숨을 틔우다”🌿
+# tium
 
+Plant Companion & Daily Green
 
-#### 식물과 함께하는 작고 따뜻한 변화를 희망합니다.
-#### Tium은 식물의 작은 숨결을 기억하고, 그에 귀 기울이는 '식집사'를 위한 식물 관리앱입니다.
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.
