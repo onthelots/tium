@@ -1,34 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:tium/presentation/home/screen/home_screen.dart';
+import 'package:tium/presentation/information/screen/information_screen.dart';
 import 'package:tium/presentation/main/main_screen.dart';
+import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
+import 'package:tium/presentation/onboarding/screen/onboarding_screen.dart';
+import 'package:tium/presentation/search/screen/search_screen.dart';
 
 /// Screen Routes
 class Routes {
   static const String splash = '/';
   static const String main = '/main'; // 메인
-
-  // notice
-  static const String notice = '/notice'; // 공지사항
-
-  // introduce
-  static const String introduce = '/introduce'; // 소개페이지
+  static const String onboarding = '/onboarding'; // 온보딩
 
   // tab
   static const String home = '/home'; // 홈 (탭바)
-  static const String weekly = '/weekly'; // 번호기록 (탭바)
+  static const String information = '/information'; // 정보 (탭바)
+  static const String search = '/search'; // 검색 (탭바)
   static const String mypage = '/mypage'; // 마임페이지 (탭바)
-
-  // round list
-  static const String allround = '/allround'; // 번호기록 (탭바)
-
-  // statics
-  static const String stats = '/stats'; // 회차별 통계
-
-  // latest round result
-  static const String latestRoundResult = '/latestRoundResult'; // 최근 회차 결과
-
-  // number generate
-  static const String dailyQuestion = '/dailyQuestion'; // 번호 생성 퀴즈
-  static const String recommendation = '/recommendation'; // 번호 생성 결과 (AI 추천결과)
 
   // settings
   static const String notification = '/notification'; // 알림 설정
@@ -55,10 +43,26 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => MainScreen(),
         );
-      // case Routes.home:
-      //   return MaterialPageRoute(
-      //     builder: (_) => const HomeScreen(),
-      //   );
+      case Routes.onboarding:
+        return MaterialPageRoute(
+          builder: (_) => const OnboardingScreen(),
+        );
+      case Routes.home:
+        return MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+        );
+      case Routes.information:
+        return MaterialPageRoute(
+          builder: (_) => const InformationScreen(),
+        );
+      case Routes.search:
+        return MaterialPageRoute(
+          builder: (_) => const SearchScreen(),
+        );
+      case Routes.mypage:
+        return MaterialPageRoute(
+          builder: (_) => const MypageScreen(),
+        );
       default:
         return null;
     }
