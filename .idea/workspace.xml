@@ -4,32 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="45915695-9de3-4528-b560-99228250d8a7" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/ios/Runner/ko.lproj/LaunchScreen.strings" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ios/Runner/ko.lproj/Main.strings" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/information/screen/information_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/main/bloc/bottom_nav_bloc/bottom_nav_bloc.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/main/bloc/bottom_nav_bloc/bottom_nav_event.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/main/bloc/bottom_nav_bloc/bottom_nav_state.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/mypage/screen/mypage_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/search/screen/search_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Podfile" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Podfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner.xcworkspace/contents.xcworkspacedata" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/ios/Runner/Info.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/routes/routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/routes/routes.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/presentation/main/main_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/main/main_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="45915695-9de3-4528-b560-99228250d8a7" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
