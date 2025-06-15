@@ -46,11 +46,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int currentRound = 0;
- // 현재 진행중인 라운드를 갱신
   final _router = AppRouter();
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(

@@ -61,7 +61,7 @@ class AppRouter {
         );
       case Routes.mypage:
         return MaterialPageRoute(
-          builder: (_) => const MypageScreen(),
+          builder: (_) => const MyPageScreen(),
         );
       default:
         return null;

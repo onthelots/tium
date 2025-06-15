@@ -31,7 +31,7 @@ class _MainScreenState extends State<MainScreen> {
     HomeScreen(),
     InformationScreen(),
     SearchScreen(),
-    MypageScreen(),
+    MyPageScreen(),
   ];
 
   @override
@@ -42,7 +42,6 @@ class _MainScreenState extends State<MainScreen> {
         builder: (context, state) {
           final currentIndex = state.index; // 기본값 0
           return Scaffold(
-            // IndexedStack을 사용하여 탭 전환
             body: IndexedStack(
               index: currentIndex,
               children: _tabs,
