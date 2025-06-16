@@ -4,24 +4,28 @@ part 'user_model.g.dart';
 @HiveType(typeId: 0)
 class UserModel {
   @HiveField(0)
-  String environment;
+  String experienceLevel;
 
   @HiveField(1)
-  List<String> interests;
+  String locationPreference;
 
   @HiveField(2)
-  String experience;
+  String careTime;
 
   @HiveField(3)
-  List<UserPlant> indoorPlants;
+  List<String> interestTags;
 
   @HiveField(4)
+  List<UserPlant> indoorPlants;
+
+  @HiveField(5)
   List<UserPlant> outdoorPlants;
 
   UserModel({
-    required this.environment,
-    required this.interests,
-    required this.experience,
+    required this.experienceLevel,
+    required this.locationPreference,
+    required this.careTime,
+    required this.interestTags,
     this.indoorPlants = const [],
     this.outdoorPlants = const [],
   });

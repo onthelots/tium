@@ -5,31 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45915695-9de3-4528-b560-99228250d8a7" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/firebase/serviceAccountKey.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/core/services/hive/onboarding/onboarding_prefs.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/data/datasources/onboarding/onboarding_remote_datasource.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/data/models/onboarding/onboarding_question_model.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/data/models/user/user_model.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/data/repositories/onboarding/onboarding_repository_impl.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/domain/entities/onboarding/onboarding_question.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/domain/repositories/onboarding/onboarding_repository.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/domain/usecases/onboarding/onboarding_usecase.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_event.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/components/adaptive_alert.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/components/custom_loading_indicator.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/components/custom_scaffold.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_intro_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/di/locator.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/di/locator.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/core/routes/routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/routes/routes.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/core/services/shared_preferences_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/services/shared_preferences_helper.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/model/user/user_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/services/hive/hive_prefs.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/user/user_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/user/user_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/user/user_model.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/user/user_model.g.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/presentation/main/main_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/main/main_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/presentation/mypage/screen/mypage_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/mypage/screen/mypage_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
@@ -62,23 +50,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Flutter.main.dart.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "feat/onboarding",
-    "io.flutter.reload.alreadyRun": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/Users/onthelots/Desktop/tium/firebase",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Flutter.main.dart.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feat/onboarding&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/onthelots/Desktop/tium/firebase&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/firebase" />

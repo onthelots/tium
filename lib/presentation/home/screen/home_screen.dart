@@ -39,11 +39,11 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('🌱 키우는 환경: ${_user!.environment}'),
+            Text('🌱 키우는 환경: ${_user!.locationPreference}'),
             const SizedBox(height: 10),
-            Text('🌾 관심 작물: ${_user!.interests.join(", ")}'),
+            Text('🌾 관심 작물: ${_user!.interestTags.join(", ")}'),
             const SizedBox(height: 10),
-            Text('🌿 경험 수준: ${_user!.experience}'),
+            Text('🌿 경험 수준: ${_user!.experienceLevel}'),
             const SizedBox(height: 10),
             Text('실내 식물 수: ${_user!.indoorPlants.length}개'),
             Text('실외 식물 수: ${_user!.outdoorPlants.length}개'),

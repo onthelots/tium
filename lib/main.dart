@@ -14,26 +14,17 @@ import 'presentation/main/bloc/theme_bloc/theme_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb &&
-      kDebugMode &&
-      defaultTargetPlatform == TargetPlatform.android) {
-    await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
-  }
 
-  // 앱 구동여부 확인
-  final bool isFirstRun = await SharedPreferencesHelper.getFirstRunState();
-  final String initialRoute = isFirstRun ? Routes.onboarding : Routes.main;
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await setupLocator();
 
-  // Firebase, DI(Locator), Hive를 병렬로 초기화
-  await Future.wait([
-    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-    setupLocator(),
-  ]);
+  final isFirstRun = await SharedPreferencesHelper.getFirstRun();
 
-  // run
-  Future.delayed(Duration(seconds: 2), () {
-    runApp(MyApp(initialRoute: initialRoute));
-  });
+  final String initialRoute = isFirstRun
+      ? Routes.intro
+      : Routes.main;
+
+  runApp(MyApp(initialRoute: initialRoute));
 }
 
 class MyApp extends StatefulWidget {
@@ -66,7 +57,9 @@ class _MyAppState extends State<MyApp> {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeMode,
-            initialRoute: widget.initialRoute,
+
+            // 테스트 시, intro로 설정
+            initialRoute: Routes.intro,
             onGenerateRoute: _router.onGenerateRoute,
           );
         },

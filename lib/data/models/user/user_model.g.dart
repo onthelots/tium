@@ -17,27 +17,30 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UserModel(
-      environment: fields[0] as String,
-      interests: (fields[1] as List).cast<String>(),
-      experience: fields[2] as String,
-      indoorPlants: (fields[3] as List).cast<UserPlant>(),
-      outdoorPlants: (fields[4] as List).cast<UserPlant>(),
+      experienceLevel: fields[0] as String,
+      locationPreference: fields[1] as String,
+      careTime: fields[2] as String,
+      interestTags: (fields[3] as List).cast<String>(),
+      indoorPlants: (fields[4] as List).cast<UserPlant>(),
+      outdoorPlants: (fields[5] as List).cast<UserPlant>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
-      ..write(obj.environment)
+      ..write(obj.experienceLevel)
       ..writeByte(1)
-      ..write(obj.interests)
+      ..write(obj.locationPreference)
       ..writeByte(2)
-      ..write(obj.experience)
+      ..write(obj.careTime)
       ..writeByte(3)
-      ..write(obj.indoorPlants)
+      ..write(obj.interestTags)
       ..writeByte(4)
+      ..write(obj.indoorPlants)
+      ..writeByte(5)
       ..write(obj.outdoorPlants);
   }
 

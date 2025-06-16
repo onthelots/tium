@@ -3,6 +3,7 @@ import 'package:tium/presentation/home/screen/home_screen.dart';
 import 'package:tium/presentation/information/screen/information_screen.dart';
 import 'package:tium/presentation/main/main_screen.dart';
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
+import 'package:tium/presentation/onboarding/screen/onboarding_intro_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_screen.dart';
 import 'package:tium/presentation/search/screen/search_screen.dart';
 
@@ -10,6 +11,7 @@ import 'package:tium/presentation/search/screen/search_screen.dart';
 class Routes {
   static const String splash = '/';
   static const String main = '/main'; // 메인
+  static const String intro = '/intro'; // 앱 소개 (첫 실행 시
   static const String onboarding = '/onboarding'; // 온보딩
 
   // tab
@@ -42,6 +44,10 @@ class AppRouter {
       case Routes.main:
         return MaterialPageRoute(
           builder: (_) => MainScreen(),
+        );
+      case Routes.intro:
+        return MaterialPageRoute(
+          builder: (_) => const OnboardingIntroScreen(),
         );
       case Routes.onboarding:
         return MaterialPageRoute(
