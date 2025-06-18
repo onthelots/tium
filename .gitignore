@@ -109,7 +109,7 @@ coverage/
 app.*.symbols
 
 # Firebase folder
-/firebase/
+firebase/
 
 # Exceptions to above rules.
 !**/ios/**/default.mode1v3

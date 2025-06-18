@@ -4,23 +4,7 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="45915695-9de3-4528-b560-99228250d8a7" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/lib/components/adaptive_alert.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/components/custom_loading_indicator.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/components/custom_scaffold.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_intro_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/routes/routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/routes/routes.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/core/services/shared_preferences_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/services/shared_preferences_helper.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/user/user_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/user/user_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/data/models/user/user_model.g.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/user/user_model.g.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
-    </list>
+    <list default="true" id="45915695-9de3-4528-b560-99228250d8a7" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
