@@ -8,6 +8,8 @@ import 'core/routes/routes.dart';
 import 'core/services/shared_preferences_helper.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
+import 'presentation/home/bloc/weather/weather_bloc.dart';
+import 'presentation/home/bloc/weather/weather_event.dart';
 import 'presentation/main/bloc/theme_bloc/theme_bloc.dart';
 import 'presentation/main/bloc/theme_bloc/theme_event.dart';
 import 'presentation/main/bloc/theme_bloc/theme_state.dart';
@@ -44,6 +46,10 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider(
           create: (context) => ThemeBloc()..add(ThemeInitialEvent()), // 앱 실행 시 테마 초기화
+        ),
+        BlocProvider(
+          create: (context) => locator<WeatherBloc>()
+            ..add(LoadWeather('11B10101')),   // 초기 로드(기본 지역)
         ),
       ],
 

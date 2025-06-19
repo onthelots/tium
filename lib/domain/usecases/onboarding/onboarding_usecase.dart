@@ -1,4 +1,4 @@
-import 'package:tium/domain/entities/onboarding/onboarding_question.dart';
+import 'package:tium/domain/entities/onboarding/onboarding_question_entity.dart';
 import 'package:tium/domain/repositories/onboarding/onboarding_repository.dart';
 
 class GetOnboardingQuestions {

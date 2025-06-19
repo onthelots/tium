@@ -8,11 +8,10 @@ class AppTheme {
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: AppColors.lightPrimary,
-    // 주요색상
-    focusColor: AppColors.lightAccent,
-    scaffoldBackgroundColor: AppColors.lightBackground,
-    // 백그라운드 색상
     highlightColor: AppColors.lightSecondary,
+    focusColor: AppColors.lightAccent,
+    // 백그라운드 색상
+    scaffoldBackgroundColor: AppColors.lightBackground,
 
     // - text
     textTheme: const TextTheme(

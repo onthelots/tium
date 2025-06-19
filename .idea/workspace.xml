@@ -4,7 +4,33 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="45915695-9de3-4528-b560-99228250d8a7" name="Changes" comment="" />
+    <list default="true" id="45915695-9de3-4528-b560-99228250d8a7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/core/dio/api_client.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/data/datasources/weather/weather_remote_datasource.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/data/models/weather/weather_model.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/data/repositories/weather/weather_repository_impl.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/domain/entities/weather/weather_entity.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/domain/repositories/weather/weather_repository.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/domain/usecases/weather/weather_usecase.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/home/bloc/weather/weather_bloc.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/home/bloc/weather/weather_event.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/home/bloc/weather/weather_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/di/locator.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/di/locator.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/services/shared_preferences_helper.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/services/shared_preferences_helper.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/onboarding/onboarding_question_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/onboarding/onboarding_question_model.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/onboarding/onboarding_repository_impl.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/repositories/onboarding/onboarding_repository_impl.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/entities/onboarding/onboarding_question.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/domain/entities/onboarding/onboarding_question_entity.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/repositories/onboarding/onboarding_repository.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/domain/repositories/onboarding/onboarding_repository.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/usecases/onboarding/onboarding_usecase.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/domain/usecases/onboarding/onboarding_usecase.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

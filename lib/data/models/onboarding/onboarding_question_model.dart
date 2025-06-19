@@ -1,4 +1,4 @@
-import 'package:tium/domain/entities/onboarding/onboarding_question.dart';
+import 'package:tium/domain/entities/onboarding/onboarding_question_entity.dart';
 
 class OnboardingQuestionModel extends OnboardingQuestion {
   const OnboardingQuestionModel({

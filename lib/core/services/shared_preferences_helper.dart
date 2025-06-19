@@ -28,4 +28,22 @@ class SharedPreferencesHelper {
       (await SharedPreferences.getInstance()).getBool(_firstRunKey) ?? true;
   static Future<void> setFirstRunFalse() async =>
       (await SharedPreferences.getInstance()).setBool(_firstRunKey, false);
+
+
+  // ▶ 첫 날씨 및 지역 설정
+  static Future<void> setWeatherRegion(String label, String code) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('weatherRegionLabel', label);
+    await prefs.setString('weatherRegionCode', code);
+  }
+
+  static Future<String?> getWeatherRegionLabel() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('weatherRegionLabel');
+  }
+
+  static Future<String?> getWeatherRegionCode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('weatherRegionCode');
+  }
 }

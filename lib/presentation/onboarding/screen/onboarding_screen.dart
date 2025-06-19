@@ -6,7 +6,7 @@ import 'package:tium/components/custom_scaffold.dart';
 import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/core/services/shared_preferences_helper.dart';
-import 'package:tium/domain/entities/onboarding/onboarding_question.dart';
+import 'package:tium/domain/entities/onboarding/onboarding_question_entity.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_event.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart';
