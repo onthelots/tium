@@ -1,23 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:tium/components/custom_scaffold.dart';
 import 'package:tium/core/constants.dart';
-import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/helper/lat_lng_grid_converter.dart';
 import 'package:tium/core/routes/routes.dart';
-import 'package:tium/core/services/hive/hive_prefs.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
-import 'package:tium/core/services/shared_preferences_helper.dart';
 import 'package:tium/data/models/user/user_model.dart';
-import 'package:tium/domain/usecases/location/location_usecase.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_event.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_state.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_bloc.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_event.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_state.dart';
-import 'package:tium/presentation/home/screen/juso_search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

@@ -289,7 +289,7 @@ class NextButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: enabled ? 4 : 0,
         ),
-        onPressed: onPressed,
+        onPressed: enabled ? onPressed : null,  // 여기서 onPressed를 null로 설정,
         child: Text(
           isLastPage ? '완료' : '다음',
           style: theme.textTheme.titleMedium?.copyWith(color: Colors.white),
