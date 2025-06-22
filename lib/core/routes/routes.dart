@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tium/presentation/home/screen/home_screen.dart';
+import 'package:tium/presentation/home/screen/juso_search_screen.dart';
 import 'package:tium/presentation/information/screen/information_screen.dart';
 import 'package:tium/presentation/main/main_screen.dart';
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
@@ -11,7 +12,7 @@ import 'package:tium/presentation/search/screen/search_screen.dart';
 class Routes {
   static const String splash = '/';
   static const String main = '/main'; // 메인
-  static const String intro = '/intro'; // 앱 소개 (첫 실행 시
+  static const String intro = '/intro'; // 앱 소개 (첫 실행 시)
   static const String onboarding = '/onboarding'; // 온보딩
 
   // tab
@@ -19,6 +20,9 @@ class Routes {
   static const String information = '/information'; // 정보 (탭바)
   static const String search = '/search'; // 검색 (탭바)
   static const String mypage = '/mypage'; // 마임페이지 (탭바)
+
+  // sub screen
+  static const String juso = '/juso'; // 주소검색
 
   // settings
   static const String notification = '/notification'; // 알림 설정
@@ -36,7 +40,6 @@ class WebRoutes {
   static const String warning = 'https://momentous-wallet-0f7.notion.site/1ab1c3f0e0038032a81ec06504765a09?pvs=4'; // 주의사항
 }
 
-
 /// AppRouter
 class AppRouter {
   Route? onGenerateRoute(RouteSettings settings) {
@@ -50,12 +53,17 @@ class AppRouter {
           builder: (_) => const OnboardingIntroScreen(),
         );
       case Routes.onboarding:
+        final isHomePushed = settings.arguments as bool;
         return MaterialPageRoute(
-          builder: (_) => const OnboardingScreen(),
+          builder: (_) => OnboardingScreen(isHomePushed: isHomePushed,),
         );
       case Routes.home:
         return MaterialPageRoute(
           builder: (_) => const HomeScreen(),
+        );
+      case Routes.juso:
+        return MaterialPageRoute(
+          builder: (_) => const JusoSearchScreen(),
         );
       case Routes.information:
         return MaterialPageRoute(

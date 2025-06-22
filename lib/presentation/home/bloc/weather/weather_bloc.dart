@@ -4,21 +4,26 @@ import 'package:tium/presentation/home/bloc/weather/weather_event.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_state.dart';
 
 class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
-  WeatherBloc(this._getUV) : super(WeatherInitial()) {
-    print("WeatherBloc 생성됨");  // <== 여기에 찍어보기
+  final GetUVIndex _getUV;
+  final GetCurrentTemperature _getTemperature;
+
+  WeatherBloc(this._getUV, this._getTemperature) : super(WeatherInitial()) {
+    print("WeatherBloc 생성됨");
+
     on<LoadWeather>((event, emit) async {
-      print("LoadWeather 이벤트 수신: areaCode=${event.areaCode}");  // <== 이벤트 받는지 확인
+      print("LoadWeather 이벤트 수신: areaCode=${event.areaCode}, nx=${event.nx}, ny=${event.ny}");
       emit(WeatherLoading());
       try {
         final uv = await _getUV(event.areaCode);
-        print("자외선 지수 : ${uv.value}");
-        emit(WeatherLoaded(uv));
+        final temp = await _getTemperature(event.nx, event.ny);
+
+        print("자외선 지수: ${uv.value}, 기온: ${temp.value}°C");
+
+        emit(WeatherLoaded(uvIndex: uv, temperature: temp));
       } catch (e) {
-        print("에러 발생: $e");  // <== 에러 메시지 출력
+        print("에러 발생: $e");
         emit(WeatherError(e.toString()));
       }
     });
   }
-
-  final GetUVIndex _getUV;
 }

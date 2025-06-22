@@ -12,15 +12,19 @@ import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_eve
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart';
 
 class OnboardingScreen extends StatelessWidget {
-  const OnboardingScreen({super.key});
+  final bool isHomePushed;
+
+  const OnboardingScreen({super.key, required this.isHomePushed});
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(create: (_) => locator<OnboardingBloc>()..add(LoadOnboardingQuestions()), child: const OnboardingView());
+    return BlocProvider(create: (_) => locator<OnboardingBloc>()..add(LoadOnboardingQuestions()), child: OnboardingView(isHomePushed: isHomePushed,));
   }
 }
 
 class OnboardingView extends StatefulWidget {
-  const OnboardingView({super.key});
+  final bool isHomePushed;
+  const OnboardingView({super.key, required this.isHomePushed});
   @override
   State<OnboardingView> createState() => _OnboardingViewState();
 }
@@ -69,7 +73,7 @@ class _OnboardingViewState extends State<OnboardingView> {
       context,
       title: '온보딩을 건너뛸까요?',
       content: '맞춤 추천과 식물 관리를 위해 간단한 설정이 필요해요!\n지금 그만두시면, 설정 화면에서 직접 등록해야 해요',
-      defaultActionText: '지금 건너뛰기',
+      defaultActionText: '건너뛰기',
       cancelActionText: '계속 설정하기',
     );
     if (confirmed == true) {
@@ -84,14 +88,14 @@ class _OnboardingViewState extends State<OnboardingView> {
 
     return CustomScaffold(
       appBarVisible: true,
-      title: '온보딩 (${currentPage + 1}/$totalPages)',
+      title: '맞춤 설정',
       leadingVisible: false,
-      trailing: TextButton(
-        onPressed: () {
-          _confirmSkip();
-        },
-        child: Text('건너뛰기', style: theme.textTheme.titleMedium?.copyWith(
-          color: theme.hintColor, fontWeight: FontWeight.w400))),
+      trailing: widget.isHomePushed ? null : TextButton(
+          onPressed: () {
+            _confirmSkip();
+          },
+          child: Text('건너뛰기', style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.hintColor, fontWeight: FontWeight.w300))),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(4),
         child: LinearProgressIndicator(
@@ -165,71 +169,96 @@ class _OnboardingViewState extends State<OnboardingView> {
     required Function(List<String>) onChanged,
   }) {
     final theme = Theme.of(context);
-    return ListView.separated(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: question.options.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
-      itemBuilder: (context, index) {
-        final option = question.options[index];
-        final selected = selectedList.contains(option);
 
-        // 임시 아이콘 지정 (나중에 asset 이미지 교체 가능)
-        final iconData = [
-          Icons.water_drop_outlined,
-          Icons.house_outlined,
-          Icons.local_florist_outlined,
-        ][index % 3];
-
-        // InkWell 효과를 위함
-        return InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            final newSelected = List<String>.from(selectedList);
-            if (isMulti) {
-              if (selected) {
-                newSelected.remove(option);
-              } else {
-                newSelected.add(option);
-              }
-            } else {
-              newSelected.clear();
-              newSelected.add(option);
-            }
-            onChanged(newSelected);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: selected ? theme.primaryColor : theme.disabledColor,
-                width: 1, // 항상 2로 고정
-              ),
-              color: selected ? theme.focusColor.withOpacity(0.1) : theme.scaffoldBackgroundColor,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  iconData,
-                  size: 36,
-                  color: selected ? theme.primaryColor : theme.disabledColor,
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Text(
-                    option,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: selected ? theme.primaryColor : theme.dividerColor,
-                      fontWeight: selected ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ),
-              ],
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // ─── 질문 텍스트 ───────────────────────
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+          child: Text(
+            question.questionText.replaceAll(r'\n', '\n'), // 줄바꿈 텍스트 처리
+            textAlign: TextAlign.center,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
           ),
-        );
-      },
+        ),
+        const SizedBox(height: 32),
+
+        // ─── 옵션 리스트 ──────────────────────
+        Expanded(
+          child: ListView.separated(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: question.options.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              final option = question.options[index];
+              final selected = selectedList.contains(option);
+
+              final iconData = [
+                Icons.water_drop_outlined,
+                Icons.house_outlined,
+                Icons.local_florist_outlined,
+              ][index % 3];
+
+              return InkWell(
+                borderRadius: BorderRadius.circular(16),
+                onTap: () {
+                  final newSelected = List<String>.from(selectedList);
+                  if (isMulti) {
+                    selected ? newSelected.remove(option) : newSelected.add(
+                        option);
+                  } else {
+                    newSelected
+                      ..clear()
+                      ..add(option);
+                  }
+                  onChanged(newSelected);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 24),
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: selected ? theme.primaryColor : theme
+                          .disabledColor,
+                      width: 1,
+                    ),
+                    color: selected
+                        ? theme.focusColor.withOpacity(0.1)
+                        : theme.scaffoldBackgroundColor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        iconData,
+                        size: 36,
+                        color: selected ? theme.primaryColor : theme
+                            .disabledColor,
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Text(
+                          option,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            color: selected ? theme.primaryColor : theme
+                                .dividerColor,
+                            fontWeight:
+                            selected ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

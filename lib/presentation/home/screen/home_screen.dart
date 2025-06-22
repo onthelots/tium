@@ -1,70 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:tium/components/custom_scaffold.dart';
 import 'package:tium/core/constants.dart';
+import 'package:tium/core/di/locator.dart';
+import 'package:tium/core/helper/lat_lng_grid_converter.dart';
+import 'package:tium/core/routes/routes.dart';
 import 'package:tium/core/services/hive/hive_prefs.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
 import 'package:tium/core/services/shared_preferences_helper.dart';
 import 'package:tium/data/models/user/user_model.dart';
+import 'package:tium/domain/usecases/location/location_usecase.dart';
+import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
+import 'package:tium/presentation/home/bloc/location/location_search_event.dart';
+import 'package:tium/presentation/home/bloc/location/location_search_state.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_bloc.dart';
+import 'package:tium/presentation/home/bloc/weather/weather_event.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_state.dart';
-
-/// HomeScreen – Sliver 기반 메인 탭
-///
-/// ▸ 공공데이터 사용처
-///   1. 기상청 생활기상지수 API → WeatherRepository
-///   2. 농사로 Garden / 실내정원 API → PlantRepository
-///   3. 농촌진흥청 병해충 API      → PestRepository
-///   4. 모두농(농정원) 행사 RSS    → EventRepository
-///
-/// 이 예시는 UI/UX·색상 가이드에 집중하고, 실제 네트워크 코드/파싱은
-///
-
-class WeatherRepository {
-  Future<WeatherData> fetchCurrent(String regionCode) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return WeatherData(temperature: "25", uvIndex: "6 (보통)");
-  }
-}
-
-class PlantRepository {
-  Future<List<Plant>> recommendForUser(UserModel user) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return [
-      Plant(name: "스투키", imageUrl: ""),
-      Plant(name: "산세베리아", imageUrl: ""),
-      Plant(name: "아글라오네마", imageUrl: ""),
-    ];
-  }
-
-  Future<List<Tip>> tipsForUser(UserModel user) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return [
-      Tip(title: "햇빛 없이 키우는 법", description: "창문 없이도 잘 자라는 식물 정리"),
-      Tip(title: "배양토 종류 총정리", description: "초보자도 이해하는 흙 가이드"),
-    ];
-  }
-}
-
-class PestRepository {
-  Future<PestAlert> fetchCurrentAlert(String regionCode) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return PestAlert(
-      title: "응애 발생 위험 ↑",
-      message: "잎 뒷면을 주기적으로 확인하세요 (6월 19일 기준)",
-    );
-  }
-}
-
-class EventRepository {
-  Future<EventItem> fetchUpcoming({String? city}) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    return EventItem(
-      title: "서울 도시농업박람회",
-      period: "6월 30일 ~ 7월 2일 / 무료 사전신청",
-    );
-  }
-}
-
+import 'package:tium/presentation/home/screen/juso_search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -75,23 +28,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
-  bool _isCollapsed = false;
-  String _regionLabel = "서울";
-  UserModel? _user;
-  WeatherData? _weather;
-  List<Plant> _recommendedPlants = [];
-  List<Tip> _tips = [];
-  PestAlert? _pestAlert;
-  EventItem? _event;
+
+  // flags
+  bool _isCollapsed = false; // 상단 AppBar 접힘여부 확인
   bool _loading = true;
+
+  // data
+  UserModel? _user;
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_handleScroll);
-    _fetchAll();
+    _scrollController.addListener(_handleScroll); // Scroll Listener
+    _fetchAll(); // Home Screen 구성 정보 불러오기
   }
 
+  // Scroll Listener (scroll offset을 기반으로 isCollapsed (접힘여부) 확인
   void _handleScroll() {
     if (_scrollController.hasClients && _scrollController.offset > 100) {
       if (!_isCollapsed) setState(() => _isCollapsed = true);
@@ -101,25 +53,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _fetchAll() async {
-    _user = await UserPrefs.getUser();
-    if (_user == null) return;
+    _user = await UserPrefs.getUser(); // 유저정보
 
-    // 지역코드 & 라벨 가져오기 (없다면 기본값 사용)
-    final regionCode =
-        await SharedPreferencesHelper.getWeatherRegionCode() ?? '11B10101';
-    _regionLabel =
-        await SharedPreferencesHelper.getWeatherRegionLabel() ?? "서울";
+    // 유저정보 내 위치정보
+    if (_user?.location != null) {
+      final loc = _user!.location!;
+      final grid = LatLngGridConverter.latLngToGrid(loc.lat, loc.lng);
 
-    final plantRepo = PlantRepository();
-    final pestRepo = PestRepository();
-    final eventRepo = EventRepository();
-
-    await Future.wait([
-      plantRepo.recommendForUser(_user!).then((p) => _recommendedPlants = p),
-      plantRepo.tipsForUser(_user!).then((t) => _tips = t),
-      pestRepo.fetchCurrentAlert(regionCode).then((a) => _pestAlert = a),
-      eventRepo.fetchUpcoming(city: '서울').then((e) => _event = e),
-    ]);
+      // 날씨정보 불러오기
+      context.read<WeatherBloc>().add(LoadWeather(
+        areaCode: loc.areaCode,
+        nx: grid.x,
+        ny: grid.y,
+      ));
+    }
 
     setState(() => _loading = false);
   }
@@ -138,21 +85,34 @@ class _HomeScreenState extends State<HomeScreen> {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    return Scaffold(
-      backgroundColor: AppColors.lightBackground,
-      body: CustomScrollView(
-        controller: _scrollController,
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          BlocBuilder<WeatherBloc, WeatherState>(
-            builder: (context, state) => _buildSliverAppBar(theme, state),
-          ),
-          _buildRecommendedSection(),
-          _buildTipSection(),
-          if (_pestAlert != null) _buildPestSection(),
-          if (_event != null) _buildEventSection(),
-          const SliverToBoxAdapter(child: SizedBox(height: 32)),
-        ],
+    return BlocListener<LocationBloc, LocationState>(
+      listener: (context, state) async {
+        if (state is LocationLoadSuccess) {
+          final userLocation = state.location;
+          setState(() {
+            _user = _user?.copyWith(location: userLocation);
+            _loading = true;  // 다시 로딩 상태로 돌리기
+          });
+          await UserPrefs.saveUser(_user!);
+          await _fetchAll();
+        } else if (state is LocationLoadFailure) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.lightBackground,
+        body: CustomScrollView(
+          controller: _scrollController,
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            BlocBuilder<WeatherBloc, WeatherState>(
+              builder: (context, state) => _buildSliverAppBar(theme, state),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 32)),
+          ],
+        ),
       ),
     );
   }
@@ -160,11 +120,14 @@ class _HomeScreenState extends State<HomeScreen> {
   // ───────────────────────────────────────────── SliverAppBar
   SliverAppBar _buildSliverAppBar(ThemeData theme, WeatherState state) {
     String temp = '--';
-    String uv   = '--';
+    String uv = '--';
+
     if (state is WeatherLoaded) {
-      temp = state.uvIndex.value.toString() ?? '--'; // assume added field or separate API
-      uv   = _interpretUVLevel(state.uvIndex.value);
+      temp = state.temperature.value.toString();
+      uv = _interpretUVLevel(state.uvIndex.value);
     }
+
+    final bool needLocation = _user?.location == null;
 
     return SliverAppBar(
       pinned: true,
@@ -172,17 +135,26 @@ class _HomeScreenState extends State<HomeScreen> {
       centerTitle: true,
       backgroundColor: AppColors.lightPrimary,
       title: _isCollapsed
-          ? Text('$_regionLabel · $temp°C  ☀  자외선지수 $uv',
-          style: theme.textTheme.labelMedium?.copyWith(color: Colors.white))
+          ? Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text('$temp°C / 자외선지수 $uv',
+              style: theme.textTheme.labelMedium?.copyWith(color: Colors.white)),
+          if (needLocation)
+            IconButton(
+              icon: const Icon(Icons.location_searching, color: Colors.white),
+              onPressed: () {
+              },
+            ),
+        ],
+      )
           : null,
       flexibleSpace: FlexibleSpaceBar(
         collapseMode: CollapseMode.parallax,
         background: Container(
-          decoration: BoxDecoration(
-            color: theme.primaryColor,
-          ),
-          padding: const EdgeInsets.only(left: 20, bottom: 20),
+          padding: const EdgeInsets.only(left: 20, bottom: 20, right: 20),
           alignment: Alignment.bottomLeft,
+          color: theme.primaryColor,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -190,8 +162,18 @@ class _HomeScreenState extends State<HomeScreen> {
               Text('안녕하세요, OOO님',
                   style: theme.textTheme.headlineSmall?.copyWith(color: Colors.white)),
               const SizedBox(height: 6),
-              Text('$_regionLabel · $temp°C  ☀  자외선지수 $uv',
-                  style: theme.textTheme.labelMedium?.copyWith(color: Colors.white)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('$temp°C  ☀  자외선지수 $uv',
+                      style: theme.textTheme.labelMedium?.copyWith(color: Colors.white)),
+                  if (needLocation)
+                    IconButton(
+                      icon: const Icon(Icons.location_searching, color: Colors.white),
+                      onPressed: () => _handleLocationTap(context),
+                    ),
+                ],
+              ),
             ],
           ),
         ),
@@ -207,197 +189,88 @@ class _HomeScreenState extends State<HomeScreen> {
     return '위험';
   }
 
-  // ────────── 추천 식물 ──────────
-  SliverToBoxAdapter _buildRecommendedSection() {
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _sectionTitle('오늘의 추천 식물 🌿'),
-          SizedBox(
-            height: 180,
-            child: ListView.separated(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (_, i) => _PlantCard(_recommendedPlants[i]),
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemCount: _recommendedPlants.length.clamp(0, 10),
-            ),
+  // 유저 정보가 없을 경우
+  Future<void> _handleLocationTap(BuildContext context) async {
+    if (_user == null) {
+      await Navigator.pushNamed(context, Routes.onboarding, arguments: true);
+      await _fetchAll();
+    } else {
+      _showLocationChoiceDialog(context);
+    }
+  }
+
+  void _showLocationChoiceDialog(BuildContext parentCtx) {
+    showModalBottomSheet(
+      context: parentCtx,
+      builder: (sheetCtx) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: Icon(Icons.gps_fixed),
+                title: Text('현재 위치 사용하기'),
+                onTap: () async {
+                  Navigator.pop(sheetCtx);
+                  await _getCurrentLocationAndUpdate(parentCtx);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.search),
+                title: Text('주소로 검색하기'),
+                onTap: () async {
+                  Navigator.pop(sheetCtx);
+                  Navigator.pushNamed(context, Routes.juso);
+                },
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  // ────────── TIP 섹션 ──────────
-  SliverToBoxAdapter _buildTipSection() {
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _sectionTitle('실내 정원 TIP 🪴'),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: _tips.map((t) => _TipCard(t)).toList(),
-            ),
-          ),
-        ],
-      ),
-    );
+  Future<void> _getCurrentLocationAndUpdate(BuildContext ctx) async {
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        if (!ctx.mounted) return;
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          const SnackBar(content: Text('휴대폰 위치 서비스(GPS)가 꺼져 있습니다.')),
+        );
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        permission = await Geolocator.requestPermission();
+        if (permission != LocationPermission.whileInUse &&
+            permission != LocationPermission.always) {
+          if (!ctx.mounted) return;
+          ScaffoldMessenger.of(ctx).showSnackBar(
+            const SnackBar(content: Text('위치 권한이 거부되었습니다.')),
+          );
+          return;
+        }
+      }
+
+      final locationSettings = LocationSettings(
+        accuracy: LocationAccuracy.high,
+      );
+
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: locationSettings,
+      );
+
+      if (!ctx.mounted) return;
+      ctx.read<LocationBloc>().add(
+        LocationByLatLngRequested(position.latitude, position.longitude),
+      );
+    } catch (e) {
+      if (!ctx.mounted) return;
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        SnackBar(content: Text('위치 정보를 가져오지 못했습니다: $e')),
+      );
+    }
   }
-
-  // ────────── 병해충 ──────────
-  SliverToBoxAdapter _buildPestSection() {
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _sectionTitle('병해충 주의보 🐛'),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _AlertCard(_pestAlert!),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ────────── 행사 ──────────
-  SliverToBoxAdapter _buildEventSection() {
-    return SliverToBoxAdapter(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _sectionTitle('도시농업 행사 📅'),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _EventCard(_event!),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 공통 섹션 타이틀
-  Widget _sectionTitle(String text) => Padding(
-    padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-    child: Text(text,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.lightPrimary)),
-  );
-}
-
-// ──────────────────────────────────────────────────────────────
-// SMALL COMPONENTS
-// ──────────────────────────────────────────────────────────────
-class _PlantCard extends StatelessWidget {
-  const _PlantCard(this.plant);
-  final Plant plant;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 140,
-      decoration: BoxDecoration(
-        color: AppColors.lightTertiary,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4)],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // TODO: 네트워크 이미지로 교체 (plant.imageUrl)
-          const Icon(Icons.local_florist, size: 46, color: AppColors.lightPrimary),
-          const SizedBox(height: 8),
-          Text(plant.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
-}
-
-class _TipCard extends StatelessWidget {
-  const _TipCard(this.tip);
-  final Tip tip;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: AppColors.lightAccent.withOpacity(0.4),
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: const Icon(Icons.tips_and_updates, color: AppColors.lightPrimary),
-        title: Text(tip.title),
-        subtitle: Text(tip.description),
-      ),
-    );
-  }
-}
-
-class _AlertCard extends StatelessWidget {
-  const _AlertCard(this.alert);
-  final PestAlert alert;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.red.shade50,
-      child: ListTile(
-        leading: const Icon(Icons.warning, color: Colors.red),
-        title: Text(alert.title),
-        subtitle: Text(alert.message),
-      ),
-    );
-  }
-}
-
-class _EventCard extends StatelessWidget {
-  const _EventCard(this.event);
-  final EventItem event;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: AppColors.lightSecondary.withOpacity(0.3),
-      child: ListTile(
-        leading: const Icon(Icons.event, color: AppColors.lightPrimary),
-        title: Text(event.title),
-        subtitle: Text(event.period),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-      ),
-    );
-  }
-}
-
-// ──────────────────────────────────────────────────────────────
-// DATA CLASSES (요약)
-// ──────────────────────────────────────────────────────────────
-class WeatherData {
-  final String temperature;
-  final String uvIndex;
-  WeatherData({required this.temperature, required this.uvIndex});
-}
-
-class Plant {
-  final String name;
-  final String imageUrl;
-  Plant({required this.name, required this.imageUrl});
-}
-
-class Tip {
-  final String title;
-  final String description;
-  Tip({required this.title, required this.description});
-}
-
-class PestAlert {
-  final String title;
-  final String message;
-  PestAlert({required this.title, required this.message});
-}
-
-class EventItem {
-  final String title;
-  final String period;
-  EventItem({required this.title, required this.period});
 }

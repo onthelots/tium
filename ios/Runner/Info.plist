@@ -36,5 +36,7 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>내 위치를 한 번 확인해, 식물을 키우는데 유용한 동네 날씨 정보를 알려드릴게요.</string>
 </dict>
 </plist>

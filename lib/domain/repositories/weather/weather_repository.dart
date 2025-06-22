@@ -1,5 +1,7 @@
-import 'package:tium/domain/entities/weather/weather_entity.dart';
+import 'package:tium/domain/entities/weather/temperature.dart';
+import 'package:tium/domain/entities/weather/uvIndex.dart';
 
-abstract class LivingWeatherRepository {
+abstract class WeatherRepository {
   Future<UVIndex> getUVIndex(String areaCode);
+  Future<Temperature> getTemperature(int nx, int ny);
 }

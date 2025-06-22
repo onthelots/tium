@@ -58,11 +58,11 @@ class OnboardingIntroScreen extends StatelessWidget {
               ),
               onPressed: () async {
                 await SharedPreferencesHelper.setFirstRunFalse();
-                Navigator.pushReplacementNamed(context, Routes.onboarding);
+                Navigator.pushReplacementNamed(context, Routes.onboarding, arguments: false);
               },
               child: Text(
-                '맞춤 관리 시작하기',
-                style: theme.textTheme.titleMedium?.copyWith(color: AppColors.lightBackground)
+                  '맞춤 관리 시작하기',
+                  style: theme.textTheme.titleMedium?.copyWith(color: AppColors.lightBackground)
               ),
             ),
           ),
@@ -76,7 +76,7 @@ class OnboardingIntroScreen extends StatelessWidget {
               Navigator.pushReplacementNamed(context, Routes.main);
             },
             child: Text(
-              '나중에 할게요',
+                '나중에 할게요',
                 style: theme.textTheme.titleMedium?.copyWith(
                     color: theme.disabledColor)
             ),
