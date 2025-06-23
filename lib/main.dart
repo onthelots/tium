@@ -3,37 +3,37 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:tium/core/app_info/app_info_cubit.dart';
+import 'package:tium/presentation/home/bloc/juso_search/juso_search_cubit.dart';
+import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
+import 'package:tium/presentation/home/screen/juso_search_screen.dart';
+import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
+import 'package:tium/presentation/search/screen/search_screen.dart';
 import 'core/di/locator.dart';
 import 'core/routes/routes.dart';
 import 'core/services/shared_preferences_helper.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
+import 'presentation/home/bloc/weather/weather_bloc.dart';
+import 'presentation/home/bloc/weather/weather_event.dart';
+import 'presentation/home/screen/home_screen.dart';
 import 'presentation/main/bloc/theme_bloc/theme_bloc.dart';
 import 'presentation/main/bloc/theme_bloc/theme_event.dart';
 import 'presentation/main/bloc/theme_bloc/theme_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb &&
-      kDebugMode &&
-      defaultTargetPlatform == TargetPlatform.android) {
-    await InAppWebViewController.setWebContentsDebuggingEnabled(kDebugMode);
-  }
 
-  // 앱 구동여부 확인
-  final bool isFirstRun = await SharedPreferencesHelper.getFirstRunState();
-  final String initialRoute = isFirstRun ? Routes.onboarding : Routes.main;
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await setupLocator();
 
-  // Firebase, DI(Locator), Hive를 병렬로 초기화
-  await Future.wait([
-    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-    setupLocator(),
-  ]);
+  final isFirstRun = await SharedPreferencesHelper.getFirstRun();
 
-  // run
-  Future.delayed(Duration(seconds: 2), () {
-    runApp(MyApp(initialRoute: initialRoute));
-  });
+  final String initialRoute = isFirstRun
+      ? Routes.intro
+      : Routes.main;
+
+  runApp(MyApp(initialRoute: initialRoute));
 }
 
 class MyApp extends StatefulWidget {
@@ -46,17 +46,33 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  int currentRound = 0;
- // 현재 진행중인 라운드를 갱신
   final _router = AppRouter();
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
           create: (context) => ThemeBloc()..add(ThemeInitialEvent()), // 앱 실행 시 테마 초기화
+        ),
+        BlocProvider(
+          create: (_) => locator<WeatherBloc>(),
+          child: HomeScreen(),  // bloc은 HomeScreen 내부에서 add 호출됨
+        ),
+        BlocProvider(
+          create: (_) => locator<LocationBloc>(),
+          child: HomeScreen(),  // bloc은 HomeScreen 내부에서 add 호출됨
+        ),
+        BlocProvider(
+          create: (_) => locator<JusoSearchCubit>(),
+          child: JusoSearchScreen(),  // bloc은 HomeScreen 내부에서 add 호출됨
+        ),
+        BlocProvider(
+          create: (_) => locator<SearchBloc>(),
+          child: SearchScreen(),
+        ),
+        // version
+        BlocProvider(
+          create: (context) => AppInfoCubit()..fetchAppVersion(),
         ),
       ],
 
@@ -70,6 +86,8 @@ class _MyAppState extends State<MyApp> {
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: themeMode,
+
+            // 테스트 시, intro로 설정
             initialRoute: widget.initialRoute,
             onGenerateRoute: _router.onGenerateRoute,
           );

@@ -1,10 +1,9 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPreferencesHelper {
   static const _themeKey = 'themeMode';
+  static const _firstRunKey = 'isFirstRun';
 
   // 테마 모드 저장
   static Future<void> saveThemeMode(ThemeMode mode) async {
@@ -24,29 +23,27 @@ class SharedPreferencesHelper {
     }
   }
 
-  // 앱 구동여부 확인
-  static Future<bool> getFirstRunState() async {
+  // 첫 실행 여부
+  static Future<bool> getFirstRun() async =>
+      (await SharedPreferences.getInstance()).getBool(_firstRunKey) ?? true;
+  static Future<void> setFirstRunFalse() async =>
+      (await SharedPreferences.getInstance()).setBool(_firstRunKey, false);
+
+
+  // 첫 날씨 및 지역 설정
+  static Future<void> setWeatherRegion(String label, String code) async {
     final prefs = await SharedPreferences.getInstance();
-    final bool? isFirstRun = prefs.getBool('isFirstRun');
-    return isFirstRun ?? true;
+    await prefs.setString('weatherRegionLabel', label);
+    await prefs.setString('weatherRegionCode', code);
   }
 
-  // 앱 첫 구동여부 false로 설정할 것
-  static Future<void> setFirstRunStateToFalse() async {
+  static Future<String?> getWeatherRegionLabel() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isFirstRun', false);
+    return prefs.getString('weatherRegionLabel');
   }
 
-  // 면책사항 확인 여부 확인
-  static Future<bool> getWaringCheckState() async {
+  static Future<String?> getWeatherRegionCode() async {
     final prefs = await SharedPreferences.getInstance();
-    final bool? isWaringCheck = prefs.getBool('isWaringCheck');
-    return isWaringCheck ?? false;
-  }
-
-  // 앱 첫 구동여부 false로 설정할 것
-  static Future<void> setWaringCheckStateToTrue() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isWaringCheck', true);
+    return prefs.getString('weatherRegionCode');
   }
 }
