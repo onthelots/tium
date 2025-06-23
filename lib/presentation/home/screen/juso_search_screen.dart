@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:tium/components/custom_scaffold.dart';
 import 'package:tium/core/di/locator.dart';
 import 'package:tium/presentation/home/bloc/juso_search/juso_search_cubit.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
@@ -19,8 +20,11 @@ class _JusoSearchScreenState extends State<JusoSearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('주소 검색')),
+    final theme = Theme.of(context);
+    return CustomScaffold(
+      appBarVisible: true,
+      title: '주소 검색',
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: BlocListener<LocationBloc, LocationState>(
         listener: (context, state) {
           if (state is LocationLoadSuccess) {
@@ -40,8 +44,9 @@ class _JusoSearchScreenState extends State<JusoSearchScreen> {
                 controller: _controller,
                 decoration: InputDecoration(
                   hintText: '도로명 또는 지번을 입력하세요',
+                  hintStyle: theme.textTheme.bodyMedium,
                   suffixIcon: IconButton(
-                    icon: const Icon(Icons.search),
+                    icon: Icon(Icons.search, color: theme.colorScheme.primary),
                     onPressed: () {
                       final keyword = _controller.text.trim();
                       if (keyword.isNotEmpty) {
@@ -73,13 +78,16 @@ class _JusoSearchScreenState extends State<JusoSearchScreen> {
                       }
                       return ListView.separated(
                         itemCount: state.results.length,
-                        separatorBuilder: (_, __) => const Divider(height: 1),
+                        separatorBuilder: (_, __) =>
+                            Divider(height: 10.0,
+                                thickness: 1.0,
+                                color: theme.colorScheme.tertiary),
                         itemBuilder: (_, index) {
                           final r = state.results[index];
                           final fullAddress = r.roadAddr.isNotEmpty ? r.roadAddr : r.jibunAddr;
                           return ListTile(
-                            title: Text(fullAddress),
-                            subtitle: Text('${r.siNm} ${r.sggNm} ${r.emdNm}${r.liNm != null && r.liNm!.isNotEmpty ? ' ${r.liNm}' : ''}'),
+                            title: Text(fullAddress, style: theme.textTheme.titleSmall,),
+                            subtitle: Text('${r.siNm} ${r.sggNm} ${r.emdNm}${r.liNm != null && r.liNm!.isNotEmpty ? ' ${r.liNm}' : ''}', style: theme.textTheme.bodySmall,),
                             onTap: () {
                               // LocationBloc에 주소 → 좌표 요청
                               context.read<LocationBloc>().add(

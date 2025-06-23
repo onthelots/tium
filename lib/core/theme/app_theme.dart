@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tium/core/constants.dart';
+import 'package:tium/core/constants/constants.dart';
 
 /// AppTheme
 class AppTheme {
@@ -10,8 +10,21 @@ class AppTheme {
     primaryColor: AppColors.lightPrimary,
     highlightColor: AppColors.lightSecondary,
     focusColor: AppColors.lightAccent,
-    // 백그라운드 색상
     scaffoldBackgroundColor: AppColors.lightBackground,
+
+    // - color
+    colorScheme: const ColorScheme(
+      brightness: Brightness.light,
+      primary: AppColors.lightPrimary,
+      secondary: AppColors.lightSecondary,
+      tertiary: AppColors.lightTertiary,
+      surface: AppColors.lightSurface,
+      error: AppColors.lightAccent,
+      onPrimary: Colors.white,
+      onSecondary: Colors.black87,
+      onSurface: Colors.black87,
+      onError: Colors.white,
+    ),
 
     // - text
     textTheme: const TextTheme(
@@ -81,6 +94,20 @@ class AppTheme {
     focusColor: AppColors.darkAccent,
     scaffoldBackgroundColor: AppColors.darkBackground,
     highlightColor: AppColors.darkSecondary,
+
+    // - color
+    colorScheme: const ColorScheme(
+      brightness: Brightness.dark,
+      primary: AppColors.darkPrimary,
+      secondary: AppColors.darkSecondary,
+      tertiary: AppColors.darkTertiary,
+      surface: AppColors.darkSurface,
+      error: AppColors.darkAccent,
+      onPrimary: Colors.black,
+      onSecondary: Colors.white,
+      onSurface: Colors.white,
+      onError: Colors.black,
+    ),
 
     // - text
     textTheme: const TextTheme(

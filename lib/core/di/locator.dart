@@ -5,25 +5,31 @@ import 'package:tium/core/dio/api_client.dart';
 import 'package:tium/data/datasources/location/juso_search_remote_datasource.dart';
 import 'package:tium/data/datasources/location/location_remote_datasource.dart';
 import 'package:tium/data/datasources/onboarding/onboarding_remote_datasource.dart';
+import 'package:tium/data/datasources/plant/dry_garden_remote_datasource.dart';
+import 'package:tium/data/datasources/plant/garden_remote_datasource.dart';
 import 'package:tium/data/datasources/weather/weather_remote_datasource.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/data/repositories/location/juso_search_repository_impl.dart';
 import 'package:tium/data/repositories/location/location_repository_impl.dart';
 import 'package:tium/data/repositories/onboarding/onboarding_repository_impl.dart';
+import 'package:tium/data/repositories/plant/plant_repository_impl.dart';
 import 'package:tium/data/repositories/weather/weather_repository_impl.dart';
 import 'package:tium/domain/repositories/location/juso_search_repository.dart';
 import 'package:tium/domain/repositories/location/location_repository.dart';
 import 'package:tium/domain/repositories/onboarding/onboarding_repository.dart';
+import 'package:tium/domain/repositories/plant/plant_repository.dart';
 import 'package:tium/domain/repositories/weather/weather_repository.dart';
 import 'package:tium/domain/usecases/location/juso_search_usecase.dart';
 import 'package:tium/domain/usecases/location/location_usecase.dart';
 import 'package:tium/domain/usecases/onboarding/onboarding_usecase.dart';
+import 'package:tium/domain/usecases/plant/plants_usecase.dart';
 import 'package:tium/domain/usecases/weather/weather_usecase.dart';
 import 'package:tium/presentation/home/bloc/juso_search/juso_search_cubit.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_bloc.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
 
 
 // ──────────────────────────────────────────────────────────────
@@ -31,12 +37,13 @@ import 'package:hive_flutter/hive_flutter.dart';
 final locator = GetIt.instance;
 
 Future<void> setupLocator() async {
-  _registerCore();        // 공통 의존성(Firebase 등)
-  _registerOnboarding();  // 온보딩
-  _registerLocation();    // 위치
-  _registerWeather();     // 날씨
-  _registerJusoSearch();
-  await _initHive();      // Hive 초기화 & 어댑터
+  _registerCore(); // 공통 의존성(Firebase 등)
+  _registerOnboarding(); // 온보딩
+  _registerLocation(); // 위치
+  _registerWeather(); // 날씨
+  _registerJusoSearch(); // 주소 검색
+  registerPlants(); // 농사로 API
+  await _initHive(); // Hive 초기화 & 어댑터
 }
 
 // ──────────────────────────────────────────────────────────────
@@ -212,6 +219,59 @@ void _registerWeather() {
     ),
   );
 }
+
+// ──────────────────────────────────────────────────────────────
+// Plants (농사로 API)
+void registerPlants() {
+  // 1. ApiClients
+  locator
+    .registerLazySingleton<ApiClient>(
+          () => ApiClient(
+        baseUrl: 'http://api.nongsaro.go.kr/service',
+        defaultQuery: const {
+          'apiKey': '20250612VVRTBWINLAYYISM2ILTXCA',
+          'format': 'json',
+        },
+      ),
+      instanceName: 'nongsaroClient',
+    );
+
+  // 2. datasources
+  locator.registerLazySingleton<DryGardenRemoteDataSource>(
+        () => DryGardenRemoteDataSourceImpl(
+      locator<ApiClient>(instanceName: 'nongsaroClient'),
+    ),
+  );
+  locator.registerLazySingleton<GardenRemoteDataSource>(
+        () => GardenRemoteDataSourceImpl(
+      locator<ApiClient>(instanceName: 'nongsaroClient'),
+    ),
+  );
+
+  // 3. repository
+  locator.registerLazySingleton<PlantRepository>(
+        () => PlantRepositoryImpl(
+      dryGardenRemote: locator(),
+      gardenRemote: locator(),
+    ),
+  );
+
+  // 4. usecases
+  locator
+    ..registerLazySingleton<GetDryGardenPlants>(
+            () => GetDryGardenPlants(locator()))
+    ..registerLazySingleton<GetIndoorGardenPlants>(
+            () => GetIndoorGardenPlants(locator()));
+
+  // 5. bloc
+  locator.registerFactory<SearchBloc>(
+        () => SearchBloc(
+      getDryGardenPlants: locator(),
+      getIndoorGardenPlants: locator(),
+    ),
+  );
+}
+
 
 // ──────────────────────────────────────────────────────────────
 // Hive

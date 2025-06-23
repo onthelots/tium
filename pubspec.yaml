@@ -51,6 +51,9 @@ dependencies:
   xml: ^6.5.0
   lottie: ^3.3.1
   intl: ^0.20.2
+  share_plus: ^11.0.0
+  url_launcher: ^6.3.1
+  flutter_launcher_icons: ^0.14.4
 
 dev_dependencies:
   flutter_test:
@@ -58,7 +61,12 @@ dev_dependencies:
 
   flutter_lints: ^5.0.0
   build_runner: ^2.4.15
+  flutter_oss_licenses: ^3.0.4
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/
+    - assets/img/
+    - assets/animations/
 

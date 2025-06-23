@@ -1,4 +1,4 @@
-import 'package:tium/domain/entities/weather/temperature.dart';
+import 'package:tium/domain/entities/weather/weather.dart';
 import 'package:tium/domain/entities/weather/uvIndex.dart';
 
 abstract class WeatherState {}
@@ -9,9 +9,9 @@ class WeatherLoading extends WeatherState {}
 
 class WeatherLoaded extends WeatherState {
   final UVIndex uvIndex;
-  final Temperature temperature;
+  final Weather weather;
 
-  WeatherLoaded({required this.uvIndex, required this.temperature});
+  WeatherLoaded({required this.uvIndex, required this.weather});
 }
 
 class WeatherError extends WeatherState {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tium/components/custom_scaffold.dart';
-import 'package:tium/core/constants.dart';
+import 'package:tium/core/constants/constants.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/core/services/shared_preferences_helper.dart';
 

@@ -1,5 +1,5 @@
 import 'package:tium/data/datasources/weather/weather_remote_datasource.dart';
-import 'package:tium/domain/entities/weather/temperature.dart';
+import 'package:tium/domain/entities/weather/weather.dart';
 import 'package:tium/domain/entities/weather/uvIndex.dart';
 import 'package:tium/domain/repositories/weather/weather_repository.dart';
 
@@ -8,11 +8,10 @@ class WeatherRepositoryImpl implements WeatherRepository {
 
   final WeatherRemoteDataSource _remote;
 
-  // ───────────────────────── 기온
   @override
-  Future<Temperature> getTemperature(int nx, int ny) async {
-    final dto = await _remote.fetchTemperature(nx: nx, ny: ny);
-    return Temperature(baseTime: dto.baseDateTime, value: dto.value);
+  Future<Weather> getTemperature(int nx, int ny) async {
+    final dto = await _remote.fetchWeather(nx: nx, ny: ny);
+    return Weather(baseTime: dto.baseDateTime, temperature: dto.temperature, condition: dto.conditionText);
   }
 
   @override

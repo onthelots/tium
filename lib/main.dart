@@ -3,9 +3,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:tium/core/app_info/app_info_cubit.dart';
 import 'package:tium/presentation/home/bloc/juso_search/juso_search_cubit.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/screen/juso_search_screen.dart';
+import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
+import 'package:tium/presentation/search/screen/search_screen.dart';
 import 'core/di/locator.dart';
 import 'core/routes/routes.dart';
 import 'core/services/shared_preferences_helper.dart';
@@ -62,6 +65,14 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(
           create: (_) => locator<JusoSearchCubit>(),
           child: JusoSearchScreen(),  // bloc은 HomeScreen 내부에서 add 호출됨
+        ),
+        BlocProvider(
+          create: (_) => locator<SearchBloc>(),
+          child: SearchScreen(),
+        ),
+        // version
+        BlocProvider(
+          create: (context) => AppInfoCubit()..fetchAppVersion(),
         ),
       ],
 

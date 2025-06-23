@@ -6,11 +6,12 @@ import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:dio/dio.dart';
 
+// 2. ApiClient (shared)
 class ApiClient {
   late final Dio _dio;
   final String baseUrl;
   final Map<String, String> defaultHeaders; // 헤더 방식
-  final Map<String, String> defaultQuery;   // 쿼리 방식
+  final Map<String, String> defaultQuery; // 쿼리 방식
 
   ApiClient({
     required this.baseUrl,
@@ -37,13 +38,12 @@ class ApiClient {
     );
   }
 
-  /// get 요청에 재시도 로직 추가
   Future<Response<T>> get<T>(
       String path, {
         Map<String, dynamic>? query,
         Map<String, dynamic>? headers,
-        int retryCount = 2,            // 재시도 최대 횟수 (기본 2회)
-        Duration retryDelay = const Duration(seconds: 1), // 재시도 전 대기 시간
+        int retryCount = 2,
+        Duration retryDelay = const Duration(seconds: 1),
       }) async {
     int attempt = 0;
     while (true) {
@@ -56,8 +56,8 @@ class ApiClient {
         return response;
       } catch (e) {
         attempt++;
-        if (attempt > retryCount) rethrow; // 최대 재시도 횟수 초과 시 예외 던짐
-        await Future.delayed(retryDelay);   // 재시도 전 대기
+        if (attempt > retryCount) rethrow;
+        await Future.delayed(retryDelay);
       }
     }
   }

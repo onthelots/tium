@@ -17,9 +17,9 @@ class WeatherBloc extends Bloc<WeatherEvent, WeatherState> {
         final uv = await _getUV(event.areaCode);
         final temp = await _getTemperature(event.nx, event.ny);
 
-        print("자외선 지수: ${uv.value}, 기온: ${temp.value}°C");
+        print("자외선 지수: ${uv.value}, 기온: ${temp.temperature}°C");
 
-        emit(WeatherLoaded(uvIndex: uv, temperature: temp));
+        emit(WeatherLoaded(uvIndex: uv, weather: temp));
       } catch (e) {
         print("에러 발생: $e");
         emit(WeatherError(e.toString()));
