@@ -8,7 +8,7 @@ import 'package:tium/presentation/home/screen/home_screen.dart';
 import 'package:tium/presentation/information/screen/information_screen.dart';
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
 import 'package:tium/presentation/search/screen/search_screen.dart';
-import '../../core/constants.dart';
+import '../../core/constants/constants.dart';
 import 'bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'bloc/bottom_nav_bloc/bottom_nav_event.dart';
 import 'bloc/bottom_nav_bloc/bottom_nav_state.dart';
@@ -29,9 +29,9 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _tabs = [
     HomeScreen(),
-    InformationScreen(),
+    // InformationScreen(),
     SearchScreen(),
-    MypageScreen(),
+    MyPageScreen(),
   ];
 
   @override
@@ -42,7 +42,6 @@ class _MainScreenState extends State<MainScreen> {
         builder: (context, state) {
           final currentIndex = state.index; // 기본값 0
           return Scaffold(
-            // IndexedStack을 사용하여 탭 전환
             body: IndexedStack(
               index: currentIndex,
               children: _tabs,
