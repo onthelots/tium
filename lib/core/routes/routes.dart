@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/presentation/home/screen/home_screen.dart';
 import 'package:tium/presentation/home/screen/juso_search_screen.dart';
+import 'package:tium/presentation/home/screen/plant_recommend_screen.dart';
 import 'package:tium/presentation/information/screen/information_screen.dart';
 import 'package:tium/presentation/main/main_screen.dart';
 import 'package:tium/presentation/mypage/screen/license/oss_license_screen.dart';
@@ -8,7 +10,7 @@ import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
 import 'package:tium/presentation/mypage/screen/theme/theme_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_intro_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_screen.dart';
-import 'package:tium/presentation/search/screen/search_detail_screen.dart';
+import 'package:tium/presentation/plant/screen/search_detail_screen.dart';
 import 'package:tium/presentation/search/screen/search_screen.dart';
 import 'package:tium/presentation/web/screen/web_view_screen.dart';
 
@@ -27,7 +29,8 @@ class Routes {
 
   // sub screen
   static const String juso = '/juso'; // 주소검색
-  static const String plantDetail = '/plantDetail';
+  static const String recommendPlant = '/recommendPlant';
+  static const String plantDetail = '/plantDetail'; // 식물 상세보기
 
 
   // settings
@@ -69,17 +72,35 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => const JusoSearchScreen(),
         );
-      case Routes.information:
-        return MaterialPageRoute(
-          builder: (_) => const InformationScreen(),
-        );
       case Routes.search:
         return MaterialPageRoute(
           builder: (_) => const SearchScreen(),
         );
-      case Routes.plantDetail:
+      case Routes.information:
         return MaterialPageRoute(
-          builder: (_) => PlantDetailScreen(),
+          builder: (_) => const InformationScreen(),
+        );
+      case Routes.recommendPlant:
+        final args = settings.arguments as Map<String, List<PlantSummary>>;
+        return MaterialPageRoute(
+          builder: (_) => PlantRecommendScreen(
+            indoorPlants: args['indoor'] ?? [],
+            dryPlants: args['dry'] ?? [],
+          ),
+        );
+      case Routes.plantDetail:
+        final args = settings.arguments as Map<String, dynamic>;
+        final plantId = args['id'] as String;
+        final category = args['category'] as PlantCategory;
+        final imageUrl = args['imageUrl'] as String;
+        final name = args['name'] as String;
+        return MaterialPageRoute(
+          builder: (_) => PlantDetailScreen(
+            plantId: plantId,
+            category: category,
+            imageUrl: imageUrl,
+            name: name,
+          ),
         );
       case Routes.mypage:
         return MaterialPageRoute(

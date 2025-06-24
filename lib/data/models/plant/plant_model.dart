@@ -1,69 +1,70 @@
-enum PlantCategory { dryGarden, indoorGarden, beginner }
+enum PlantCategory {
+  indoorGarden,
+  dryGarden,
+}
+
+enum DifficultyLevel {
+  beginner,
+  intermediate,
+  advanced,
+  unknown,
+}
+
+enum GrowthSpeed {
+  slow,
+  medium,
+  fast,
+  unknown,
+}
 
 class PlantSummary {
   final String id;
   final String name;
   final String imageUrl;
+  final String? highResImageUrl;
+  final PlantCategory category;
 
   const PlantSummary({
     required this.id,
     required this.name,
     required this.imageUrl,
+    this.highResImageUrl,
+    required this.category,
   });
 
-  // 건조 식물용 (imgUrl1 사용)
+  // 공통 CDATA / 텍스트 파서
+  static String? getValue(dynamic node) {
+    if (node == null) return null;
+    if (node is String) return node;
+    if (node is Map) {
+      if (node.containsKey('__cdata')) return node['__cdata']?.toString();
+      if (node.containsKey('\$t')) return node['\$t']?.toString();
+    }
+    return null;
+  }
+
+  // 건조 식물용 (mainImgUrl1)
   factory PlantSummary.fromDryGardenJson(Map<String, dynamic> json) {
     return PlantSummary(
-      id: json['cntntsNo']?.toString() ?? '',
-      name: json['cntntsSj'] ?? '',
-      imageUrl: json['imgUrl1'] ?? '',
+      id: getValue(json['cntntsNo']) ?? '',
+      name: getValue(json['cntntsSj']) ?? '',
+      imageUrl: getValue(json['mainImgUrl1']) ?? getValue(json['imgUrl1']) ?? '',
+      category: PlantCategory.dryGarden,  // 여기서 명확히 지정
     );
   }
 
-  // 실내 정원용 (rtnThumbFileUrl 첫번째 URL 사용)
-  factory PlantSummary.fromIndoorGardenJson(Map<String, dynamic> json) {
-    final urls = (json['rtnThumbFileUrl'] as String?)?.split('|') ?? [];
-    final imageUrl = urls.isNotEmpty ? urls[0] : '';
+  // 실내 정원용 (rtnThumbFileUrl)
+  factory PlantSummary.fromIndoorGardenJson(Map<String, dynamic> json, {String? highResImageUrl}) {
+    final rawUrls = getValue(json['rtnThumbFileUrl']) ?? '';
+    final urls = rawUrls.split('|');
+    final imageUrl = urls.isNotEmpty && urls.first.isNotEmpty ? urls.first : '';
 
     return PlantSummary(
-      id: json['cntntsNo']?.toString() ?? '',
-      name: json['cntntsSj'] ?? '',
+      id: getValue(json['cntntsNo']) ?? '',
+      name: getValue(json['cntntsSj']) ?? '',
       imageUrl: imageUrl,
-    );
-  }
-}
-
-class PlantDetail {
-  final String id;
-  final String name;
-  final String description;
-  final String imageUrl;
-
-  const PlantDetail({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.imageUrl,
-  });
-
-  factory PlantDetail.fromDryGardenJson(Map<String, dynamic> json) {
-    return PlantDetail(
-      id: json['cntntsNo']?.toString() ?? '',
-      name: json['cntntsSj'] ?? '',
-      description: json['mainChartrInfo'] ?? '',
-      imageUrl: json['imgUrl1'] ?? '',
-    );
-  }
-
-  factory PlantDetail.fromIndoorGardenJson(Map<String, dynamic> json) {
-    final urls = (json['rtnThumbFileUrl'] as String?)?.split('|') ?? [];
-    final imageUrl = urls.isNotEmpty ? urls[0] : '';
-
-    return PlantDetail(
-      id: json['cntntsNo']?.toString() ?? '',
-      name: json['cntntsSj'] ?? '',
-      description: json['mainChartrInfo'] ?? '',
-      imageUrl: imageUrl,
+      highResImageUrl: highResImageUrl ?? imageUrl,
+      category: PlantCategory.indoorGarden,  // 여기서 명확히 지정
     );
   }
 }

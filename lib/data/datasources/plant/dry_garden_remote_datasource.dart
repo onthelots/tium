@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:tium/core/dio/api_client.dart';
+import 'package:tium/data/models/plant/plant_detail_model.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:xml2json/xml2json.dart';
 
@@ -16,13 +18,12 @@ class DryGardenRemoteDataSourceImpl implements DryGardenRemoteDataSource {
   DryGardenRemoteDataSourceImpl(this.client);
 
   @override
-  Future<List<PlantSummary>> list({int size = 5}) async {
+  Future<List<PlantSummary>> list({int size = 300}) async {
     final res = await client.get(
       '/dryGarden/dryGardenList',
       query: {
         'pageNo': 1,
         'numOfRows': size,
-        // dataType 매개변수는 XML 전용이라 삭제
       },
     );
 
@@ -45,16 +46,14 @@ class DryGardenRemoteDataSourceImpl implements DryGardenRemoteDataSource {
   Future<PlantDetail> detail(String id) async {
     final res = await client.get(
       '/dryGarden/dryGardenDtl',
-      query: {
-        'cntntsNo': id,
-      },
+      query: {'cntntsNo': id},
     );
 
     _xml2json.parse(res.data as String);
     final jsonString = _xml2json.toParker();
     final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
-
     final item = jsonMap['response']?['body']?['item'];
+    debugPrint('건조식물 : $item');
 
     return PlantDetail.fromDryGardenJson(item as Map<String, dynamic>);
   }

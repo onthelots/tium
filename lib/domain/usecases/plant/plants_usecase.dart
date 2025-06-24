@@ -1,5 +1,6 @@
 import 'package:tium/data/datasources/plant/dry_garden_remote_datasource.dart';
 import 'package:tium/data/datasources/plant/garden_remote_datasource.dart';
+import 'package:tium/data/models/plant/plant_detail_model.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/domain/repositories/plant/plant_repository.dart';
 
@@ -18,5 +19,12 @@ class GetIndoorGardenPlants {
 class GetPlantDetail {
   GetPlantDetail(this._repo);
   final PlantRepository _repo;
-  Future<PlantDetail> call(String id, PlantCategory category) => _repo.detail(id, category);
+
+  Future<PlantDetail> call({
+    required String id,
+    required PlantCategory category,
+    required String name, // 👈 추가
+  }) {
+    return _repo.detail(id, category, name: name); // 👈 전달
+  }
 }

@@ -26,9 +26,11 @@ import 'package:tium/domain/usecases/plant/plants_usecase.dart';
 import 'package:tium/domain/usecases/weather/weather_usecase.dart';
 import 'package:tium/presentation/home/bloc/juso_search/juso_search_cubit.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
+import 'package:tium/presentation/home/bloc/plant_today/plant_today_bloc.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_bloc.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_bloc.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
 
 
@@ -237,11 +239,14 @@ void registerPlants() {
     );
 
   // 2. datasources
+  // 건조 식물
   locator.registerLazySingleton<DryGardenRemoteDataSource>(
         () => DryGardenRemoteDataSourceImpl(
       locator<ApiClient>(instanceName: 'nongsaroClient'),
     ),
   );
+
+  // 실내 식물
   locator.registerLazySingleton<GardenRemoteDataSource>(
         () => GardenRemoteDataSourceImpl(
       locator<ApiClient>(instanceName: 'nongsaroClient'),
@@ -261,14 +266,29 @@ void registerPlants() {
     ..registerLazySingleton<GetDryGardenPlants>(
             () => GetDryGardenPlants(locator()))
     ..registerLazySingleton<GetIndoorGardenPlants>(
-            () => GetIndoorGardenPlants(locator()));
+            () => GetIndoorGardenPlants(locator()))
+    ..registerLazySingleton<GetPlantDetail>(
+            () => GetPlantDetail(locator()));
+
 
   // 5. bloc
+
+  // 식물검색
   locator.registerFactory<SearchBloc>(
         () => SearchBloc(
       getDryGardenPlants: locator(),
       getIndoorGardenPlants: locator(),
     ),
+  );
+
+  // 식물 상세정보 조회
+  locator.registerFactory<PlantDetailBloc>(
+        () => PlantDetailBloc(locator<GetPlantDetail>()),
+  );
+
+  // 식물 랜덤
+  locator.registerFactory<PlantBloc>(
+        () => PlantBloc(getDry: locator<GetDryGardenPlants>(), getIndoor: locator<GetIndoorGardenPlants>()),
   );
 }
 

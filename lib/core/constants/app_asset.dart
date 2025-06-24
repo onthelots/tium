@@ -22,4 +22,13 @@ class AppAssetHome {
 
   final String indoor_bg = 'assets/img/indoor_bg.png';
   final String outdoor_bg = 'assets/img/outdoor_bg.png';
+
+  final String default_bg = 'assets/img/default_bg.png';
+  final String night_rainy_bg = 'assets/img/night_rainy_bg.png';
+  final String night_bg = 'assets/img/night_bg.png';
+  final String clear_day_bg = 'assets/img/clear_day_bg.png';
+  final String cloudy_day_bg = 'assets/img/cloudy_day_bg.png';
+  final String overcast_day_bg = 'assets/img/overcast_day_bg.png';
+  final String rainy_day_bg = 'assets/img/rainy_day_bg.png';
+  final String snowy_day_bg = 'assets/img/snowy_day_bg.png';
 }
