@@ -32,7 +32,7 @@ class CustomBottomNavigationBar {
   static List<BottomNavigationBarItem> bottomNavigationBarItem = const [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
     // BottomNavigationBarItem(icon: Icon(Icons.list), label: '정보'),
-    BottomNavigationBarItem(icon: Icon(Icons.search), label: '작물검색'),
+    BottomNavigationBarItem(icon: Icon(Icons.search), label: '식물검색'),
     BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지'),
   ];
 }
