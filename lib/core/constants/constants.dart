@@ -40,3 +40,29 @@ class CustomBottomNavigationBar {
     BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지'),
   ];
 }
+
+// ------ 유저 타입 도출 위한 매핑 딕셔너리
+
+const Map<String, String> experienceMap = {
+  '아직은 어색한 사이예요': 'beginner',
+  '조금씩 알아가는 중이에요': 'intermediate',
+  '이젠 말 안 해도 통해요': 'expert',
+};
+
+const Map<String, String> locationMap = {
+  '햇살 가득한 창가': 'window',
+  '조용한 방 안': 'bedroom',
+  '집안 여기 저기': 'anywhere',
+};
+
+const Map<String, String> careTimeMap = {
+  '거의 시간이 없어요': 'short',
+  '주말엔 괜찮아요': 'moderate',
+  '매일 돌볼 수 있어요': 'plenty',
+};
+
+const Map<String, String> interestMap = {
+  '계절마다 꽃이 피는 식물': 'flower',
+  '생김새가 독특한 식물': 'shape',
+  '가성비가 좋은 식물': 'price',
+};

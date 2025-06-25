@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tium/core/di/locator.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/user/user_model.dart';
+import 'package:tium/presentation/home/bloc/recommendation/recommend_plant_bloc.dart';
+import 'package:tium/presentation/home/bloc/recommendation/recommend_plant_event.dart';
 import 'package:tium/presentation/home/screen/home_screen.dart';
 import 'package:tium/presentation/home/screen/juso_search_screen.dart';
 import 'package:tium/presentation/home/screen/plant_recommend_screen.dart';
@@ -9,6 +14,7 @@ import 'package:tium/presentation/mypage/screen/license/oss_license_screen.dart'
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
 import 'package:tium/presentation/mypage/screen/theme/theme_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_intro_screen.dart';
+import 'package:tium/presentation/onboarding/screen/onboarding_result_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_screen.dart';
 import 'package:tium/presentation/plant/screen/search_detail_screen.dart';
 import 'package:tium/presentation/search/screen/search_screen.dart';
@@ -20,6 +26,7 @@ class Routes {
   static const String main = '/main'; // 메인
   static const String intro = '/intro'; // 앱 소개 (첫 실행 시)
   static const String onboarding = '/onboarding'; // 온보딩
+  static const String userType = '/userType'; // 유저타입 확인
 
   // tab
   static const String home = '/home'; // 홈 (탭바)
@@ -55,31 +62,47 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => MainScreen(),
         );
+
       case Routes.intro:
         return MaterialPageRoute(
           builder: (_) => const OnboardingIntroScreen(),
         );
+
       case Routes.onboarding:
         final isHomePushed = settings.arguments as bool;
         return MaterialPageRoute(
           builder: (_) => OnboardingScreen(isHomePushed: isHomePushed,),
         );
+
+      case Routes.userType:
+        final userType = settings.arguments as UserType;
+        return MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => locator<RecommendationBloc>()..add(LoadUserRecommendations(userType: userType)),
+            child: OnboardingResultScreen(userType: userType),
+          ),
+        );
+
       case Routes.home:
         return MaterialPageRoute(
           builder: (_) => const HomeScreen(),
         );
+
       case Routes.juso:
         return MaterialPageRoute(
           builder: (_) => const JusoSearchScreen(),
         );
+
       case Routes.search:
         return MaterialPageRoute(
           builder: (_) => const SearchScreen(),
         );
+
       case Routes.information:
         return MaterialPageRoute(
           builder: (_) => const InformationScreen(),
         );
+
       case Routes.recommendPlant:
         final args = settings.arguments as Map<String, List<PlantSummary>>;
         return MaterialPageRoute(
@@ -88,6 +111,7 @@ class AppRouter {
             dryPlants: args['dry'] ?? [],
           ),
         );
+
       case Routes.plantDetail:
         final args = settings.arguments as Map<String, dynamic>;
         final plantId = args['id'] as String;

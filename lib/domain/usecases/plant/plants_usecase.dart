@@ -2,6 +2,7 @@ import 'package:tium/data/datasources/plant/dry_garden_remote_datasource.dart';
 import 'package:tium/data/datasources/plant/garden_remote_datasource.dart';
 import 'package:tium/data/models/plant/plant_detail_model.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant_preference/plant_preference.dart';
 import 'package:tium/domain/repositories/plant/plant_repository.dart';
 
 class GetDryGardenPlants {
@@ -29,11 +30,35 @@ class GetPlantDetail {
   }
 }
 
-class GetPlantByLevel {
-  final GardenRemoteDataSource dataSource;
-  GetPlantByLevel(this.dataSource);
+class GetRecommendedPlants {
+  final PlantRepository repo;
+  GetRecommendedPlants(this.repo);
 
-  Future<List<PlantSummary>> call(int manageLevelCode) {
-    return dataSource.list(manageLevelCode: manageLevelCode);
+  Future<List<PlantSummary>> call(UserPlantPreference pref) {
+    return repo.getPlantsFiltered(
+      lightChkVal: pref.lightChkVal,
+      lefcolrChkVal: pref.lefcolrChkVal,
+      grwhstleChkVal: pref.grwhstleChkVal,
+      ignSeasonChkVal: pref.ignSeasonChkVal,
+      priceType: pref.priceType,
+      waterCycleSel: pref.waterCycleSel,
+    );
+  }
+}
+
+class GetRecommendedPlantsByFilter {
+  final PlantRepository repo;
+  GetRecommendedPlantsByFilter(this.repo);
+
+  Future<List<PlantSummary>> call(Map<String, String> filter, {int size = 10}) {
+    return repo.getPlantsFiltered(
+      lightChkVal: filter['lightChkVal'],
+      lefcolrChkVal: filter['lefcolrChkVal'],
+      grwhstleChkVal: filter['grwhstleChkVal'],
+      ignSeasonChkVal: filter['ignSeasonChkVal'],
+      priceType: filter['priceType'],
+      waterCycleSel: filter['waterCycleSel'],
+      size: size,
+    );
   }
 }

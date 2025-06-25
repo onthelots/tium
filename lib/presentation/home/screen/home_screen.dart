@@ -6,10 +6,14 @@ import 'package:tium/core/constants/constants.dart';
 import 'package:tium/core/helper/lat_lng_grid_converter.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
 import 'package:tium/core/routes/routes.dart';
+import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_event.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_state.dart';
+import 'package:tium/presentation/home/bloc/plant_section/plant_section_bloc.dart';
+import 'package:tium/presentation/home/bloc/plant_section/plant_section_event.dart';
+import 'package:tium/presentation/home/bloc/plant_section/plant_section_state.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_bloc.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_event.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_state.dart';
@@ -20,6 +24,8 @@ import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_blo
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_state.dart';
 import 'package:tium/presentation/search/screen/search_delegate.dart';
 import 'package:tium/presentation/search/screen/search_screen.dart';
+
+import 'plant_section_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -40,22 +46,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   /// 유저정보 불러오기
   Future<void> _fetchAll() async {
-
-    // 1. HIVE에 있나?
     _user = await UserPrefs.getUser();
 
-    // 2. 위치정보가 존재할 경우
     if (_user?.location != null) {
       final loc = _user!.location!;
       final grid = LatLngGridConverter.latLngToGrid(loc.lat, loc.lng);
-
-      // 날씨정보 가져오기
       context.read<WeatherBloc>().add(
         LoadWeather(areaCode: loc.areaCode, nx: grid.x, ny: grid.y),
       );
     }
 
-    // 3. 로딩 원래대로
+    // userType 기반 추천 식물 섹션 로드 이벤트 추가
+    if (_user?.userType != null) {
+      context.read<RecommendationSectionBloc>().add(
+        LoadUserRecommendationsSections(userType: _user!.userType),
+      );
+    }
+
     setState(() => _loading = false);
   }
 
@@ -246,6 +253,91 @@ class _HomeScreenState extends State<HomeScreen> {
                       },
                     ),
                   ),
+
+                  const SizedBox(height: 16),
+
+                  // 추천 식물 섹션 UI
+                  _user == null
+                      ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      '유저 정보가 없습니다. 온보딩을 진행해주세요.',
+                      style: theme.textTheme.bodyLarge,
+                    ),
+                  )
+                      : BlocBuilder<RecommendationSectionBloc, RecommendationSectionState>(
+                    builder: (context, state) {
+                      if (state is RecommendationSectionLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is RecommendationSectionLoaded) {
+                        if (state.sections.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              '추천 식물이 없습니다.',
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          );
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: state.sections.map((section) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        section.title,
+                                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => RecommendationFilteredPlantListScreen(
+                                                title: section.title,
+                                                filter: section.filter ?? {},
+                                                limit: 20, // 더보기 화면에선 더 많이 요청
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: const Text("더보기"),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8),
+                                  SizedBox(
+                                    height: 180, // 카드 높이 예시
+                                    child: ListView.separated(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: section.plants.length,
+                                      separatorBuilder: (_, __) => const SizedBox(width: 12),
+                                      itemBuilder: (context, index) {
+                                        final plant = section.plants[index];
+                                        return PlantCard(plant: plant);
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        );
+                      } else if (state is RecommendationSectionError) {
+                        return Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text('추천 식물 로딩 중 오류: ${state.message}', style: theme.textTheme.bodyLarge),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
                 ],
               ),
             ),
@@ -317,3 +409,39 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 }
+
+class PlantCard extends StatelessWidget {
+  final PlantSummary plant;
+  const PlantCard({required this.plant, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return SizedBox(
+      width: 140,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            plant.imageUrl != null
+                ? Image.network(plant.imageUrl!, height: 100, width: double.infinity, fit: BoxFit.cover)
+                : Container(height: 100, color: theme.colorScheme.primary.withOpacity(0.1)),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                plant.name ?? '이름 없음',
+                style: theme.textTheme.bodyMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

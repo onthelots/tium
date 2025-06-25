@@ -10,6 +10,7 @@ import 'package:tium/domain/entities/onboarding/onboarding_question_entity.dart'
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_event.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart';
+import 'package:tium/presentation/onboarding/screen/onboarding_result_screen.dart';
 
 class OnboardingScreen extends StatelessWidget {
   final bool isHomePushed;
@@ -35,7 +36,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   String experienceLevel = '';
   String locationPreference = '';
   String careTime = '';
-  List<String> interestTags = [];
+  String interestTags = '';
 
   int get currentPage => (_pageController.hasClients ? _pageController.page?.round() : 0) ?? 0;
   final int totalPages = 4;
@@ -108,7 +109,9 @@ class _OnboardingViewState extends State<OnboardingView> {
       body: BlocConsumer<OnboardingBloc, OnboardingState>(
         listener: (context, state) {
           if (state is OnboardingSaved) {
-            Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
+
+            Navigator.pushNamedAndRemoveUntil(context, Routes.userType, arguments: state.userType, (_) => false);
+
           } else if (state is OnboardingError) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
           }
@@ -128,26 +131,22 @@ class _OnboardingViewState extends State<OnboardingView> {
                       _buildVerticalOptions(
                         question: state.questions[0],
                         selectedList: experienceLevel.isEmpty ? [] : [experienceLevel],
-                        isMulti: false,
                         onChanged: (list) => setState(() => experienceLevel = list.isNotEmpty ? list.first : ''),
                       ),
                       _buildVerticalOptions(
                         question: state.questions[1],
                         selectedList: locationPreference.isEmpty ? [] : [locationPreference],
-                        isMulti: false,
                         onChanged: (list) => setState(() => locationPreference = list.isNotEmpty ? list.first : ''),
                       ),
                       _buildVerticalOptions(
                         question: state.questions[2],
                         selectedList: careTime.isEmpty ? [] : [careTime],
-                        isMulti: false,
                         onChanged: (list) => setState(() => careTime = list.isNotEmpty ? list.first : ''),
                       ),
                       _buildVerticalOptions(
                         question: state.questions[3],
-                        selectedList: interestTags,
-                        isMulti: true,
-                        onChanged: (list) => setState(() => interestTags = list),
+                        selectedList: interestTags.isEmpty ? [] : [interestTags],
+                        onChanged: (list) => setState(() => interestTags = list.isNotEmpty ? list.first : ''),
                       ),
                     ],
                   ),
@@ -165,7 +164,7 @@ class _OnboardingViewState extends State<OnboardingView> {
   Widget _buildVerticalOptions({
     required OnboardingQuestion question,
     required List<String> selectedList,
-    required bool isMulti,
+
     required Function(List<String>) onChanged,
   }) {
     final theme = Theme.of(context);
@@ -207,14 +206,9 @@ class _OnboardingViewState extends State<OnboardingView> {
                 borderRadius: BorderRadius.circular(16),
                 onTap: () {
                   final newSelected = List<String>.from(selectedList);
-                  if (isMulti) {
-                    selected ? newSelected.remove(option) : newSelected.add(
-                        option);
-                  } else {
-                    newSelected
-                      ..clear()
-                      ..add(option);
-                  }
+                  newSelected
+                    ..clear()
+                    ..add(option);
                   onChanged(newSelected);
                 },
                 child: Container(
