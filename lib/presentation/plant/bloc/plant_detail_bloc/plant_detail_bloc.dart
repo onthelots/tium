@@ -22,6 +22,9 @@ class PlantDetailBloc extends Bloc<PlantDetailEvent, PlantDetailState> {
         category: event.category,
         name: event.name,
       );
+
+      print("detail : ${detail.wateringInfo}");
+
       emit(PlantDetailLoaded(detail));
     } catch (e, stack) {
       debugPrint('PlantDetailBloc Error: $e');

@@ -20,11 +20,6 @@ class PlantRecommendScreen extends StatelessWidget {
 
     return CustomScaffold(
       title: "추천 식물",
-      // appBar: AppBar(
-      //   title: Text('추천 식물'),
-      //   backgroundColor: theme.scaffoldBackgroundColor,
-      //   foregroundColor: theme.colorScheme.onPrimary,
-      // ),
       body: ListView.separated(
         itemCount: combined.length,
         itemBuilder: (context, index) {
@@ -54,7 +49,7 @@ class PlantRecommendScreen extends StatelessWidget {
               ),
               tileColor: Colors.transparent,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(8)),
               splashColor: theme.colorScheme.secondary.withOpacity(0.3),
               onTap: () {
                 Navigator.pushNamed(

@@ -229,7 +229,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                     color: selected
                         ? theme.focusColor.withOpacity(0.1)
                         : theme.scaffoldBackgroundColor,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
@@ -245,7 +245,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                           option,
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: selected ? theme.primaryColor : theme
-                                .dividerColor,
+                                .hintColor,
                             fontWeight:
                             selected ? FontWeight.bold : FontWeight.normal,
                           ),
@@ -286,7 +286,7 @@ class NextButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: enabled ? theme.primaryColor : theme.disabledColor,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: enabled ? 4 : 0,
         ),
         onPressed: enabled ? onPressed : null,  // 여기서 onPressed를 null로 설정,

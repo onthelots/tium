@@ -5,7 +5,115 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45915695-9de3-4528-b560-99228250d8a7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/clear_day_bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/cloudy_day_bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/default_bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/indoor_bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/night_bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/night_rainy_bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/outdoor_bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/overcast_day_bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/rainy_day_bg.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/img/snowy_day_bg.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/components/adaptive_alert.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/components/custom_loading_indicator.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/components/custom_scaffold.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/app_info/app_info_cubit.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/app_info/package_info_service.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_asset.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/constants.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/dio/api_client.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/helper/lat_lng_grid_converter.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/routes/routes.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/services/hive/hive_prefs.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/services/hive/onboarding/onboarding_prefs.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/services/shared_preferences_helper.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/theme/app_theme.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/datasources/location/juso_search_remote_datasource.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/datasources/location/location_remote_datasource.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/datasources/onboarding/onboarding_remote_datasource.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/datasources/plant/dry_garden_remote_datasource.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/datasources/plant/garden_remote_datasource.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/datasources/weather/weather_remote_datasource.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/location/juso_search_dto.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/location/location_dto.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/onboarding/onboarding_question_model.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/plant/plant_detail_model.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/plant/plant_model.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/user/user_model.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/user/user_model.g.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/weather/uvIndex_dto.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/weather/weather_dto.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/location/juso_search_repository_impl.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/location/location_repository_impl.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/onboarding/onboarding_repository_impl.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/plant/plant_repository_impl.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/repositories/weather/weather_repository_impl.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/entities/hero_content/hero_content_model.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/entities/onboarding/onboarding_question_entity.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/entities/weather/uvIndex.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/entities/weather/weather.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/repositories/location/juso_search_repository.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/repositories/location/location_repository.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/repositories/onboarding/onboarding_repository.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/repositories/plant/plant_repository.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/repositories/weather/weather_repository.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/usecases/location/juso_search_usecase.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/usecases/location/location_usecase.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/usecases/onboarding/onboarding_usecase.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/usecases/plant/plants_usecase.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/domain/usecases/weather/weather_usecase.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/main.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/oss_licenses.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/juso_search/juso_search_cubit.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/location/location_search_bloc.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/location/location_search_event.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/location/location_search_state.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/plant_today/plant_today_bloc.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/plant_today/plant_today_event.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/plant_today/plant_today_state.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/weather/weather_bloc.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/weather/weather_event.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/weather/weather_state.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/juso_search_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/plant_recommend_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/test_color_preview_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/utils/hero_content_resolver.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/widgets/home_app_bar.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/widgets/home_event_header.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/widgets/home_event_list.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/widgets/location_choice_dialog.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/information/screen/information_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/main/bloc/bottom_nav_bloc/bottom_nav_bloc.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/main/bloc/bottom_nav_bloc/bottom_nav_event.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/main/bloc/bottom_nav_bloc/bottom_nav_state.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/main/bloc/theme_bloc/theme_bloc.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/main/bloc/theme_bloc/theme_event.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/main/bloc/theme_bloc/theme_state.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/main/main_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/mypage/screen/license/oss_license_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/mypage/screen/mypage_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/mypage/screen/theme/theme_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_event.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_intro_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/plant/bloc/plant_detail_bloc/plant_detail_bloc.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/plant/bloc/plant_detail_bloc/plant_detail_event.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/plant/bloc/plant_detail_bloc/plant_detail_state.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/plant/screen/search_detail_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/search/bloc/plant_search_bloc/plant_search_event.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/search/bloc/plant_search_bloc/plant_search_state.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/search/screen/search_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/web/screen/web_view_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

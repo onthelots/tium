@@ -42,18 +42,20 @@ HeroContent resolveHeroContent(WeatherState state, UserModel? user) {
       title: '티움에 오신 걸 환영해요!',
       subtitle: '사용자 정보를 설정하고\n지금 날씨를 알아볼까요?',
       showLocationBtn: true,
-      backgroundImage: AppAsset.home.default_bg, // ✅ 기본 배경
+      backgroundImage: AppAsset.home.default_bg,
+      isDay: false
     );
   }
 
   if (user.location == null) {
     return HeroContent(
-      icon: Icons.location_on,
-      iconColor: Colors.redAccent,
-      title: '내 위치를 알려주세요',
-      subtitle: '식물이 있는 곳의 날씨를 알려드릴게요',
-      showLocationBtn: true,
-      backgroundImage: AppAsset.home.default_bg,
+        icon: Icons.location_on,
+        iconColor: Colors.redAccent,
+        title: '내 위치를 알려주세요',
+        subtitle: '식물이 있는 곳의 날씨를 알려드릴게요',
+        showLocationBtn: true,
+        backgroundImage: AppAsset.home.default_bg,
+        isDay: false
     );
   }
 
@@ -64,17 +66,18 @@ HeroContent resolveHeroContent(WeatherState state, UserModel? user) {
       title: '잠시만 기다려 주세요...',
       subtitle: '최신 날씨를 확인하고 있어요',
       backgroundImage: AppAsset.home.default_bg,
+      isDay: false,
     );
   }
 
   final temp = state.weather.temperature.toStringAsFixed(1);
-  final uvLevel = interpretUVLevel(state.uvIndex.value);
   final condition = state.weather.condition;
 
   IconData icon;
   Color color;
   String title;
   String subtitle;
+  bool isDay;
 
   if (dayTime) {
     // 낮 문구 및 아이콘
@@ -117,7 +120,8 @@ HeroContent resolveHeroContent(WeatherState state, UserModel? user) {
         break;
     }
 
-    subtitle = '$temp°C / 자외선 $uvLevel';
+    isDay = true;
+    subtitle = '현재 온도 $temp°C';
 
   } else {
 
@@ -142,12 +146,12 @@ HeroContent resolveHeroContent(WeatherState state, UserModel? user) {
       case '소나기':
         icon = Icons.umbrella;
         color = Colors.blue.shade700;
-        title = '비가 내리는 밤이에요 🌧';
+        title = '비가 내리는 밤이에요';
         break;
       case '눈':
         icon = Icons.ac_unit;
         color = Colors.lightBlue.shade300;
-        title = '눈 내리는 밤이에요 ❄️';
+        title = '눈 내리는 밤이에요';
         break;
       case '비/눈':
         icon = Icons.grain;
@@ -160,7 +164,8 @@ HeroContent resolveHeroContent(WeatherState state, UserModel? user) {
         title = '조용한 밤이에요';
         break;
     }
-    subtitle = '$temp°C';
+    isDay = false;
+    subtitle = '현재 온도 $temp°C';
   }
 
   // ✅ 배경 이미지 경로 설정
@@ -172,6 +177,7 @@ HeroContent resolveHeroContent(WeatherState state, UserModel? user) {
     title: title,
     subtitle: subtitle,
     backgroundImage: backgroundImage,
+    isDay: isDay
   );
 }
 

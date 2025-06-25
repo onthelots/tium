@@ -8,7 +8,7 @@ class PlantDetail {
   final String? originPlace;
   final String? growthInfo;
   final String? careLevel;
-  final String? wateringInfo;
+  final WateringInfo wateringInfo;
   final String? propagationMethod;
   final String? sunlightInfo;
   final DifficultyLevel difficultyLevel;
@@ -22,7 +22,7 @@ class PlantDetail {
     this.originPlace,
     this.growthInfo,
     this.careLevel,
-    this.wateringInfo,
+    required this.wateringInfo,
     this.propagationMethod,
     this.sunlightInfo,
     required this.difficultyLevel,
@@ -42,6 +42,7 @@ class PlantDetail {
   factory PlantDetail.fromDryGardenJson(Map<String, dynamic> json) {
     final rawDifficultyCode = getValue(json['manageLevelNm']);
     final rawGrowthSpeed = getValue(json['grwtseVeNm']);
+    final rawWateringText = getValue(json['waterCycleInfo']);
 
     return PlantDetail(
       id: getValue(json['cntntsNo']) ?? '',
@@ -51,7 +52,10 @@ class PlantDetail {
       originPlace: getValue(json['orgplce']),
       growthInfo: getValue(json['grwtInfo']),
       careLevel: getValue(json['manageLevelNm']),
-      wateringInfo: getValue(json['watercycle']),
+      wateringInfo: mapWateringInfo(
+        category: PlantCategory.dryGarden,
+        description: rawWateringText,
+      ),
       propagationMethod: getValue(json['prpgtInfo']),
       sunlightInfo: getValue(json['lighttInfo']),
       difficultyLevel: mapDifficultyCode(rawDifficultyCode, PlantCategory.dryGarden),
@@ -61,7 +65,7 @@ class PlantDetail {
 
   factory PlantDetail.fromIndoorGardenJson(
       Map<String, dynamic> json, {
-        required String name, // 외부에서 Summary의 이름을 넘겨줌
+        required String name,
         String? highResImage,
       }) {
     final imageUrl = highResImage ??
@@ -69,6 +73,8 @@ class PlantDetail {
 
     final rawDifficultyCode = getValue(json['managelevelCodeNm']) ?? getValue(json['manageLevelNm']);
     final rawGrowthSpeed = getValue(json['grwtveCodeNm']) ?? getValue(json['grwtseVeNm']);
+    final rawWateringCode = getValue(json['watercycleSummerCode']);
+    final rawWateringText = getValue(json['watercycleSummerCodeNm']);
 
     return PlantDetail(
       id: getValue(json['cntntsNo']) ?? '',
@@ -78,7 +84,11 @@ class PlantDetail {
       originPlace: getValue(json['distbNm']) ?? getValue(json['orgplceInfo']),
       growthInfo: getValue(json['grwhTpCodeNm']) ?? getValue(json['grwhTpInfo']),
       careLevel: rawDifficultyCode,
-      wateringInfo: getValue(json['watercycleWinterCodeNm']) ?? getValue(json['watercycle']),
+      wateringInfo: mapWateringInfo(
+        category: PlantCategory.indoorGarden,
+        code: rawWateringCode,
+        description: rawWateringText,
+      ),
       propagationMethod: getValue(json['prpgtmthCodeNm']) ?? getValue(json['prpgtInfo']),
       sunlightInfo: getValue(json['lighttdemanddoCodeNm']) ?? getValue(json['lighttInfo']),
       difficultyLevel: mapDifficultyCode(rawDifficultyCode, PlantCategory.indoorGarden),
@@ -87,7 +97,14 @@ class PlantDetail {
   }
 }
 
-// 난이도 코드별 매핑 함수
+String cleanHtml(String? html) {
+  if (html == null) return '';
+  return html
+      .replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n') // <br>, <br/> → 줄바꿈
+      .replaceAll(RegExp(r'<[^>]*>'), '') // 다른 모든 태그 제거
+      .trim(); // 앞뒤 공백 제거
+}
+
 DifficultyLevel mapDifficultyCode(String? code, PlantCategory category) {
   if (code == null) return DifficultyLevel.unknown;
 
@@ -117,8 +134,6 @@ DifficultyLevel mapDifficultyCode(String? code, PlantCategory category) {
   return DifficultyLevel.unknown;
 }
 
-
-// 성장속도 코드/문자열 매핑 함수
 GrowthSpeed mapGrowthSpeed(String? speedStr) {
   if (speedStr == null) return GrowthSpeed.unknown;
 
@@ -130,3 +145,60 @@ GrowthSpeed mapGrowthSpeed(String? speedStr) {
 
   return GrowthSpeed.unknown;
 }
+
+WateringInfo mapWateringInfo({
+  required PlantCategory category,
+  String? code,
+  String? description,
+}) {
+  final cleanedDescription = cleanHtml(description);
+
+  if (category == PlantCategory.indoorGarden) {
+    switch (code?.trim()) {
+      case '053001':
+        return WateringInfo(
+          description: cleanedDescription.isNotEmpty ? cleanedDescription : '항상 흙을 축축하게 유지',
+          minDays: 1,
+          maxDays: 2,
+          type: WateringType.alwaysWet,
+        );
+      case '053002':
+        return WateringInfo(
+          description: cleanedDescription.isNotEmpty ? cleanedDescription : '흙을 촉촉하게 유지',
+          minDays: 3,
+          maxDays: 4,
+          type: WateringType.keepMoist,
+        );
+      case '053003':
+        return WateringInfo(
+          description: cleanedDescription.isNotEmpty ? cleanedDescription : '토양 표면이 말랐을 때 충분히 관수',
+          minDays: 5,
+          maxDays: 6,
+          type: WateringType.whenSurfaceDries,
+        );
+      case '053004':
+        return WateringInfo(
+          description: cleanedDescription.isNotEmpty ? cleanedDescription : '화분 흙 대부분 말랐을 때 충분히 관수',
+          minDays: 7,
+          maxDays: 10,
+          type: WateringType.whenMostlyDries,
+        );
+    }
+
+    return WateringInfo(
+      description: cleanedDescription.isNotEmpty ? cleanedDescription : '물주기 정보 없음',
+      minDays: 0,
+      maxDays: 0,
+      type: WateringType.unknown,
+    );
+  }
+
+  // dryGarden
+  return WateringInfo(
+    description: cleanedDescription.isNotEmpty ? cleanedDescription : '건조한 환경에 강해 자주 물을 줄 필요가 없습니다',
+    minDays: 15,
+    maxDays: 30,
+    type: WateringType.droughtTolerant,
+  );
+}
+

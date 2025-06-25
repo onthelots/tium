@@ -28,3 +28,12 @@ class GetPlantDetail {
     return _repo.detail(id, category, name: name); // 👈 전달
   }
 }
+
+class GetPlantByLevel {
+  final GardenRemoteDataSource dataSource;
+  GetPlantByLevel(this.dataSource);
+
+  Future<List<PlantSummary>> call(int manageLevelCode) {
+    return dataSource.list(manageLevelCode: manageLevelCode);
+  }
+}

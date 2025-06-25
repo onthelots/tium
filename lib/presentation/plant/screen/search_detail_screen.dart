@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/core/di/locator.dart';
@@ -28,7 +29,7 @@ class PlantDetailScreen extends StatelessWidget {
         ..add(PlantDetailRequested(
           id: plantId,
           category: category,
-          name: name, // 👈 여기에 식물 이름 전달
+          name: name,
         )),
       child: Scaffold(
         body: BlocBuilder<PlantDetailBloc, PlantDetailState>(
@@ -51,11 +52,8 @@ class PlantDetailScreen extends StatelessWidget {
                 slivers: [
                   SliverAppBar(
                     automaticallyImplyLeading: false, // ← 기본 백버튼 제거
-                    pinned: false,
+                    pinned: true,
                     stretch: true,
-                    onStretchTrigger: () async {
-                      // 추가 작업 가능
-                    },
                     stretchTriggerOffset: 100,
                     expandedHeight: 300,
                     backgroundColor: theme.scaffoldBackgroundColor,
@@ -63,15 +61,17 @@ class PlantDetailScreen extends StatelessWidget {
 
                     actions: [
                       Container(
-                        margin: const EdgeInsets.only(top: 15, right: 15),
+                        margin: const EdgeInsets.only(top: 10, right: 15),
                         decoration: BoxDecoration(
                           color: theme.disabledColor,
                           shape: BoxShape.circle,
                         ),
-                        child: IconButton(
-                          icon: const Icon(Icons.close, color: Colors.white, size: 25),
-                          tooltip: '닫기',
-                          onPressed: () => Navigator.of(context).pop(),
+                        child: GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: const Padding(
+                            padding: EdgeInsets.all(5), // 아이콘 주변 여백 조절
+                            child: Icon(Icons.close, color: Colors.white, size: 20),
+                          ),
                         ),
                       ),
                     ],
@@ -86,7 +86,7 @@ class PlantDetailScreen extends StatelessWidget {
                         plant.name,
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: Colors.white,
-                          shadows: [
+                          shadows: const [
                             Shadow(
                               blurRadius: 8,
                               color: Colors.black54,
@@ -97,14 +97,45 @@ class PlantDetailScreen extends StatelessWidget {
                       ),
                       background: Hero(
                         tag: plant.id,
-                        child: imageUrl.isNotEmpty
-                            ? Image.network(
-                          imageUrl,
-                          fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) =>
-                          const Icon(Icons.broken_image, size: 100, color: Colors.grey),
-                        )
-                            : Container(color: Colors.grey[300]),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            if (imageUrl.isNotEmpty)
+                              CachedNetworkImage(
+                                imageUrl: imageUrl,
+                                fit: BoxFit.cover,
+                                placeholder: (context, url) => Container(
+                                  color: Colors.grey[300],
+                                  child: const Center(child: CircularProgressIndicator()),
+                                ),
+                                errorWidget: (context, url, error) => const Icon(
+                                  Icons.broken_image,
+                                  size: 100,
+                                  color: Colors.grey,
+                                ),
+                              )
+                            else
+                              Container(color: Colors.grey[300]),
+                            // 그라데이션 추가
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.black.withOpacity(0.65),
+                                    Colors.black.withOpacity(0.35),
+                                    Colors.black.withOpacity(0.15),
+                                    Colors.black.withOpacity(0.05),
+                                    Colors.black.withOpacity(0.4),
+                                  ],
+                                  stops: [0.0, 0.2, 0.5, 0.8, 1.0],
+                                  tileMode: TileMode.clamp,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -112,28 +143,44 @@ class PlantDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
+                        Text(
+                          '기본 정보',
+                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+
+                        const SizedBox(height: 15),
+                        // 기본 정보 박스
                         _HighlightInfoRow(
                           difficulty: difficultyLevelToString(plant.difficultyLevel),
-                          watering: plant.wateringInfo ?? '정보 없음',
-                        ),
-                        const SizedBox(height: 12),
-
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Text(
-                            '📋 식물 관리 정보',
-                            style: theme.textTheme.titleMedium,
-                          ),
+                          watering: "${plant.wateringInfo.minDays}일 ~ ${plant.wateringInfo.maxDays}일",
                         ),
 
-                        _InfoCard(label: '성장 특성', value: plant.growthInfo, icon: Icons.eco),
-                        _InfoCard(label: '번식 방법', value: plant.propagationMethod, icon: Icons.grass),
-                        _InfoCard(label: '광량 정보', value: plant.sunlightInfo, icon: Icons.wb_sunny),
-                        _InfoCard(label: '성장 속도', value: growthSpeedToString(plant.growthSpeed), icon: Icons.speed),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 25),
+
+                        Text(
+                          '상세 정보',
+                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+
+                        const SizedBox(height: 15),
+
+                        // 상세 정보 박스
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _InfoCard(label: '잘 자라는 온도 및 특징', value: parseHtmlBreaks(plant.growthInfo), icon: Icons.eco),
+                            const SizedBox(height: 10),
+                            _InfoCard(label: '키우는 방법', value: parseHtmlBreaks(plant.propagationMethod), icon: Icons.grass),
+                            const SizedBox(height: 10),
+                            _InfoCard(label: '빛을 어떻게, 얼마나 봐야해요?', value: mapSunlightInfo(plant.sunlightInfo), icon: Icons.wb_sunny),
+                            const SizedBox(height: 10),
+                            _InfoCard(label: '물은 얼마나 자주줘야 해요?', value: parseHtmlBreaks(plant.wateringInfo.description), icon: Icons.water_drop),
+                            const SizedBox(height: 10),
+                            _InfoCard(label: '얼마나 빨리 자라나요?', value: growthSpeedToString(plant.growthSpeed), icon: Icons.speed),
+                          ],
+                        ),
                       ]),
                     ),
-
                   ),
                 ],
               );
@@ -162,14 +209,12 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (value == null || value!.isEmpty) return const SizedBox.shrink();
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[850] : Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,7 +222,7 @@ class _InfoCard extends StatelessWidget {
           if (icon != null)
             Padding(
               padding: const EdgeInsets.only(right: 12.0),
-              child: Icon(icon, color: Colors.green[400], size: 24),
+              child: Icon(icon, color: theme.focusColor, size: 24),
             ),
           Expanded(
             child: Column(
@@ -185,9 +230,9 @@ class _InfoCard extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: theme.textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.green[800],
+                    color: theme.focusColor,
                     letterSpacing: -0.2,
                   ),
                 ),
@@ -221,9 +266,46 @@ String difficultyLevelToString(DifficultyLevel level) {
     case DifficultyLevel.advanced:
       return '전문가';
     default:
-      return '정보 없음';
+      return '중급자';
   }
 }
+
+String mapSunlightInfo(String? sunlightInfo) {
+  if (sunlightInfo == null || sunlightInfo.trim().isEmpty) return '광량 정보가 없습니다.';
+
+  final normalized = sunlightInfo.replaceAll(RegExp(r'\s+'), ''); // 공백 제거
+  // 각각 포함 여부 체크
+  final hasLow = normalized.contains('낮은광도(300~800Lux)');
+  final hasMid = normalized.contains('중간광도(800~1,500Lux)');
+  final hasHigh = normalized.contains('높은광도(1,500~10,000Lux)');
+
+  // 미리 정의한 조합에 따라 친숙한 문구 반환
+  if (hasLow && hasMid && hasHigh) {
+    return '어두운 곳부터 밝은 곳까지 모두 잘 자라요';
+  }
+  if (!hasLow && hasMid && hasHigh) {
+    return '밝은 실내와 햇빛 좋은 곳에서 잘 자라요';
+  }
+  if (hasLow && hasMid && !hasHigh) {
+    return '햋빛 상관없이 모든 환경에서 잘 자라요';
+  }
+  if (hasLow && !hasMid && hasHigh) {
+    return '햋빛 상관없이 모든 환경에서 잘 자라요';
+  }
+  if (hasLow && !hasMid && !hasHigh) {
+    return '어두운 실내에서도 잘 자라요';
+  }
+  if (!hasLow && hasMid && !hasHigh) {
+    return '밝은 실내가 좋아요';
+  }
+  if (!hasLow && !hasMid && hasHigh) {
+    return '햇빛이 잘 드는 곳이 필요해요';
+  }
+
+  // 그 외에는 원본 텍스트 그대로, 줄바꿈 처리만 함
+  return parseHtmlBreaks(sunlightInfo);
+}
+
 
 String growthSpeedToString(GrowthSpeed speed) {
   switch (speed) {
@@ -238,6 +320,52 @@ String growthSpeedToString(GrowthSpeed speed) {
   }
 }
 
+// 광도
+class LuxDescriptionHelper {
+  static String fromLightDemandCodes(List<String> codes) {
+    final hasLow = codes.contains('055001');
+    final hasMid = codes.contains('055002');
+    final hasHigh = codes.contains('055003');
+
+    // --- 3개 다 있는 경우
+    if (hasLow && hasMid && hasHigh) {
+      return "어두운 곳부터 햇빛 잘 드는 곳까지 모두 잘 자라요 🌥️☀️";
+    }
+
+    // --- 중 + 고
+    if (!hasLow && hasMid && hasHigh) {
+      return "밝은 실내나 햇빛 좋은 곳이 좋아요 🌤️☀️";
+    }
+
+    // --- 저 + 중
+    if (hasLow && hasMid && !hasHigh) {
+      return "어두운 실내부터 밝은 실내까지 잘 자라요 🌥️🌤️";
+    }
+
+    // --- 고 + 저
+    if (hasLow && !hasMid && hasHigh) {
+      return "다양한 환경에서 잘 자라요 🌥️☀️";
+    }
+
+    // --- 단일
+    if (hasLow && !hasMid && !hasHigh) {
+      return "어두운 실내에서도 잘 자라요 🌥️";
+    }
+
+    if (!hasLow && hasMid && !hasHigh) {
+      return "밝은 실내가 좋아요 🌤️";
+    }
+
+    if (!hasLow && !hasMid && hasHigh) {
+      return "햇빛이 잘 드는 곳이 필요해요 ☀️";
+    }
+
+    // fallback
+    return "광량 정보가 부족해요 🌫️";
+  }
+}
+
+
 class _HighlightInfoRow extends StatelessWidget {
   final String difficulty;
   final String watering;
@@ -246,28 +374,12 @@ class _HighlightInfoRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
-      margin: const EdgeInsets.only(top: 20, bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      decoration: BoxDecoration(
-        color: isDark ? Colors.green[900] : Colors.green[50],
-        borderRadius: BorderRadius.circular(16),
-      ),
       child: Row(
         children: [
-          _HighlightBox(
-            icon: Icons.emoji_people,
-            label: '난이도',
-            value: difficulty,
-          ),
-          const SizedBox(width: 16),
-          _HighlightBox(
-            icon: Icons.water_drop,
-            label: '물주기',
-            value: watering,
-          ),
+          _HighlightBox(label: '난이도', value: difficulty),
+          _HighlightBox(label: '물주기', value: watering),
         ],
       ),
     );
@@ -275,12 +387,10 @@ class _HighlightInfoRow extends StatelessWidget {
 }
 
 class _HighlightBox extends StatelessWidget {
-  final IconData icon;
   final String label;
   final String value;
 
   const _HighlightBox({
-    required this.icon,
     required this.label,
     required this.value,
   });
@@ -289,22 +399,21 @@ class _HighlightBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Icon(icon, color: Colors.green[700], size: 28),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(color: Colors.green[800]),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            value,
-            style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        margin: const EdgeInsets.symmetric(horizontal: 5),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(label, style: theme.textTheme.titleMedium),
+            const SizedBox(height: 6),
+            Text(value, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
+          ],
+        ),
       ),
     );
   }
