@@ -191,7 +191,7 @@
 - [ ] empty
 
 2) Develop
-- [ ] 이미지 분석(Tensorflow lite)을 통한 식물 인식 모델 구축
+- [ ] 이미지 분석(Tensorflow 혹은 Google ML)을 통한 식물 인식 모델 구축
 - [ ] LLM 모델을 통한 사용자 맞춤형 질의응답 챗봇 생성
 
 <br>
