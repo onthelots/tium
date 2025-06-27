@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tium/components/custom_cached_image.dart';
 import 'package:tium/components/custom_loading_indicator.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
@@ -70,14 +71,13 @@ class PlantSearchDelegate extends SearchDelegate {
           child: ListTile(
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                plant.highResImageUrl ?? plant.imageUrl,
+              child: SizedBox(
                 width: 48,
                 height: 48,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) =>
-                    Icon(Icons.image_not_supported,
-                        color: theme.colorScheme.onSurface.withOpacity(0.3)),
+                child: buildCachedImage(
+                  plant.highResImageUrl ?? plant.imageUrl,
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             title: Text(

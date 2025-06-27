@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/core/app_info/app_info_cubit.dart';
 import 'package:tium/presentation/home/bloc/juso_search/juso_search_cubit.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
-import 'package:tium/presentation/home/screen/juso_search_screen.dart';
+import 'package:tium/presentation/home/screen/weather/juso_search_screen.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_event.dart';
 import 'core/di/locator.dart';

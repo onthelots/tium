@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tium/components/custom_cached_image.dart';
 import 'package:tium/components/custom_scaffold.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
@@ -24,6 +25,7 @@ class PlantRecommendScreen extends StatelessWidget {
         itemCount: combined.length,
         itemBuilder: (context, index) {
           final plant = combined[index];
+          final imageUrl = plant.highResImageUrl ?? plant.imageUrl;
           return Container(
             decoration: BoxDecoration(
               color: theme.scaffoldBackgroundColor,
@@ -33,14 +35,7 @@ class PlantRecommendScreen extends StatelessWidget {
             child: ListTile(
               leading: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  plant.highResImageUrl ?? plant.imageUrl,
-                  width: 48,
-                  height: 48,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Icon(Icons.image_not_supported,
-                      color: theme.colorScheme.onSurface.withOpacity(0.3)),
-                ),
+                child: buildCachedImage(imageUrl), // shimmer + cached 이미지
               ),
               title: Text(
                 plant.name,

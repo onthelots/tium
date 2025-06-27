@@ -148,7 +148,7 @@ const Map<UserType, List<RecommendationSectionInfo>> userRecommendationSectionsR
       },
     ),
     RecommendationSectionInfo(
-      title: '늦가을에도 생기를 주는 식물',
+      title: '화사한 생기를 주는 식물',
       filter: {
         'ignSeasonChkVal': '073004',
       },

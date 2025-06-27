@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tium/components/custom_cached_image.dart';
 import 'package:tium/components/custom_loading_indicator.dart';
 import 'package:tium/core/constants/app_asset.dart';
 import 'package:tium/core/routes/routes.dart';
@@ -41,93 +42,174 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('결과 분석'),
+        title: const Text('취향 분석 결과'),
         centerTitle: true,
         automaticallyImplyLeading: false,
+        backgroundColor: theme.colorScheme.primary,
+        elevation: 2,
       ),
       body: _isGenerating
-          ? Center(child: CustomLoadingIndicator(message: "취향을 분석중입니다 ..."))
+          ? Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(
+              "취향을 분석 중입니다 ...",
+              style: theme.textTheme.bodyMedium,
+            ),
+          ],
+        ),
+      )
           : Padding(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: SingleChildScrollView(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 유저 타입 설명
-              Image.asset(info.imageAsset, height: 200),
+              // 유저 타입 이미지
+              Container(
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.15),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    )
+                  ],
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    info.imageAsset,
+                    width: 160,
+                    height: 160,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+
               const SizedBox(height: 32),
+
+              // 유저 타입 제목
               Text(
                 info.title,
-                style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+
+              const SizedBox(height: 12),
+
+              // 유저 타입 설명
               Text(
                 info.description,
-                style: theme.textTheme.bodyLarge,
+                style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 40),
 
-              // 추천 식물 섹션
+              const SizedBox(height: 48),
+
+              // 추천 식물 섹션 제목
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '당신에게 추천하는 식물 🌿',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.secondary,
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
 
+              const SizedBox(height: 16),
+
+              // 추천 식물 리스트
               BlocBuilder<RecommendationBloc, RecommendationState>(
                 builder: (context, state) {
                   if (state is RecommendationLoading) {
-                    return const Padding(
-                      padding: EdgeInsets.all(24),
-                      child: Center(child: CircularProgressIndicator()),
-                    );
+                    return const Center(child: CircularProgressIndicator());
                   } else if (state is RecommendationLoaded) {
+                    if (state.plants.isEmpty) {
+                      return Text(
+                        "추천 식물이 없습니다.",
+                        style: theme.textTheme.bodyMedium,
+                      );
+                    }
                     return ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: state.plants.length,
-                      separatorBuilder: (_, __) => const Divider(),
+                      separatorBuilder: (_, __) => const Divider(height: 24),
                       itemBuilder: (context, index) {
                         final plant = state.plants[index];
+                        final imageUrl = plant.highResImageUrl ?? plant.imageUrl;
+
                         return ListTile(
+                          contentPadding: EdgeInsets.zero,
                           leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.network(
-                              plant.imageUrl ?? '',
-                              width: 48,
-                              height: 48,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => const Icon(Icons.image_not_supported),
+                            borderRadius: BorderRadius.circular(12),
+                            child: buildCachedImage(imageUrl),
+                          ),
+                          title: Text(
+                            plant.name,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
                             ),
                           ),
-                          title: Text(plant.name),
-                          subtitle: Text(plant.name ?? ''),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            Navigator.pushNamed(
+                              context,
+                              Routes.plantDetail,
+                              arguments: {
+                                'id': plant.id,
+                                'category': plant.category,
+                                'imageUrl': imageUrl,
+                                'name': plant.name,
+                              },
+                            );
+                          },
                         );
                       },
                     );
                   } else if (state is RecommendationError) {
-                    return Text('추천 실패: ${state.message}');
+                    return Text(
+                      '추천 실패: ${state.message}',
+                      style: theme.textTheme.bodyMedium?.copyWith(color: Colors.red),
+                    );
                   } else {
                     return const SizedBox.shrink();
                   }
                 },
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 48),
 
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              // 홈으로 버튼
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 18),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 5,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text(
+                    '홈으로 이동하기',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  ),
                 ),
-                child: const Text('홈으로 이동하기'),
               ),
             ],
           ),
@@ -136,6 +218,7 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
     );
   }
 }
+
 
 // 예시 유저 타입 설명 정보
 class UserTypeInfo {

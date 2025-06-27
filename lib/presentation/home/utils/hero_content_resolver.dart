@@ -35,30 +35,6 @@ HeroContent resolveHeroContent(WeatherState state, UserModel? user) {
   final now = DateTime.now();
   final dayTime = isDayTime(now);
 
-  if (user == null) {
-    return HeroContent(
-      icon: Icons.waving_hand,
-      iconColor: AppColors.lightAccent,
-      title: '티움에 오신 걸 환영해요!',
-      subtitle: '사용자 정보를 설정하고\n지금 날씨를 알아볼까요?',
-      showLocationBtn: true,
-      backgroundImage: AppAsset.home.default_bg,
-      isDay: false
-    );
-  }
-
-  if (user.location == null) {
-    return HeroContent(
-        icon: Icons.location_on,
-        iconColor: Colors.redAccent,
-        title: '내 위치를 알려주세요',
-        subtitle: '식물이 있는 곳의 날씨를 알려드릴게요',
-        showLocationBtn: true,
-        backgroundImage: AppAsset.home.default_bg,
-        isDay: false
-    );
-  }
-
   if (state is! WeatherLoaded) {
     return HeroContent(
       icon: Icons.downloading,

@@ -6,7 +6,8 @@ import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/home/bloc/recommendation/recommend_plant_bloc.dart';
 import 'package:tium/presentation/home/bloc/recommendation/recommend_plant_event.dart';
 import 'package:tium/presentation/home/screen/home_screen.dart';
-import 'package:tium/presentation/home/screen/juso_search_screen.dart';
+import 'package:tium/presentation/home/screen/plant_section/plant_section_list_screen.dart';
+import 'package:tium/presentation/home/screen/weather/juso_search_screen.dart';
 import 'package:tium/presentation/home/screen/plant_recommend_screen.dart';
 import 'package:tium/presentation/information/screen/information_screen.dart';
 import 'package:tium/presentation/main/main_screen.dart';
@@ -36,7 +37,7 @@ class Routes {
 
   // sub screen
   static const String juso = '/juso'; // 주소검색
-  static const String recommendPlant = '/recommendPlant';
+  static const String sectionlist = '/sectionlist'; // 필터링 된 식물 리스트
   static const String plantDetail = '/plantDetail'; // 식물 상세보기
 
 
@@ -103,12 +104,17 @@ class AppRouter {
           builder: (_) => const InformationScreen(),
         );
 
-      case Routes.recommendPlant:
-        final args = settings.arguments as Map<String, List<PlantSummary>>;
+      case Routes.sectionlist:
+        final args = settings.arguments as Map<String, dynamic>;
+        final title = args['title'] as String;
+        final filter = args['filter'] as Map<String, String>;
+        final limit = args['limit'] as int? ?? 20;
+
         return MaterialPageRoute(
-          builder: (_) => PlantRecommendScreen(
-            indoorPlants: args['indoor'] ?? [],
-            dryPlants: args['dry'] ?? [],
+          builder: (_) => PlantSectionListScreen(
+            title: title,
+            filter: filter,
+            limit: limit,
           ),
         );
 
