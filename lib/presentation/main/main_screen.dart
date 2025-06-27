@@ -30,7 +30,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _tabs = [
     HomeScreen(),
     // InformationScreen(),
-    SearchScreen(),
+    // SearchScreen(),
     MyPageScreen(),
   ];
 

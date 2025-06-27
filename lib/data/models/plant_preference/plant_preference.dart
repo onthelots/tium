@@ -27,18 +27,18 @@ class RecommendationSectionInfo {
   const RecommendationSectionInfo({
     required this.title,
     required this.filter,
-    this.limit = 4,
+    this.limit = 3,
   });
 }
 
 /// 유저 타입 - 절대 필터
 const Map<UserType, UserPlantPreference> userPlantPreferenceMap = {
   UserType.sunnyLover: UserPlantPreference(
-    lightChkVal: '055003', // 높은 광도
-    lefcolrChkVal: '069002', // 금색/노랑
-    grwhstleChkVal: '054001', // 직립형
-    ignSeasonChkVal: '073001', // 봄
-    priceType: '068002', // 5천 ~ 1만원
+    lightChkVal: '055003',
+    lefcolrChkVal: '069002',
+    grwhstleChkVal: '054001',
+    ignSeasonChkVal: '073001',
+    priceType: '068002',
     waterCycleSel: '053003', // 토양 표면 마르면 관수
   ),
   UserType.quietCompanion: UserPlantPreference(

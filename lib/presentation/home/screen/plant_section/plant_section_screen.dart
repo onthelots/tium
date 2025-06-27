@@ -42,7 +42,7 @@ class PlantSectionScreen extends StatelessWidget {
             children: [
               // 제목 + 더보기
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.only(left: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

@@ -11,6 +11,7 @@ import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_blo
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_event.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_result_screen.dart';
+import 'package:tium/presentation/onboarding/utils/question_option_icon_mapping.dart';
 
 class OnboardingScreen extends StatelessWidget {
   final bool isHomePushed;
@@ -110,7 +111,16 @@ class _OnboardingViewState extends State<OnboardingView> {
         listener: (context, state) {
           if (state is OnboardingSaved) {
 
-            Navigator.pushNamedAndRemoveUntil(context, Routes.userType, arguments: state.userType, (_) => false);
+            // 인자 전달
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              Routes.userType,
+              arguments: {
+                'userType': state.userType,
+                'isFirstRun': true,
+              },
+                  (_) => false,
+            );
 
           } else if (state is OnboardingError) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
@@ -195,12 +205,7 @@ class _OnboardingViewState extends State<OnboardingView> {
             itemBuilder: (context, index) {
               final option = question.options[index];
               final selected = selectedList.contains(option);
-
-              final iconData = [
-                Icons.water_drop_outlined,
-                Icons.house_outlined,
-                Icons.local_florist_outlined,
-              ][index % 3];
+              final iconData = getOptionIcon(question.key, option);
 
               return InkWell(
                 borderRadius: BorderRadius.circular(16),

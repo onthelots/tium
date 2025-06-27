@@ -14,9 +14,10 @@ class MyPageScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: theme.scaffoldBackgroundColor,
+        backgroundColor: theme.dividerColor,
         scrolledUnderElevation: 0,
         elevation: 0,
+        centerTitle: false,
         title: Text('마이페이지', style: theme.textTheme.labelLarge,),
       ),
       body: SingleChildScrollView(

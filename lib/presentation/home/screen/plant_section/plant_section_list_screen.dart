@@ -41,8 +41,11 @@ class _PlantSectionListScreenState extends State<PlantSectionListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        backgroundColor: theme.dividerColor,
+        scrolledUnderElevation: 0,
         elevation: 0,
+        centerTitle: true,
+        title: Text(widget.title, style: theme.textTheme.labelLarge,),
       ),
       body: BlocBuilder<FilteredPlantListBloc, FilteredPlantListState>(
         builder: (context, state) {

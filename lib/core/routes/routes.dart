@@ -3,17 +3,16 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/core/di/locator.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
-import 'package:tium/presentation/home/bloc/recommendation/recommend_plant_bloc.dart';
-import 'package:tium/presentation/home/bloc/recommendation/recommend_plant_event.dart';
 import 'package:tium/presentation/home/screen/home_screen.dart';
 import 'package:tium/presentation/home/screen/plant_section/plant_section_list_screen.dart';
 import 'package:tium/presentation/home/screen/weather/juso_search_screen.dart';
-import 'package:tium/presentation/home/screen/plant_recommend_screen.dart';
 import 'package:tium/presentation/information/screen/information_screen.dart';
 import 'package:tium/presentation/main/main_screen.dart';
 import 'package:tium/presentation/mypage/screen/license/oss_license_screen.dart';
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
 import 'package:tium/presentation/mypage/screen/theme/theme_screen.dart';
+import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_bloc.dart';
+import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_event.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_intro_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_result_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_screen.dart';
@@ -76,11 +75,18 @@ class AppRouter {
         );
 
       case Routes.userType:
-        final userType = settings.arguments as UserType;
+        final args = settings.arguments as Map<String, dynamic>;
+        final userType = args['userType'] as UserType;
+        final isFirstRun = args['isFirstRun'] as bool;
         return MaterialPageRoute(
           builder: (_) => BlocProvider(
-            create: (_) => locator<RecommendationBloc>()..add(LoadUserRecommendations(userType: userType)),
-            child: OnboardingResultScreen(userType: userType),
+            create: (_) => locator<RecommendationBloc>()..add(
+              LoadUserRecommendations(userType: userType),
+            ),
+            child: OnboardingResultScreen(
+              userType: userType,
+              isFirstRun: isFirstRun,
+            ),
           ),
         );
 

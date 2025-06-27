@@ -6,29 +6,30 @@ import 'package:tium/core/constants/app_asset.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
-import 'package:tium/presentation/home/bloc/recommendation/recommend_plant_bloc.dart';
-import 'package:tium/presentation/home/bloc/recommendation/recommend_plant_event.dart';
-import 'package:tium/presentation/home/bloc/recommendation/recommend_plant_state.dart';
+import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_bloc.dart';
+import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_event.dart';
+import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_state.dart';
+import 'package:tium/presentation/onboarding/utils/user_type_info.dart';
 
 class OnboardingResultScreen extends StatefulWidget {
+  final bool isFirstRun;
   final UserType userType;
 
-  const OnboardingResultScreen({super.key, required this.userType});
+  const OnboardingResultScreen({
+    super.key,
+    required this.userType,
+    required this.isFirstRun,
+  });
 
   @override
   State<OnboardingResultScreen> createState() => _OnboardingResultScreenState();
 }
 
 class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
-  bool _isGenerating = true;
-
   @override
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        _isGenerating = false;
-      });
       context.read<RecommendationBloc>().add(
         LoadUserRecommendations(userType: widget.userType),
       );
@@ -42,28 +43,14 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('취향 분석 결과'),
+        backgroundColor: theme.dividerColor,
+        scrolledUnderElevation: 0,
+        elevation: 0,
         centerTitle: true,
-        automaticallyImplyLeading: false,
-        backgroundColor: theme.colorScheme.primary,
-        elevation: 2,
+        title: Text('내 식물 케어 유형', style: theme.textTheme.labelLarge,),
       ),
-      body: _isGenerating
-          ? Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const CircularProgressIndicator(),
-            const SizedBox(height: 16),
-            Text(
-              "취향을 분석 중입니다 ...",
-              style: theme.textTheme.bodyMedium,
-            ),
-          ],
-        ),
-      )
-          : Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -75,22 +62,22 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.15),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                    )
+                      blurRadius: 14,
+                      offset: const Offset(0, 6),
+                    ),
                   ],
                 ),
                 child: ClipOval(
                   child: Image.asset(
                     info.imageAsset,
-                    width: 160,
-                    height: 160,
+                    width: 150,
+                    height: 150,
                     fit: BoxFit.cover,
                   ),
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 36),
 
               // 유저 타입 제목
               Text(
@@ -102,32 +89,100 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
                 textAlign: TextAlign.center,
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 16),
 
               // 유저 타입 설명
-              Text(
-                info.description,
-                style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 48),
-
-              // 추천 식물 섹션 제목
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  '당신에게 추천하는 식물 🌿',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.secondary,
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+                margin: const EdgeInsets.only(top: 8),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceVariant.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: theme.colorScheme.outline.withOpacity(0.4),
+                    width: 1,
                   ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.info_outline, size: 20),
+                        const SizedBox(width: 6),
+                        Text(
+                          '당신의 케어 스타일은?',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      info.description,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        height: 1.6,
+                        color: theme.colorScheme.onSurface.withOpacity(0.85),
+                      ),
+                      textAlign: TextAlign.left,
+                    ),
+                  ],
                 ),
               ),
 
-              const SizedBox(height: 16),
+            ],
+          ),
+        ),
+      ),
+      bottomNavigationBar: !widget.isFirstRun ? null : Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 30), // 하단만 여백
+        child: SafeArea(
+          minimum: const EdgeInsets.only(bottom: 0),
+          child: SizedBox(
+            width: double.infinity,
+            height: 52, // 더 얇게
+            child: ElevatedButton(
+              onPressed: () {
+                if (widget.isFirstRun) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context, Routes.main, (route) => false,
+                  );
+                } else {
+                  Navigator.pop(context);
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: Colors.white,
+                elevation: 4,
+                padding: EdgeInsets.zero,
+              ),
+              child: const Text(
+                '홈으로 이동하기',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.6,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
 
-              // 추천 식물 리스트
+    );
+  }
+}
+
+
+/// 추천 식물리스트 (좀 필터링을 줄이자)
+/*
+// 추천 식물 리스트
               BlocBuilder<RecommendationBloc, RecommendationState>(
                 builder: (context, state) {
                   if (state is RecommendationLoading) {
@@ -186,97 +241,4 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
                   }
                 },
               ),
-
-              const SizedBox(height: 48),
-
-              // 홈으로 버튼
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamedAndRemoveUntil(context, Routes.main, (_) => false);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    elevation: 5,
-                    backgroundColor: theme.colorScheme.primary,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text(
-                    '홈으로 이동하기',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-
-// 예시 유저 타입 설명 정보
-class UserTypeInfo {
-  final String title;
-  final String description;
-  final String imageAsset;
-
-  const UserTypeInfo({
-    required this.title,
-    required this.description,
-    required this.imageAsset,
-  });
-}
-
-final Map<UserType, UserTypeInfo> userTypeInfo = {
-  UserType.sunnyLover: UserTypeInfo(
-    title: '햇살을 사랑하는 당신',
-    description: '창가에서 햇빛 가득한 식물과 함께하는 것을 좋아해요.',
-    imageAsset: AppAsset.icon.icon_circle,
-  ),
-  UserType.quietCompanion: UserTypeInfo(
-    title: '조용한 방의 동반자',
-    description: '분주한 일상 속 조용한 방 안에서 식물과 함께해요.',
-    imageAsset: AppAsset.icon.icon_circle,
-  ),
-  UserType.smartSaver: UserTypeInfo(
-    title: '스마트하게 돌보는 사람',
-    description: '부담 없는 관리로 식물과의 관계를 시작해요.',
-    imageAsset: AppAsset.icon.icon_circle,
-  ),
-  UserType.bloomingWatcher: UserTypeInfo(
-    title: '꽃을 기다리는 사람',
-    description: '계절마다 피어나는 꽃을 보며 기쁨을 느껴요.',
-    imageAsset: AppAsset.icon.icon_circle,
-  ),
-  UserType.growthSeeker: UserTypeInfo(
-    title: '성장에 집중하는 사람',
-    description: '잎과 줄기의 독특한 생김새에 매력을 느껴요.',
-    imageAsset: AppAsset.icon.icon_circle,
-  ),
-  UserType.seasonalRomantic: UserTypeInfo(
-    title: '계절을 타는 로맨티스트',
-    description: '식물로 사계절을 느끼며 힐링하는 당신.',
-    imageAsset: AppAsset.icon.icon_circle,
-  ),
-  UserType.plantMaster: UserTypeInfo(
-    title: '식물 마스터',
-    description: '매일 돌보며 식물과 깊은 교감을 나눠요.',
-    imageAsset: AppAsset.icon.icon_circle,
-  ),
-  UserType.calmObserver: UserTypeInfo(
-    title: '가성비를 중시하는 관찰자',
-    description: '조용히, 알뜰하게 식물을 돌보는 당신.',
-    imageAsset: AppAsset.icon.icon_circle,
-  ),
-  UserType.growthExplorer: UserTypeInfo(
-    title: '성장을 탐험하는 사람',
-    description: '식물의 변화와 가능성을 즐기는 도전가형!',
-    imageAsset: AppAsset.icon.icon_circle,
-  ),
-};
+ */

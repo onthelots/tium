@@ -18,6 +18,9 @@ import 'package:tium/presentation/home/bloc/weather/weather_bloc.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_event.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_state.dart';
 import 'package:tium/presentation/home/utils/hero_content_resolver.dart';
+import 'package:tium/presentation/home/widgets/home_search_header_delegate.dart';
+import 'package:tium/presentation/home/widgets/home_section_shimmer.dart';
+import 'package:tium/presentation/home/widgets/home_weather_header_delegate.dart';
 import 'package:tium/presentation/home/widgets/location_choice_dialog.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tium/presentation/landing/landing_screen.dart';
@@ -48,6 +51,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_user?.location != null) {
       final loc = _user!.location!;
       final grid = LatLngGridConverter.latLngToGrid(loc.lat, loc.lng);
+      print("로드하기");
       context.read<WeatherBloc>().add(
         LoadWeather(areaCode: loc.areaCode, nx: grid.x, ny: grid.y),
       );
@@ -61,6 +65,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     setState(() => _loading = false);
+  }
+
+  /// 날씨 정보 불러오기(분리)
+  void _handleWeatherReload() {
+    final loc = _user?.location;
+    if (loc != null) {
+      final grid = LatLngGridConverter.latLngToGrid(loc.lat, loc.lng);
+      print("🌦️ 날씨 다시 불러오기: ${loc.areaCode}, x=${grid.x}, y=${grid.y}");
+
+      context.read<WeatherBloc>().add(
+        LoadWeather(areaCode: loc.areaCode, nx: grid.x, ny: grid.y),
+      );
+    }
   }
 
   @override
@@ -93,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
+              /// 앱바
               SliverAppBar(
                 pinned: false, // 스크롤 시 사라지도록
                 floating: false,
@@ -100,142 +118,57 @@ class _HomeScreenState extends State<HomeScreen> {
                 expandedHeight: 60,
                 backgroundColor: theme.scaffoldBackgroundColor,
                 elevation: 0,
-                titleSpacing: 16,
                 automaticallyImplyLeading: false,
-                title: Row(
-                  children: [
-                    Image.asset(AppAsset.icon.icon_circle, height: 28),
-                    const SizedBox(width: 10),
-                    Text("TIUM", style: theme.textTheme.titleMedium),
-                    const Spacer(),
-                    const Icon(Icons.notifications),
-                  ],
+                title: Padding(
+                  padding: const EdgeInsets.only(left: 16.0), // 정확하게 16만큼 떨어뜨리기
+                  child: Row(
+                    children: [
+                      Image.asset(AppAsset.icon.icon_circle, height: 28),
+                      const SizedBox(width: 10),
+                      Text("TIUM", style: theme.textTheme.titleMedium),
+                      const Spacer(),
+                      IconButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, Routes.userType,
+                            arguments: {
+                              'userType': _user?.userType,
+                              'isFirstRun': false,
+                            },);
+                        },
+                        icon: const Icon(Icons.account_circle),
+                      ),
+                    ],
+                  ),
                 ),
+                titleSpacing: 0, // 이건 0으로 맞춰두는 것이 좋음
+
               ),
           
-              // ✅ SearchBar pinned
+              /// 날씨
+              if (_user != null)
               SliverPersistentHeader(
                 pinned: true,
-                delegate: _SearchBarHeaderDelegate(),
+                delegate: WeatherStatusHeaderDelegate(
+                  user: _user,
+                  onLocationTap: () => _handleLocationTap(context),
+                  onRetry: _handleWeatherReload,
+                ),
               ),
-          
+
+              /// 검색창
+              SliverPersistentHeader(
+                pinned: false,
+                delegate: SearchBarHeaderDelegate(),
+              ),
+
+              /// 나머지 위젯
               SliverToBoxAdapter(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 15),
-                    if (_user != null)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-                      // 1. 유저 정보가 존재(온보딩 완료)하나, location이 없을 경우
-                      child: _user?.location == null
-                          ? Container(
-                        decoration: BoxDecoration(
-                          color: theme.scaffoldBackgroundColor,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 24, // 원의 반지름 (size: 48)
-                              backgroundColor: theme.colorScheme.secondary.withOpacity(0.2), // 배경색
-                              child: Icon(
-                                Icons.location_on,
-                                color: theme.colorScheme.secondary,
-                                size: 28, // 아이콘 크기
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                   "지금 날씨를 알려드릴게요",
-                                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                   "먼저 위치 정보를 설정해 주세요", // 예: "26.5°C / 자외선 보통"
-                                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w300),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.arrow_forward_ios, size: 16),
-                              onPressed: () => _handleLocationTap(context),
-                            ),
-                          ],
-                        ),
-                      )
-                          : BlocBuilder<WeatherBloc, WeatherState>(
-                        builder: (context, state) {
-                          final hero = resolveHeroContent(state, _user);
-                          final isDay = hero.isDay;
-                          final uv = (state is WeatherLoaded) ? state.uvIndex.value : null;
-          
-                          return Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  hero.icon,
-                                  color: hero.iconColor,
-                                  size: 30, // 첫 번째 예시 아이콘 크기와 동일하게 조정
-                                ),
-                                const SizedBox(width: 12), // 간격도 동일하게 12로 조정
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        hero.title,
-                                        style: theme.textTheme.titleMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        hero.subtitle,
-                                        style: theme.textTheme.titleSmall?.copyWith(
-                                          fontWeight: FontWeight.w300,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                if (uv != null && isDay)
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: theme.cardColor,
-                                      borderRadius: BorderRadius.circular(8),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: Colors.black.withOpacity(0.2),
-                                          blurRadius: 4,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Text(
-                                      'UV ${interpretUVLevel(uv)}',
-                                      style: theme.textTheme.labelSmall,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-          
                     // 추천 식물 섹션 UI
                     _user == null
-          
+
                     // 1. 랜딩 페이지
                         ? WelcomeLandingCard(
                       onPressed: () {
@@ -243,12 +176,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             context, Routes.onboarding, arguments: true);
                       },
                     )
-          
+
                     // 2. 식물 추천 섹션
                         : BlocBuilder<RecommendationSectionBloc, RecommendationSectionState>(
                       builder: (context, state) {
                         if (state is RecommendationSectionLoading) {
-                          return const Center(child: CircularProgressIndicator());
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 16),
+                            child: PlantSectionShimmer(),
+                          );
                         } else if (state is RecommendationSectionLoaded) {
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -347,45 +283,3 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 }
-
-class _SearchBarHeaderDelegate extends SliverPersistentHeaderDelegate {
-  @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    final theme = Theme.of(context);
-    return Container(
-      color: theme.scaffoldBackgroundColor,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-      child: GestureDetector(
-        onTap: () {
-          showSearch(
-            context: context,
-            delegate: PlantSearchDelegate([]),
-          );
-        },
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.tertiary,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              const Icon(Icons.search, size: 20),
-              const SizedBox(width: 12),
-              Text("함께 하고 싶은 식물 검색", style: theme.textTheme.bodySmall),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  double get maxExtent => 68;
-  @override
-  double get minExtent => 68;
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) => true;
-}
-
-

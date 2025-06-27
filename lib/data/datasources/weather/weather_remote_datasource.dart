@@ -54,9 +54,33 @@ class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
   }
 
   Map<String, dynamic> _json(dynamic d, {required String tag}) {
-    if (d is Map<String, dynamic>) return d;
-    if (d is String) return jsonDecode(d) as Map<String, dynamic>;
-    throw Exception('[$tag] Unexpected type: ${d.runtimeType}');
+    try {
+      if (d is Map<String, dynamic>) return d;
+
+      if (d is String) {
+        // 👉 XML 응답인지 확인
+        if (d.trimLeft().startsWith('<')) {
+          print('[$tag] ❌ XML 응답 감지됨:');
+          print(d);
+          throw FormatException('[$tag] XML 응답: JSON이 아님');
+        }
+
+        final decoded = jsonDecode(d);
+        if (decoded is Map<String, dynamic>) {
+          return decoded;
+        } else {
+          print('[$tag] ❌ JSON 구조가 Map이 아님: ${decoded.runtimeType}');
+          throw FormatException('[$tag] JSON 구조가 Map이 아님');
+        }
+      }
+
+      print('[$tag] ❌ 예기치 않은 타입: ${d.runtimeType}');
+      throw FormatException('[$tag] 예기치 않은 타입: ${d.runtimeType}');
+    } catch (e) {
+      print('[$tag] ❌ JSON 파싱 실패: $e');
+      if (d is String) print('[$tag] 응답 본문: $d');
+      rethrow;
+    }
   }
 
   String _calcUvTime() {
