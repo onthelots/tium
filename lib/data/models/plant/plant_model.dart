@@ -1,8 +1,11 @@
+
+// 식물 카테고리
 enum PlantCategory {
   indoorGarden,
   dryGarden,
 }
 
+// 난이도
 enum DifficultyLevel {
   beginner,
   intermediate,
@@ -10,6 +13,7 @@ enum DifficultyLevel {
   unknown,
 }
 
+// 생육 속도
 enum GrowthSpeed {
   slow,
   medium,
@@ -17,6 +21,32 @@ enum GrowthSpeed {
   unknown,
 }
 
+// 물주기 타입
+enum WateringType {
+  alwaysWet,           // 053001
+  keepMoist,           // 053002
+  whenSurfaceDries,    // 053003
+  whenMostlyDries,     // 053004
+  droughtTolerant,     // dryGarden only
+  unknown,
+}
+
+// 물주기 정보
+class WateringInfo {
+  final String description;
+  final int minDays;
+  final int maxDays;
+  final WateringType type;
+
+  const WateringInfo({
+    required this.description,
+    required this.minDays,
+    required this.maxDays,
+    required this.type,
+  });
+}
+
+// 식물 정보 (요약)
 class PlantSummary {
   final String id;
   final String name;

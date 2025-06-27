@@ -1,12 +1,19 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
 import 'package:tium/core/dio/api_client.dart';
 import 'package:tium/data/models/plant/plant_detail_model.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:xml2json/xml2json.dart';
 
 abstract class GardenRemoteDataSource {
-  Future<List<PlantSummary>> list({int size, int? manageLevelCode});
+  Future<List<PlantSummary>> list({
+    int size,
+    String? lightChkVal,
+    String? lefcolrChkVal,
+    String? grwhstleChkVal,
+    String? ignSeasonChkVal,
+    String? priceType,
+    String? waterCycleSel,
+  });
   Future<PlantDetail> detail(String id, {required String name});
 }
 
@@ -17,14 +24,26 @@ class GardenRemoteDataSourceImpl implements GardenRemoteDataSource {
   GardenRemoteDataSourceImpl(this.client);
 
   @override
-  Future<List<PlantSummary>> list({int size = 300, int? manageLevelCode}) async {
-    final query = {
+  Future<List<PlantSummary>> list({
+    int? size,
+    String? lightChkVal,
+    String? lefcolrChkVal,
+    String? grwhstleChkVal,
+    String? ignSeasonChkVal,
+    String? priceType,
+    String? waterCycleSel,
+  }) async {
+    final Map<String, dynamic> query = {
       'pageNo': 1,
       'numOfRows': size,
     };
-    if (manageLevelCode != null) {
-      query['managelevelCode'] = manageLevelCode;
-    }
+
+    if (lightChkVal != null) query['lightChkVal'] = lightChkVal;
+    if (lefcolrChkVal != null) query['lefcolrChkVal'] = lefcolrChkVal;
+    if (grwhstleChkVal != null) query['grwhstleChkVal'] = grwhstleChkVal;
+    if (ignSeasonChkVal != null) query['ignSeasonChkVal'] = ignSeasonChkVal;
+    if (priceType != null) query['priceType'] = priceType;
+    if (waterCycleSel != null) query['waterCycleSel'] = waterCycleSel;
 
     final res = await client.get('/garden/gardenList', query: query);
 
@@ -33,6 +52,8 @@ class GardenRemoteDataSourceImpl implements GardenRemoteDataSource {
     final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
 
     final itemsDynamic = jsonMap['response']?['body']?['items']?['item'];
+    if (itemsDynamic == null) return [];
+
     final items = itemsDynamic is List ? itemsDynamic : [itemsDynamic];
 
     final plants = <PlantSummary>[];

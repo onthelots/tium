@@ -10,18 +10,15 @@ class MyPageScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: theme.dividerColor,
         scrolledUnderElevation: 0,
-        leadingWidth: 200.0,
-        leading: Align(
-          alignment: Alignment.centerLeft, // 세로축 중앙, 가로축 왼쪽 정렬
-          child: Padding(
-            padding: const EdgeInsets.only(left: 13.0), // 좌측 여백 조정
-            child: Text('마이페이지', style: Theme.of(context).textTheme.labelLarge),
-          ),
-        ),
+        elevation: 0,
+        centerTitle: false,
+        title: Text('마이페이지', style: theme.textTheme.labelLarge,),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -41,8 +38,8 @@ class MyPageScreen extends StatelessWidget {
 
               Divider(
                 height: 20.0,
-                thickness: 15.0,
-                color: Theme.of(context).cardColor,
+                thickness: 10.0,
+                color: theme.dividerColor,
               ),
 
               _buildSectionTitle(context: context, title: '약관 및 라이선스'),
@@ -71,8 +68,8 @@ class MyPageScreen extends StatelessWidget {
 
               Divider(
                 height: 20.0,
-                thickness: 15.0,
-                color: Theme.of(context).cardColor,
+                thickness: 10.0,
+                color: theme.dividerColor,
               ),
               BlocBuilder<AppInfoCubit, String>(
                 builder: (context, version) {
@@ -90,57 +87,21 @@ class MyPageScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStreakCard() {
-    return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: 16.0, vertical: 16.0),
-      child: Container(
-        padding: EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(8.0),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('데일리 로또와 함께한지',
-                    style: TextStyle(fontSize: 14, color: Colors.black54)),
-                SizedBox(height: 4),
-                Text('25일째',
-                    style:
-                    TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              ],
-            ),
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildSectionTitle({required String title, required BuildContext context}) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(
           horizontal: 16.0, vertical: 16.0),
       child: Text(
         title,
-        style: Theme.of(context).textTheme.labelMedium,
+        style: theme.textTheme.labelMedium,
       ),
     );
   }
 
   Widget _buildListTile(
       {required BuildContext context, required String title, required VoidCallback onTap, Widget? trailing}) {
+    final theme = Theme.of(context);
     return Padding(
       padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: GestureDetector(
@@ -149,7 +110,7 @@ class MyPageScreen extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(title, style: Theme.of(context).textTheme.bodyMedium),
+            Text(title, style: theme.textTheme.bodyMedium),
             trailing ?? const Icon(Icons.chevron_right_rounded),
           ],
         ),

@@ -20,7 +20,8 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       experienceLevel: fields[0] as String,
       locationPreference: fields[1] as String,
       careTime: fields[2] as String,
-      interestTags: (fields[3] as List).cast<String>(),
+      interestTags: fields[3] as String,
+      userType: fields[7] as UserType,
       indoorPlants: (fields[4] as List).cast<UserPlant>(),
       outdoorPlants: (fields[5] as List).cast<UserPlant>(),
       location: fields[6] as UserLocation?,
@@ -30,7 +31,7 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
   @override
   void write(BinaryWriter writer, UserModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.experienceLevel)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class UserModelAdapter extends TypeAdapter<UserModel> {
       ..writeByte(5)
       ..write(obj.outdoorPlants)
       ..writeByte(6)
-      ..write(obj.location);
+      ..write(obj.location)
+      ..writeByte(7)
+      ..write(obj.userType);
   }
 
   @override
@@ -155,6 +158,85 @@ class UserLocationAdapter extends TypeAdapter<UserLocation> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is UserLocationAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class UserTypeAdapter extends TypeAdapter<UserType> {
+  @override
+  final int typeId = 3;
+
+  @override
+  UserType read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return UserType.sunnyLover;
+      case 1:
+        return UserType.quietCompanion;
+      case 2:
+        return UserType.growthSeeker;
+      case 3:
+        return UserType.smartSaver;
+      case 4:
+        return UserType.growthExplorer;
+      case 5:
+        return UserType.bloomingWatcher;
+      case 6:
+        return UserType.calmObserver;
+      case 7:
+        return UserType.plantMaster;
+      case 8:
+        return UserType.casualPlanterior;
+      case 9:
+        return UserType.seasonalRomantic;
+      default:
+        return UserType.sunnyLover;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, UserType obj) {
+    switch (obj) {
+      case UserType.sunnyLover:
+        writer.writeByte(0);
+        break;
+      case UserType.quietCompanion:
+        writer.writeByte(1);
+        break;
+      case UserType.growthSeeker:
+        writer.writeByte(2);
+        break;
+      case UserType.smartSaver:
+        writer.writeByte(3);
+        break;
+      case UserType.growthExplorer:
+        writer.writeByte(4);
+        break;
+      case UserType.bloomingWatcher:
+        writer.writeByte(5);
+        break;
+      case UserType.calmObserver:
+        writer.writeByte(6);
+        break;
+      case UserType.plantMaster:
+        writer.writeByte(7);
+        break;
+      case UserType.casualPlanterior:
+        writer.writeByte(8);
+        break;
+      case UserType.seasonalRomantic:
+        writer.writeByte(9);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is UserTypeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

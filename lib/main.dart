@@ -1,22 +1,20 @@
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:tium/core/app_info/app_info_cubit.dart';
 import 'package:tium/presentation/home/bloc/juso_search/juso_search_cubit.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
-import 'package:tium/presentation/home/bloc/plant_today/plant_today_bloc.dart';
-import 'package:tium/presentation/home/screen/juso_search_screen.dart';
+import 'package:tium/presentation/home/screen/weather/juso_search_screen.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
-import 'package:tium/presentation/search/screen/search_screen.dart';
+import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_event.dart';
 import 'core/di/locator.dart';
 import 'core/routes/routes.dart';
 import 'core/services/shared_preferences_helper.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
+import 'presentation/home/bloc/plant_section/plant_section_bloc.dart';
+import 'presentation/home/bloc/plant_section_list/plant_section_list_bloc.dart';
 import 'presentation/home/bloc/weather/weather_bloc.dart';
-import 'presentation/home/bloc/weather/weather_event.dart';
 import 'presentation/home/screen/home_screen.dart';
 import 'presentation/main/bloc/theme_bloc/theme_bloc.dart';
 import 'presentation/main/bloc/theme_bloc/theme_event.dart';
@@ -64,16 +62,20 @@ class _MyAppState extends State<MyApp> {
           child: HomeScreen(),  // bloc은 HomeScreen 내부에서 add 호출됨
         ),
         BlocProvider(
-          create: (_) => locator<PlantBloc>(),
-          child: SearchScreen(),
+          create: (_) => locator<RecommendationSectionBloc>(),
+          child: HomeScreen(),  // bloc은 HomeScreen 내부에서 add 호출됨
+        ),
+        BlocProvider(
+          create: (_) => locator<FilteredPlantListBloc>(),
+          child: HomeScreen(),  // bloc은 HomeScreen 내부에서 add 호출됨
         ),
         BlocProvider(
           create: (_) => locator<JusoSearchCubit>(),
           child: JusoSearchScreen(),  // bloc은 HomeScreen 내부에서 add 호출됨
         ),
         BlocProvider(
-          create: (_) => locator<SearchBloc>(),
-          child: SearchScreen(),
+          create: (_) => locator<SearchBloc>()..add(SearchLoadedRequested()),
+          child: HomeScreen(),
         ),
         // version
         BlocProvider(

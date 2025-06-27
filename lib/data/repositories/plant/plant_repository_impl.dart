@@ -22,6 +22,27 @@ class PlantRepositoryImpl implements PlantRepository {
       gardenRemote.list(size: 300);
 
   @override
+  Future<List<PlantSummary>> getPlantsFiltered({
+    String? lightChkVal,
+    String? lefcolrChkVal,
+    String? grwhstleChkVal,
+    String? ignSeasonChkVal,
+    String? priceType,
+    String? waterCycleSel,
+    int? size,
+  }) {
+    return gardenRemote.list(
+      lightChkVal: lightChkVal,
+      lefcolrChkVal: lefcolrChkVal,
+      grwhstleChkVal: grwhstleChkVal,
+      ignSeasonChkVal: ignSeasonChkVal,
+      priceType: priceType,
+      waterCycleSel: waterCycleSel,
+      size: size ?? 400,
+    );
+  }
+
+  @override
   Future<PlantDetail> detail(String id, PlantCategory category, {required String name}) {
     switch (category) {
       case PlantCategory.dryGarden:

@@ -6,14 +6,16 @@ class HeroContent {
   final String title;
   final String subtitle;
   final bool showLocationBtn;
-  final String backgroundImage;  // 추가
+  final String backgroundImage;
+  final bool isDay;
 
   HeroContent({
     required this.icon,
     required this.iconColor,
     required this.title,
     required this.subtitle,
+    required this.isDay,
     this.showLocationBtn = false,
-    this.backgroundImage = '',  // 기본값 빈 문자열
+    this.backgroundImage = '',
   });
 }

@@ -24,11 +24,10 @@ Future<bool?> showAdaptiveAlert(
             const SizedBox(height: 12),
           ],
         ),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(content, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center,),
-          ],
+        content: Text(
+          content,
+          style: theme.textTheme.bodyMedium,
+          textAlign: TextAlign.center,
         ),
         actions: [
           if (cancelActionText != null)
@@ -58,11 +57,13 @@ Future<bool?> showAdaptiveAlert(
             const SizedBox(height: 12),
           ],
         ),
-        content: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(content, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center,),
-          ],
+        content: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Text(
+            content,
+            style: theme.textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
         ),
         actions: [
           if (cancelActionText != null)

@@ -13,7 +13,7 @@ void showLocationChoiceDialog(BuildContext context, {required VoidCallback onUse
     builder: (ctx) {
       return Dialog(
         backgroundColor: theme.colorScheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         elevation: 10,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -21,7 +21,7 @@ void showLocationChoiceDialog(BuildContext context, {required VoidCallback onUse
             InkWell(
               onTap: () {
                 Navigator.pop(ctx);
-                onUseCurrent();
+                onUseCurrent(); // 현재 위치정보 설정
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),
@@ -42,7 +42,7 @@ void showLocationChoiceDialog(BuildContext context, {required VoidCallback onUse
             InkWell(
               onTap: () {
                 Navigator.pop(ctx);
-                Navigator.pushNamed(context, Routes.juso);
+                Navigator.pushNamed(context, Routes.juso); // 주소검색으로 이동
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 20),

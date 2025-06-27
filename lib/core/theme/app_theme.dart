@@ -11,6 +11,8 @@ class AppTheme {
     highlightColor: AppColors.lightSecondary,
     focusColor: AppColors.lightAccent,
     scaffoldBackgroundColor: AppColors.lightBackground,
+    dividerColor: AppColors.lightDivider,
+    cardColor: AppColors.lightCard,
 
     // - color
     colorScheme: const ColorScheme(
@@ -94,6 +96,8 @@ class AppTheme {
     focusColor: AppColors.darkAccent,
     scaffoldBackgroundColor: AppColors.darkBackground,
     highlightColor: AppColors.darkSecondary,
+    dividerColor: AppColors.darkDivider,
+    cardColor: AppColors.darkCard,
 
     // - color
     colorScheme: const ColorScheme(

@@ -5,7 +5,41 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="45915695-9de3-4528-b560-99228250d8a7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/assets/avatar/blomming_watcher.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/avatar/calm_observer.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/avatar/grow_seeker.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/avatar/growth_explorer.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/avatar/plant_master.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/avatar/quiet_companion.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/avatar/sample.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/avatar/seasonal_romantic.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/avatar/smart_saver.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/avatar/sunny_lover.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/home/screen/weather/weather_error_view.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/home/widgets/home_search_header_delegate.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/home/widgets/home_section_shimmer.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/home/widgets/home_weather_header_delegate.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/onboarding/utils/question_option_icon_mapping.dart" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lib/presentation/onboarding/utils/user_type_info.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/app_asset.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/app_asset.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/constants/constants.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/constants/constants.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/core/routes/routes.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/core/routes/routes.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/datasources/weather/weather_remote_datasource.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/datasources/weather/weather_remote_datasource.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/data/models/plant_preference/plant_preference.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/data/models/plant_preference/plant_preference.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/recommendation/recommend_plant_bloc.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/recommendation/recommend_plant_bloc.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/recommendation/recommend_plant_event.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/recommendation/recommend_plant_event.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/bloc/recommendation/recommend_plant_state.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/bloc/recommendation/recommend_plant_state.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/home/screen/home_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/plant_recommend_screen.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/plant_section/plant_section_list_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/home/screen/plant_section/plant_section_list_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/home/screen/plant_section/plant_section_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/home/screen/plant_section/plant_section_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/main/main_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/main/main_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/mypage/screen/mypage_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/mypage/screen/mypage_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_result_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_result_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/presentation/onboarding/screen/onboarding_screen.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,11 +93,11 @@
       <recent name="$PROJECT_DIR$/firebase" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/assets/avatar" />
+      <recent name="$PROJECT_DIR$/lib/presentation/onboarding/bloc" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/ios/Runner/Assets.xcassets" />
       <recent name="$PROJECT_DIR$/android/app/src/main/res" />
-      <recent name="$PROJECT_DIR$/lib/data/models" />
-      <recent name="$PROJECT_DIR$/lib/data" />
     </key>
   </component>
   <component name="RunManager">

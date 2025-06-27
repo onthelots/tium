@@ -13,7 +13,7 @@ class UserModel {
   final String careTime;
 
   @HiveField(3)
-  final List<String> interestTags;
+  final String interestTags;
 
   @HiveField(4)
   final List<UserPlant> indoorPlants;
@@ -24,11 +24,16 @@ class UserModel {
   @HiveField(6)
   final UserLocation? location;
 
+  @HiveField(7)
+  final UserType userType;
+
+
   UserModel({
     required this.experienceLevel,
     required this.locationPreference,
     required this.careTime,
     required this.interestTags,
+    required this.userType,
     this.indoorPlants = const [],
     this.outdoorPlants = const [],
     this.location,
@@ -38,7 +43,8 @@ class UserModel {
     String? experienceLevel,
     String? locationPreference,
     String? careTime,
-    List<String>? interestTags,
+    String? interestTags,
+    UserType? userType,
     List<UserPlant>? indoorPlants,
     List<UserPlant>? outdoorPlants,
     UserLocation? location,
@@ -48,6 +54,7 @@ class UserModel {
       locationPreference: locationPreference ?? this.locationPreference,
       careTime: careTime ?? this.careTime,
       interestTags: interestTags ?? this.interestTags,
+      userType: userType ?? this.userType,
       indoorPlants: indoorPlants ?? this.indoorPlants,
       outdoorPlants: outdoorPlants ?? this.outdoorPlants,
       location: location ?? this.location,
@@ -156,4 +163,28 @@ class UserLocation {
       ri: ri ?? this.ri,
     );
   }
+}
+
+@HiveType(typeId: 3)
+enum UserType {
+  @HiveField(0)
+  sunnyLover,          // 🌞 햇살러버형
+  @HiveField(1)
+  quietCompanion,      // 💤 조용한 쉼표형
+  @HiveField(2)
+  growthSeeker,        // 🌿 성장동행형
+  @HiveField(3)
+  smartSaver,          // 💰 똑똑한 소비자형
+  @HiveField(4)
+  growthExplorer,      // 🪴 생육연구자형
+  @HiveField(5)
+  bloomingWatcher,     // 🌸 꽃을 기다리는 사람형
+  @HiveField(6)
+  calmObserver,        // 🧘 느긋한 정원사형
+  @HiveField(7)
+  plantMaster,         // 🔥 도전왕 플랜테리어형
+  @HiveField(8)
+  casualPlanterior,    // 🧑‍🌾 초보 플랜테리어러형
+  @HiveField(9)
+  seasonalRomantic,    // 🌼 사계절 감성러형
 }
