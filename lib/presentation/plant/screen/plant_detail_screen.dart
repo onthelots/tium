@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/core/di/locator.dart';
+import 'package:tium/data/models/plant/plant_detail_model.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_bloc.dart';
 import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_event.dart';
@@ -20,6 +21,17 @@ class PlantDetailScreen extends StatelessWidget {
     required this.imageUrl,
     required this.name,
   }) : super(key: key);
+
+  // void _showRegisterModal(BuildContext context, PlantDetail plant) {
+  //   showModalBottomSheet(
+  //     context: context,
+  //     isScrollControlled: true,
+  //     shape: const RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+  //     ),
+  //     builder: (context) => _PlantRegisterModal(plant: plant),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -84,6 +96,7 @@ class PlantDetailScreen extends StatelessWidget {
                       titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
                       title: Text(
                         plant.name,
+                        textAlign: TextAlign.left,
                         style: theme.textTheme.titleLarge?.copyWith(
                           color: Colors.white,
                           shadows: const [
