@@ -1,7 +1,11 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:timezone/data/latest_10y.dart' as tz_data;
 import 'package:tium/core/app_info/app_info_cubit.dart';
+import 'package:tium/core/notification/local_notification_service.dart';
+import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/home/bloc/juso_search/juso_search_cubit.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/screen/weather/juso_search_screen.dart';
@@ -19,10 +23,12 @@ import 'presentation/home/screen/home_screen.dart';
 import 'presentation/main/bloc/theme_bloc/theme_bloc.dart';
 import 'presentation/main/bloc/theme_bloc/theme_event.dart';
 import 'presentation/main/bloc/theme_bloc/theme_state.dart';
+import 'presentation/management/bloc/user_plant_bloc.dart';
+import 'presentation/management/bloc/user_plant_event.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  tz_data.initializeTimeZones(); // 이거 필수
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await setupLocator();
 
@@ -80,6 +86,9 @@ class _MyAppState extends State<MyApp> {
         // version
         BlocProvider(
           create: (context) => AppInfoCubit()..fetchAppVersion(),
+        ),
+        BlocProvider(
+          create: (context) => UserPlantBloc()..add(LoadUserPlant()),
         ),
       ],
 

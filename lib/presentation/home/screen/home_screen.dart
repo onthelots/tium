@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tium/components/custom_cached_image.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/core/constants/app_asset.dart';
 import 'package:tium/core/helper/lat_lng_grid_converter.dart';
+import 'package:tium/core/notification/local_notification_service.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
 import 'package:tium/core/routes/routes.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_event.dart';
@@ -16,15 +16,12 @@ import 'package:tium/presentation/home/bloc/plant_section/plant_section_event.da
 import 'package:tium/presentation/home/bloc/plant_section/plant_section_state.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_bloc.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_event.dart';
-import 'package:tium/presentation/home/bloc/weather/weather_state.dart';
-import 'package:tium/presentation/home/utils/hero_content_resolver.dart';
 import 'package:tium/presentation/home/widgets/home_search_header_delegate.dart';
 import 'package:tium/presentation/home/widgets/home_section_shimmer.dart';
 import 'package:tium/presentation/home/widgets/home_weather_header_delegate.dart';
 import 'package:tium/presentation/home/widgets/location_choice_dialog.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:tium/presentation/landing/landing_screen.dart';
-import 'package:tium/presentation/search/screen/search_delegate.dart';
 import 'plant_section/plant_section_screen.dart';
 
 class HomeScreen extends StatefulWidget {

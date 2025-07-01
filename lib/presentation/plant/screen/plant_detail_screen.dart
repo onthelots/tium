@@ -7,6 +7,7 @@ import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_bloc.dart';
 import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_event.dart';
 import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_state.dart';
+import 'package:tium/presentation/plant/screen/plant_register_modal.dart';
 
 class PlantDetailScreen extends StatelessWidget {
   final String plantId;
@@ -22,16 +23,24 @@ class PlantDetailScreen extends StatelessWidget {
     required this.name,
   }) : super(key: key);
 
-  // void _showRegisterModal(BuildContext context, PlantDetail plant) {
-  //   showModalBottomSheet(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     shape: const RoundedRectangleBorder(
-  //       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-  //     ),
-  //     builder: (context) => _PlantRegisterModal(plant: plant),
-  //   );
-  // }
+  void _showRegisterModal(BuildContext context, PlantDetail plant) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // 키보드 올라오는걸 위해 true
+      enableDrag: false,        // 드래그해서 모달 닫기 비활성화
+      isDismissible: true,      // 바깥 탭하면 닫히도록
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        // 키보드 높이만큼 padding 줘서 텍스트 필드 가려지지 않도록
+        return Padding(
+          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+          child: PlantRegisterModal(plant: plant),
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,6 +209,20 @@ class PlantDetailScreen extends StatelessWidget {
             }
 
             return const SizedBox.shrink();
+          },
+        ),
+        floatingActionButton: BlocBuilder<PlantDetailBloc, PlantDetailState>(
+          builder: (context, state) {
+            if (state is PlantDetailLoaded) {
+              return FloatingActionButton(
+                onPressed: () {
+                  _showRegisterModal(context, state.plant);
+                },
+                backgroundColor: Colors.white.withOpacity(0.7), // 약간 투명한 흰색 배경
+                child: const Icon(Icons.add, color: Colors.black), // 아이콘 색상은 배경에 맞게 조정
+              );
+            }
+            return const SizedBox.shrink(); // 로딩 중엔 안 보임
           },
         ),
       ),

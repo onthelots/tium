@@ -68,7 +68,7 @@ class UserPlant {
   final String name;
 
   @HiveField(1)
-  final String scientificName;
+  final String scientificName; // 실제 식물 명칭 - 임시 사용
 
   @HiveField(2)
   final String difficulty;
@@ -77,10 +77,32 @@ class UserPlant {
   final String wateringCycle;
 
   @HiveField(4)
-  final bool isWateringNotificationOn;
+  final bool isWateringNotificationOn; // 알림 등록 여부
 
   @HiveField(5)
-  final DateTime registeredDate;
+  final DateTime registeredDate; // 식물 추가 날짜
+
+  @HiveField(6)
+  final DateTime lastWateredDate; // 사용자가 마지막으로 물을 준 날 (직접 등록)
+
+  @HiveField(7)
+  final int wateringIntervalDays; // 물주기 간격
+
+  @HiveField(8)
+  final int? notificationId; // 알림 Id
+
+  @HiveField(9)
+  final String? imagePath; // 사진 경로 추가
+
+  @HiveField(10)
+  final List<String> locations; // 위치 필드 추가
+
+  @HiveField(11)
+  final String id;  // 고유 id (UUID 등)
+
+  @HiveField(12)
+  final String cntntsNo;  // 농사로 API 조회 시 컨텐츠 번호
+
 
   UserPlant({
     required this.name,
@@ -89,6 +111,13 @@ class UserPlant {
     required this.wateringCycle,
     required this.isWateringNotificationOn,
     required this.registeredDate,
+    required this.lastWateredDate,
+    required this.wateringIntervalDays,
+    required this.locations,
+    required this.id,
+    required this.cntntsNo,
+    this.notificationId,
+    this.imagePath,
   });
 
   UserPlant copyWith({
@@ -98,6 +127,13 @@ class UserPlant {
     String? wateringCycle,
     bool? isWateringNotificationOn,
     DateTime? registeredDate,
+    DateTime? lastWateredDate,
+    int? wateringIntervalDays,
+    int? notificationId,
+    String? imagePath,
+    List<String>? locations,
+    String? id,
+    String? cntntsNo,
   }) {
     return UserPlant(
       name: name ?? this.name,
@@ -106,6 +142,13 @@ class UserPlant {
       wateringCycle: wateringCycle ?? this.wateringCycle,
       isWateringNotificationOn: isWateringNotificationOn ?? this.isWateringNotificationOn,
       registeredDate: registeredDate ?? this.registeredDate,
+      lastWateredDate: lastWateredDate ?? this.lastWateredDate,
+      wateringIntervalDays: wateringIntervalDays ?? this.wateringIntervalDays,
+      notificationId: notificationId ?? this.notificationId,
+      imagePath: imagePath ?? this.imagePath,
+      locations: locations ?? this.locations,
+      id: id ?? this.id,
+      cntntsNo: cntntsNo ?? this.cntntsNo,
     );
   }
 }

@@ -78,13 +78,20 @@ class UserPlantAdapter extends TypeAdapter<UserPlant> {
       wateringCycle: fields[3] as String,
       isWateringNotificationOn: fields[4] as bool,
       registeredDate: fields[5] as DateTime,
+      lastWateredDate: fields[6] as DateTime,
+      wateringIntervalDays: fields[7] as int,
+      locations: (fields[10] as List).cast<String>(),
+      id: fields[11] as String,
+      cntntsNo: fields[12] as String,
+      notificationId: fields[8] as int?,
+      imagePath: fields[9] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPlant obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(13)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -96,7 +103,21 @@ class UserPlantAdapter extends TypeAdapter<UserPlant> {
       ..writeByte(4)
       ..write(obj.isWateringNotificationOn)
       ..writeByte(5)
-      ..write(obj.registeredDate);
+      ..write(obj.registeredDate)
+      ..writeByte(6)
+      ..write(obj.lastWateredDate)
+      ..writeByte(7)
+      ..write(obj.wateringIntervalDays)
+      ..writeByte(8)
+      ..write(obj.notificationId)
+      ..writeByte(9)
+      ..write(obj.imagePath)
+      ..writeByte(10)
+      ..write(obj.locations)
+      ..writeByte(11)
+      ..write(obj.id)
+      ..writeByte(12)
+      ..write(obj.cntntsNo);
   }
 
   @override
