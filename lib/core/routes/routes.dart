@@ -6,8 +6,10 @@ import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/home/screen/home_screen.dart';
 import 'package:tium/presentation/home/screen/plant_section/plant_section_list_screen.dart';
 import 'package:tium/presentation/home/screen/weather/juso_search_screen.dart';
-import 'package:tium/presentation/information/screen/information_screen.dart';
-import 'package:tium/presentation/main/main_screen.dart';
+import 'package:tium/presentation/main/screen/main_screen.dart';
+import 'package:tium/presentation/management/screen/management_screen.dart';
+import 'package:tium/presentation/management/screen/my_plant_detail_screen.dart';
+import 'package:tium/presentation/management/screen/my_plant_edit_screen.dart';
 import 'package:tium/presentation/mypage/screen/license/oss_license_screen.dart';
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
 import 'package:tium/presentation/mypage/screen/theme/theme_screen.dart';
@@ -16,7 +18,7 @@ import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant
 import 'package:tium/presentation/onboarding/screen/onboarding_intro_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_result_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_screen.dart';
-import 'package:tium/presentation/plant/screen/search_detail_screen.dart';
+import 'package:tium/presentation/plant/screen/plant_detail_screen.dart';
 import 'package:tium/presentation/search/screen/search_screen.dart';
 import 'package:tium/presentation/web/screen/web_view_screen.dart';
 
@@ -30,15 +32,18 @@ class Routes {
 
   // tab
   static const String home = '/home'; // 홈 (탭바)
-  static const String information = '/information'; // 정보 (탭바)
+  static const String management = '/management'; // 내 식물 관리 (탭바)
   static const String search = '/search'; // 검색 (탭바)
   static const String mypage = '/mypage'; // 마임페이지 (탭바)
 
-  // sub screen
+  // home
   static const String juso = '/juso'; // 주소검색
   static const String sectionlist = '/sectionlist'; // 필터링 된 식물 리스트
   static const String plantDetail = '/plantDetail'; // 식물 상세보기
 
+  // management
+  static const String myPlantDetail = '/myPlantDetail'; // 등록한 식물 상세보기
+  static const String myPlantEdit = '/myPlantEdit'; // 등록한 식물 수정(혹은 삭제)
 
   // settings
   static const String notification = '/notification'; // 알림 설정
@@ -105,9 +110,23 @@ class AppRouter {
           builder: (_) => const SearchScreen(),
         );
 
-      case Routes.information:
+      case Routes.management:
         return MaterialPageRoute(
-          builder: (_) => const InformationScreen(),
+          builder: (_) => const ManagementScreen(),
+        );
+
+      case Routes.myPlantDetail:
+        final args = settings.arguments as Map<String, dynamic>;
+        final plant = args['plant'] as UserPlant;
+        return MaterialPageRoute(
+          builder: (_) => MyPlantDetailScreen(plant: plant),
+        );
+
+      case Routes.myPlantEdit:
+        final args = settings.arguments as Map<String, dynamic>;
+        final initialPlant = args['initialPlant'] as UserPlant;
+        return MaterialPageRoute(
+          builder: (_) => MyPlantEditScreen(initialPlant: initialPlant),
         );
 
       case Routes.sectionlist:

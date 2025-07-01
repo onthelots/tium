@@ -1,17 +1,14 @@
 import 'dart:io';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tium/presentation/home/screen/home_screen.dart';
-import 'package:tium/presentation/information/screen/information_screen.dart';
+import 'package:tium/presentation/management/screen/management_screen.dart';
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
-import 'package:tium/presentation/search/screen/search_screen.dart';
-import '../../core/constants/constants.dart';
-import 'bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
-import 'bloc/bottom_nav_bloc/bottom_nav_event.dart';
-import 'bloc/bottom_nav_bloc/bottom_nav_state.dart';
+import '../../../core/constants/constants.dart';
+import '../bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
+import '../bloc/bottom_nav_bloc/bottom_nav_event.dart';
+import '../bloc/bottom_nav_bloc/bottom_nav_state.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -29,7 +26,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _tabs = [
     HomeScreen(),
-    // InformationScreen(),
+    ManagementScreen(),
     // SearchScreen(),
     MyPageScreen(),
   ];

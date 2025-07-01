@@ -32,6 +32,5 @@ class PlantDetailBloc extends Bloc<PlantDetailEvent, PlantDetailState> {
       emit(PlantDetailError('식물 정보를 불러오지 못했습니다.'));
     }
   }
-
 }
 

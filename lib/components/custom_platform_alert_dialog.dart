@@ -55,7 +55,7 @@ Future<void> showPlatformAlertDialog({
               onCancel?.call();
             },
             style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              foregroundColor: Theme.of(context).primaryColor, // 강조 색상
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               visualDensity: VisualDensity.compact,
@@ -68,7 +68,7 @@ Future<void> showPlatformAlertDialog({
               onConfirm();
             },
             style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.primary, // 강조 색상
+              foregroundColor: Theme.of(context).primaryColor, // 강조 색상
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               visualDensity: VisualDensity.compact,

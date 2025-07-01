@@ -1,14 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tium/components/custom_cached_image.dart';
-import 'package:tium/components/custom_loading_indicator.dart';
-import 'package:tium/core/constants/app_asset.dart';
 import 'package:tium/core/routes/routes.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_bloc.dart';
 import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_event.dart';
-import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_state.dart';
 import 'package:tium/presentation/onboarding/utils/user_type_info.dart';
 
 class OnboardingResultScreen extends StatefulWidget {
@@ -30,6 +25,7 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 2), () {
+      if (!mounted) return;
       context.read<RecommendationBloc>().add(
         LoadUserRecommendations(userType: widget.userType),
       );
@@ -174,7 +170,6 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
           ),
         ),
       ),
-
     );
   }
 }

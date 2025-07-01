@@ -14,6 +14,8 @@ class CustomScaffold extends StatelessWidget {
   final Widget? trailing;
   final Widget? bottom;
 
+  final Widget? bottomNavigationBar; // ✅ 추가됨
+
   final EdgeInsetsGeometry? padding;
   final Color? backgroundColor;
   final bool appBarVisible;
@@ -31,6 +33,7 @@ class CustomScaffold extends StatelessWidget {
     this.leadingWidth,
     this.trailing,
     this.bottom,
+    this.bottomNavigationBar, // ✅ 생성자에 추가
     this.padding,
     this.backgroundColor,
     this.appBarVisible = true,
@@ -94,11 +97,11 @@ class CustomScaffold extends StatelessWidget {
           : null,
       body: SafeArea(
         child: Padding(
-          padding:
-          padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           child: body,
         ),
       ),
+      bottomNavigationBar: bottomNavigationBar, // ✅ 여기에 연결
     );
   }
 }
