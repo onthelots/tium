@@ -35,14 +35,13 @@ class AppColors {
 class CustomBottomNavigationBar {
   static List<BottomNavigationBarItem> bottomNavigationBarItem = const [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
-    // BottomNavigationBarItem(icon: Icon(Icons.list), label: '정보'),
+    BottomNavigationBarItem(icon: Icon(Icons.eco), label: '식물관리'),
     // BottomNavigationBarItem(icon: Icon(Icons.search), label: '식물검색'),
     BottomNavigationBarItem(icon: Icon(Icons.person), label: '마이페이지'),
   ];
 }
 
-// ------ 유저 타입 도출 위한 매핑 딕셔너리
-
+/// 유저 타입 도출 위한 매핑 딕셔너리
 const Map<String, String> experienceMap = {
   '아직은 어색한 사이예요': 'beginner',
   '조금씩 알아가는 중이에요': 'intermediate',
@@ -66,3 +65,15 @@ const Map<String, String> interestMap = {
   '생김새가 독특한 식물': 'shape',
   '가성비가 좋은 식물': 'price',
 };
+
+//
+const List<String> plantLocations = [
+  '거실',
+  '주방',
+  '침실',
+  '베란다',
+  '욕실',
+  '서재',
+  '현관',
+  '기타',
+];

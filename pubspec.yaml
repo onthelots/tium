@@ -1,7 +1,7 @@
 name: tium
 description: "Plant Companion & Daily Green"
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
-version: 1.0.1+1
+version: 1.0.2+1
 
 environment:
   sdk: ^3.8.0-231.0.dev
@@ -44,7 +44,7 @@ dependencies:
   cached_network_image: ^3.4.1
 
   # notification
-  #  flutter_local_notifications: ^19.1.0
+  flutter_local_notifications: ^19.1.0
   firebase_messaging: ^15.2.5
 
   # permission
@@ -67,6 +67,15 @@ dependencies:
   intl: ^0.20.2
   carousel_slider: ^5.1.1
   shimmer_animation: ^2.2.2
+  timezone: ^0.10.1
+  flutter_timezone: ^4.1.1
+  image_picker: ^1.1.2
+  fluttertoast: ^8.2.12
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  uuid: ^4.5.1
+  image_picker_ios: ^0.8.12+2
+  flutter_image_compress: ^2.4.0
 
 
 dev_dependencies:

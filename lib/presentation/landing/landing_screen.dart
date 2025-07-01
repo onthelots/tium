@@ -39,10 +39,10 @@ class WelcomeLandingCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Card(
           shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 2,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,

@@ -125,3 +125,7 @@ lib/firebase_options.dart
 
 # Dependency injection locator (may contain environment-specific singletons)
 lib/core/di/locator.dart
+
+# IDEs
+.idea/
+.vscode/
