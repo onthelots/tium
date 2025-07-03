@@ -30,15 +30,22 @@ import 'presentation/management/bloc/user_plant_event.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  // 위젯 바인딩 및 스플래시 유지
+  final WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // 초기화 로직
   await initTimeZone();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await LocalNotificationService().init(); // 알림 초기화
+  await LocalNotificationService().init();
   await setupLocator();
+
   final isFirstRun = await SharedPreferencesHelper.getFirstRun();
-  final String initialRoute = isFirstRun
-      ? Routes.intro
-      : Routes.main;
+  final String initialRoute = isFirstRun ? Routes.intro : Routes.main;
+
+  // 초기화가 모두 끝난 후 스플래시 제거
+  FlutterNativeSplash.remove();
+
   runApp(MyApp(initialRoute: initialRoute));
 }
 
