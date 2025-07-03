@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:timezone/timezone.dart' as tz;
 import 'package:tium/core/notification/local_notification_service.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
 import 'package:tium/presentation/management/bloc/user_plant_event.dart';
@@ -115,6 +117,8 @@ class UserPlantBloc extends Bloc<UserPlantEvent, UserPlantState> {
     if (event.hasPermission && updatedPlant.isWateringNotificationOn) {
       print("알림 허용되어있고, 알림 켜져있으니 알림 다시 예약");
       final nextNotificationDate = now.add(Duration(days: updatedPlant.wateringIntervalDays));
+      debugPrint('현재 tz.local: ${tz.local}');
+      debugPrint('tz.local timezone name: ${tz.local.name}');
       await LocalNotificationService().scheduleNotification(
         id: notificationId,
         title: '물주기 알림',
