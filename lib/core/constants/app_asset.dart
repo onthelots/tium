@@ -7,12 +7,27 @@ class AppAsset {
     return _instance;
   }
 
+  static final AppAssetSplash splash = AppAssetSplash();
   static final AppAssetHome home = AppAssetHome();
   static final AppAssetIcon icon = AppAssetIcon();
   static final AppAssetAvatar avatar = AppAssetAvatar();
 }
 
-/// 1. 앱 전반적으로 사용하는 이미지 목록
+/// 스플래시 이미지 (Native, custom)
+class AppAssetSplash {
+  AppAssetSplash._init();
+
+  static final AppAssetSplash _instance = AppAssetSplash._init();
+
+  factory AppAssetSplash() {
+    return _instance;
+  }
+
+  final String indoor_bg = 'assets/img/indoor_bg.png';
+  final String outdoor_bg = 'assets/img/outdoor_bg.png';
+}
+
+/// 앱 전반적으로 사용하는 이미지 목록
 class AppAssetHome {
   AppAssetHome._init();
 
@@ -35,7 +50,7 @@ class AppAssetHome {
   final String snowy_day_bg = 'assets/img/snowy_day_bg.png';
 }
 
-/// 2. Icon
+/// Icon
 class AppAssetIcon {
   AppAssetIcon._init();
 
@@ -49,7 +64,7 @@ class AppAssetIcon {
   final String icon_circle = 'assets/icon/icon_circle.png';
 }
 
-/// 3. Avatar
+/// Avatar
 class AppAssetAvatar {
   AppAssetAvatar._init();
 

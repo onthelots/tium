@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/presentation/home/screen/home_screen.dart';
 import 'package:tium/presentation/management/screen/management_screen.dart';
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
+import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
+import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_event.dart';
 import '../../../core/constants/constants.dart';
 import '../bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import '../bloc/bottom_nav_bloc/bottom_nav_event.dart';
@@ -22,6 +24,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<SearchBloc>().add(SearchLoadedRequested());
   }
 
   final List<Widget> _tabs = [

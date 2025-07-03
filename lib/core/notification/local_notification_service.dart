@@ -18,13 +18,16 @@ class LocalNotificationService {
   bool _initialized = false;
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
-  /// 초기화 (앱 시작 시 호출하지 말고, 필요 시에만 호출)
+  /// 앱 실행 시 딱 1번만 호출하는 초기화 (알림 채널 생성 및 플러그인 초기화)
   Future<void> init() async {
-    if (_initialized) return;
+    if (_initialized) {
+      debugPrint("⚠️ LocalNotificationService 이미 초기화됨");
+      return;
+    }
 
-    tz_data.initializeTimeZones();
+    debugPrint("🔧 LocalNotificationService 초기화 시작");
 
-    // Android 채널 생성
+    // 채널 생성
     const channel = AndroidNotificationChannel(
       'watering_channel_id',
       '물주기 알림',
@@ -35,15 +38,15 @@ class LocalNotificationService {
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
         ?.createNotificationChannel(channel);
 
-    // 플러터 알림 초기화
     const settings = InitializationSettings(
       android: AndroidInitializationSettings('@mipmap/ic_launcher'),
       iOS: DarwinInitializationSettings(
-        requestAlertPermission: false, // 직접 요청하므로 false
+        requestAlertPermission: false,
         requestBadgePermission: false,
         requestSoundPermission: false,
       ),
     );
+
     await flutterLocalNotificationsPlugin.initialize(
       settings,
       onDidReceiveNotificationResponse: (response) {
@@ -52,11 +55,14 @@ class LocalNotificationService {
     );
 
     _initialized = true;
+    debugPrint("✅ LocalNotificationService 초기화 완료");
   }
 
-  /// 권한 요청 및 체크
+
+  /// 알림 권한 요청 및 확인 (사용자가 알림 켤 때만 호출)
   Future<bool> requestPermissionIfNeeded(BuildContext context) async {
-    await init(); // 필요 시 초기화
+    // init 호출하여 초기화 보장 (중복 호출 시 바로 리턴)
+    await init();
 
     if (Platform.isIOS) {
       final settings = await _messaging.requestPermission(
@@ -75,14 +81,15 @@ class LocalNotificationService {
 
     if (Platform.isAndroid) {
       final status = await Permission.notification.status;
-      debugPrint("🔐 Android 권한 상태: $status");
-
       if (status.isGranted) return true;
 
       final result = await Permission.notification.request();
-      debugPrint("🔁 Android 재요청 결과: $result");
-
-      if (result.isGranted) return true;
+      if (result.isGranted) {
+        await flutterLocalNotificationsPlugin
+            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+            ?.requestNotificationsPermission(); // 추가
+        return true;
+      }
 
       _showPermissionDialog(context);
       return false;
@@ -91,7 +98,7 @@ class LocalNotificationService {
     return false; // 기타 플랫폼
   }
 
-  // 권한 허용여부 확인
+  /// 알림 권한 상태 확인 (권한 요청 없이)
   Future<bool> checkPermission() async {
     await init();
 
@@ -106,11 +113,11 @@ class LocalNotificationService {
       debugPrint("🔍 Android 권한 상태 확인: $status");
       return status.isGranted;
     }
+
     return false; // 기타 플랫폼
   }
 
-
-  /// 설정 다이얼로그
+  /// 권한 안내 다이얼로그 (설정 이동 유도)
   void _showPermissionDialog(BuildContext context) {
     showPlatformAlertDialog(
       context: context,
@@ -128,45 +135,65 @@ class LocalNotificationService {
     required String title,
     required String body,
     required DateTime scheduledDate,
-    bool isTestMode = false, // 추가
+    bool isTestMode = false,
   }) async {
+    debugPrint('현재 tz.local: ${tz.local}');
+    debugPrint('tz.local timezone name: ${tz.local.name}');
+
     final tz.TZDateTime tzDateTime;
 
     if (isTestMode) {
-      // 테스트 모드: 현재 시간 + 10초
-      final testTime = DateTime.now().add(const Duration(seconds: 10));
-      tzDateTime = tz.TZDateTime.from(testTime, tz.local);
-      debugPrint('🧪 [TEST MODE] 알림 예약: $tzDateTime');
+      final customDate = DateTime(2025, 7, 3, 20, 13); // 로컬 기준
+      tzDateTime = tz.TZDateTime.from(customDate, tz.local);
     } else {
-      // 실제 알림은 18:00에 예약
-      final scheduledTimeAt6PM = DateTime(
+      final localDateTime = DateTime(
         scheduledDate.year,
         scheduledDate.month,
         scheduledDate.day,
-        18,
+        12, // 오후 12시
+        0,
+        0,
       );
-      tzDateTime = tz.TZDateTime.from(scheduledTimeAt6PM, tz.local);
-      debugPrint('✅ [PROD MODE] 알림 예약: $tzDateTime');
+      tzDateTime = tz.TZDateTime.from(localDateTime, tz.local);
+
+      debugPrint('🔔 예약 시간 (toString): $tzDateTime');
+      debugPrint('🔔 예약 시간 (toLocal): ${tzDateTime.toLocal()}');
+      debugPrint('🔔 예약 시간 (timeZoneName): ${tzDateTime.timeZoneName}');
+      debugPrint('🔔 예약 시간 (ISO): ${tzDateTime.toIso8601String()}');
     }
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      tzDateTime,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'watering_channel_id',
-          '물주기 알림',
-          channelDescription: '식물 리마인더 알림',
-          importance: Importance.max,
-          priority: Priority.high,
+    debugPrint("🔔 알림 예약 시도: id=$id, title=$title, body=$body, scheduledDate=$tzDateTime");
+
+    try {
+      await flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        tzDateTime,
+        NotificationDetails(
+          android: AndroidNotificationDetails(
+            'watering_channel_id',
+            '물주기 알림',
+            channelDescription: '식물 리마인더 알림',
+            importance: Importance.max,
+            priority: Priority.high,
+            playSound: true,
+            enableVibration: true,
+            ticker: 'ticker',
+          ),
+          iOS: DarwinNotificationDetails(
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          ),
         ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      matchDateTimeComponents: isTestMode ? null : DateTimeComponents.dateAndTime,
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-    );
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
+      debugPrint("🎉 알림 예약 성공!");
+    } catch (e, stack) {
+      debugPrint("❌ 알림 예약 실패: $e");
+      debugPrint("$stack");
+    }
   }
 
   Future<void> cancelNotification(int id) async {

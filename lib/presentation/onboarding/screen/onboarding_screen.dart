@@ -7,6 +7,8 @@ import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/core/services/shared_preferences_helper.dart';
 import 'package:tium/domain/entities/onboarding/onboarding_question_entity.dart';
+import 'package:tium/presentation/management/bloc/user_plant_bloc.dart';
+import 'package:tium/presentation/management/bloc/user_plant_event.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_event.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart';
@@ -110,6 +112,9 @@ class _OnboardingViewState extends State<OnboardingView> {
       body: BlocConsumer<OnboardingBloc, OnboardingState>(
         listener: (context, state) {
           if (state is OnboardingSaved) {
+
+            // 유저 식물정보 파싱
+            context.read<UserPlantBloc>().add(LoadUserPlant());
 
             // 인자 전달
             Navigator.pushNamedAndRemoveUntil(

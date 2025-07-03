@@ -124,6 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       const SizedBox(width: 10),
                       Text("TIUM", style: theme.textTheme.titleMedium),
                       const Spacer(),
+                      if (_user != null)
                       IconButton(
                         onPressed: () {
                           Navigator.pushNamed(context, Routes.userType,
