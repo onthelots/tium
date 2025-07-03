@@ -76,20 +76,41 @@ dependencies:
   uuid: ^4.5.1
   image_picker_ios: ^0.8.12+2
   flutter_image_compress: ^2.4.0
+  flutter_native_splash: ^2.4.6
+  android_notification_icons: ^0.0.1
+  device_info_plus: ^11.5.0
 
+android_notification_icons:
+  image_path: 'assets/icon/ic_notification.png'
+  icon_name: 'ic_notification' # optional
+
+flutter_native_splash:
+  android: true
+  ios: true
+  web: true
+  image: "assets/splash/splash_image.png"
+  image_dark: "assets/splash/splash_image.png"
+  background_image: "assets/splash/splash_background_image.png"
+  background_image_dark: "assets/splash/splash_background_image.png"
+  android_12:
+    color: "#3BA272"
+    color_dark: "#3BA272"
+    image: "assets/splash/splash_image_android.png"
+    image_dark: "assets/splash/splash_image_android.png"
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^5.0.0
-  build_runner: ^2.4.15
+  build_runner: ^2.4.13
   flutter_oss_licenses: ^3.0.4
 
 flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/splash/
     - assets/img/
     - assets/icon/
     - assets/avatar/

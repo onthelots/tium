@@ -67,6 +67,7 @@ class PlantDetailScreen extends StatelessWidget {
               final plant = state.plant;
 
               print("식물 이름 : ${plant.name}");
+              print("식물 이름 : ${plant.id}");
 
               return CustomScrollView(
                 physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),

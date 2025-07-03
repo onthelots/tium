@@ -43,10 +43,16 @@ class LargePlantCard extends StatelessWidget {
               Positioned(
                 left: 12,
                 bottom: 12,
-                child: Text(
-                  plant.name ?? '이름 없음',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: Colors.white,
+                child: SizedBox(
+                  width: 260 - 24, // 좌우 padding 고려 (12 + 12)
+                  child: Text(
+                    plant.name ?? '이름 없음',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
                   ),
                 ),
               ),

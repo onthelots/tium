@@ -75,18 +75,6 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
     });
   }
 
-  String _nextWateringText() {
-    final nextWateringDate =
-    _plant.lastWateredDate.add(Duration(days: _plant.wateringIntervalDays));
-    final now = DateTime.now();
-    final diff =
-        nextWateringDate.difference(DateTime(now.year, now.month, now.day)).inDays;
-
-    if (diff < 0) return '물주기 필요!';
-    if (diff == 0) return '오늘 물주세요!';
-    return 'D-$diff';
-  }
-
   String _nextWateringShortText() {
     final nextDate =
     _plant.lastWateredDate.add(Duration(days: _plant.wateringIntervalDays));
@@ -348,7 +336,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
                       ),
                     ),
                     child: CircleAvatar(
-                      radius: 36,
+                      radius: 32,
                       backgroundColor: _plant.isWateringNotificationOn
                           ? theme.primaryColor
                           : theme.disabledColor,
@@ -388,7 +376,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
                       ),
                     ),
                     child: CircleAvatar(
-                      radius: 55,
+                      radius: 50,
                       backgroundColor: _isButtonDisabled ? theme.disabledColor : Colors.lightBlueAccent,
                       child: AnimatedBuilder(
                         animation: _waterDropAnimation,
@@ -436,7 +424,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
                       ),
                     ),
                     child: CircleAvatar(
-                      radius: 36,
+                      radius: 32,
                       backgroundColor: theme.hintColor,
                       child: Text(
                         _nextWateringShortText(),

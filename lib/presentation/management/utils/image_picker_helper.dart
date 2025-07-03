@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,14 +8,15 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> pickImageFromGallery(BuildContext context, void Function(File) onImagePicked) async {
-  final granted = await Permission.photos.request().isGranted || await Permission.storage.request().isGranted;
-
-  if (!granted) {
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('갤러리 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.')),
-    );
-    return;
+  if (Platform.isAndroid) {
+    final granted = await _requestGalleryPermission();
+    if (!granted) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('갤러리 접근 권한이 필요합니다. 설정에서 권한을 허용해주세요.')),
+      );
+      return;
+    }
   }
 
   final picker = ImagePicker();
@@ -24,7 +26,6 @@ Future<void> pickImageFromGallery(BuildContext context, void Function(File) onIm
   final dir = await getApplicationDocumentsDirectory();
   final targetPath = path.join(dir.path, '${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-  // ✅ HEIC -> JPEG 변환 및 저장
   final compressedFile = await FlutterImageCompress.compressAndGetFile(
     picked.path,
     targetPath,
@@ -32,8 +33,27 @@ Future<void> pickImageFromGallery(BuildContext context, void Function(File) onIm
     quality: 90,
   );
 
-  // ✅ 변환 성공 시 File 전달
   if (compressedFile != null && context.mounted) {
     onImagePicked(File(compressedFile.path));
   }
+}
+
+Future<bool> _requestGalleryPermission() async {
+  if (Platform.isAndroid) {
+    final androidVersion = await _getAndroidVersion();
+    if (androidVersion >= 33) {
+      final result = await Permission.photos.request();
+      return result.isGranted;
+    } else {
+      final result = await Permission.storage.request();
+      return result.isGranted;
+    }
+  }
+
+  return true; // iOS는 무조건 true 처리
+}
+
+Future<int> _getAndroidVersion() async {
+  final version = await DeviceInfoPlugin().androidInfo;
+  return version.version.sdkInt;
 }

@@ -113,12 +113,8 @@ class _PlantListTile extends StatelessWidget {
       },
       borderRadius: BorderRadius.circular(12),
       child: Ink(
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceVariant.withOpacity(0.5),
-          borderRadius: BorderRadius.circular(12),
-        ),
         padding: const EdgeInsets.all(12),
-        child:Row(
+        child: Row(
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
@@ -136,14 +132,14 @@ class _PlantListTile extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   letterSpacing: -0.5,
                 ),
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
+            const SizedBox(width: 16),
             const Icon(Icons.arrow_forward_ios, size: 16),
           ],
         ),
-
       ),
     );
   }

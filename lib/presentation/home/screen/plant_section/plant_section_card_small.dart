@@ -40,13 +40,20 @@ class SmallPlantCard extends StatelessWidget {
               ),
 
               // 텍스트 (좌하단)
+              // 텍스트 (좌하단)
               Positioned(
                 left: 10,
                 bottom: 10,
-                child: Text(
-                  plant.name ?? '이름 없음',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    color: Colors.white,
+                child: SizedBox(
+                  width: 120, // SizedBox 너비(140)에서 좌우 여백 감안해 최대 너비 지정
+                  child: Text(
+                    plant.name ?? '이름 없음',
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: Colors.white,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false, // 줄바꿈 방지 (선택 사항)
                   ),
                 ),
               ),

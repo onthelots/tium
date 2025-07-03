@@ -68,7 +68,6 @@ class GardenRemoteDataSourceImpl implements GardenRemoteDataSource {
     return plants;
   }
 
-
   @override
   Future<PlantDetail> detail(String id, {required String name}) async {
     final res = await client.get('/garden/gardenDtl', query: {'cntntsNo': id});
@@ -89,7 +88,6 @@ class GardenRemoteDataSourceImpl implements GardenRemoteDataSource {
 
     return PlantDetail.fromIndoorGardenJson(mappedItem, highResImage: highResImage, name: name);
   }
-
 
   Future<String?> fetchHighResImage(String id) async {
     final res = await client.get(

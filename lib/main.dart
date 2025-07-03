@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:timezone/data/latest_10y.dart' as tz_data;
+import 'package:timezone/timezone.dart' as tz;
 import 'package:tium/core/app_info/app_info_cubit.dart';
 import 'package:tium/core/notification/local_notification_service.dart';
 import 'package:tium/data/models/user/user_model.dart';
@@ -26,19 +27,24 @@ import 'presentation/main/bloc/theme_bloc/theme_state.dart';
 import 'presentation/management/bloc/user_plant_bloc.dart';
 import 'presentation/management/bloc/user_plant_event.dart';
 
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  tz_data.initializeTimeZones(); // 이거 필수
+  await initTimeZone();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await LocalNotificationService().init(); // 알림 초기화
   await setupLocator();
-
   final isFirstRun = await SharedPreferencesHelper.getFirstRun();
-
   final String initialRoute = isFirstRun
       ? Routes.intro
       : Routes.main;
-
   runApp(MyApp(initialRoute: initialRoute));
+}
+
+Future<void> initTimeZone() async {
+  tz_data.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
 }
 
 class MyApp extends StatefulWidget {
@@ -80,7 +86,7 @@ class _MyAppState extends State<MyApp> {
           child: JusoSearchScreen(),  // bloc은 HomeScreen 내부에서 add 호출됨
         ),
         BlocProvider(
-          create: (_) => locator<SearchBloc>()..add(SearchLoadedRequested()),
+          create: (_) => locator<SearchBloc>(),
           child: HomeScreen(),
         ),
         // version
