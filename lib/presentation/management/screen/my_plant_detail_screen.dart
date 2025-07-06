@@ -32,13 +32,14 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
   void initState() {
     super.initState();
     _plant = widget.plant;
-    _checkWateringCooldown();
-    _checkNotificationPermission();
+    _checkWateringCooldown(); // 물주기 여부 확인 (today)
+    _checkNotificationPermission(); // 알림 허용여부 확인
 
     _waterDropController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
     );
+
     _waterDropAnimation =
         CurvedAnimation(parent: _waterDropController, curve: Curves.easeOut);
 
@@ -55,6 +56,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
     super.dispose();
   }
 
+  // 물주기 여부 확인
   void _checkWateringCooldown() {
     final now = DateTime.now();
     final lastWateredDay = DateTime(
@@ -68,6 +70,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
     });
   }
 
+  // 알림권한 확인
   Future<void> _checkNotificationPermission() async {
     final granted = await LocalNotificationService().checkPermission();
     setState(() {
@@ -90,8 +93,8 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
   void _showWateringInfoDialog(BuildContext context) {
     final nextDate =
     _plant.lastWateredDate.add(Duration(days: _plant.wateringIntervalDays));
-    final diff =
-        nextDate.difference(DateTime.now()).inDays;
+    final now = DateTime.now();
+    final diff = nextDate.difference(DateTime(now.year, now.month, now.day)).inDays;
 
     showDialog(
       context: context,

@@ -35,6 +35,13 @@ class MyPageScreen extends StatelessWidget {
                   Navigator.of(context).pushNamed(Routes.theme);
                 },
               ),
+              _buildListTile(
+                context: context,
+                title: '알림 시간 설정',
+                onTap: () {
+                  Navigator.of(context).pushNamed(Routes.notificationTimeSetting);
+                },
+              ),
 
               Divider(
                 height: 20.0,
