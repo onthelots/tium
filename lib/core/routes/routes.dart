@@ -12,6 +12,7 @@ import 'package:tium/presentation/management/screen/my_plant_detail_screen.dart'
 import 'package:tium/presentation/management/screen/my_plant_edit_screen.dart';
 import 'package:tium/presentation/mypage/screen/license/oss_license_screen.dart';
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
+import 'package:tium/presentation/mypage/screen/notification/notification_time_setting_screen.dart';
 import 'package:tium/presentation/mypage/screen/theme/theme_screen.dart';
 import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_bloc.dart';
 import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_event.dart';
@@ -47,6 +48,7 @@ class Routes {
 
   // settings
   static const String notification = '/notification'; // 알림 설정
+  static const String notificationTimeSetting = '/notificationTimeSetting'; // 알림 시간 설정
   static const String theme = '/theme'; // 테마설정
   static const String openSource = '/opensource'; // 오픈소스
   static const String webView = '/webView'; // 웹뷰
@@ -164,6 +166,10 @@ class AppRouter {
       case Routes.theme:
         return MaterialPageRoute(
           builder: (_) => ThemeScreen(),
+        );
+      case Routes.notificationTimeSetting:
+        return MaterialPageRoute(
+          builder: (_) => const NotificationTimeSettingScreen(),
         );
       case Routes.openSource:
         return MaterialPageRoute(

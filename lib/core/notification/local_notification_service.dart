@@ -1,11 +1,14 @@
 import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tium/components/custom_platform_alert_dialog.dart';
+
+import 'package:tium/core/services/preference/notification_time_prefs.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
@@ -134,43 +137,55 @@ class LocalNotificationService {
     required int id,
     required String title,
     required String body,
-    required DateTime scheduledDate,
-    bool isTestMode = false,
+    required int days,
+    int? hour,
+    int? minute,
   }) async {
     debugPrint('현재 tz.local: ${tz.local}');
     debugPrint('tz.local timezone name: ${tz.local.name}');
 
-    final tz.TZDateTime tzDateTime;
+    final now = tz.TZDateTime.now(tz.local);
+    tz.TZDateTime scheduledDate;
 
-    if (isTestMode) {
-      final customDate = DateTime(2025, 7, 3, 20, 13); // 로컬 기준
-      tzDateTime = tz.TZDateTime.from(customDate, tz.local);
-    } else {
-      final localDateTime = DateTime(
-        scheduledDate.year,
-        scheduledDate.month,
-        scheduledDate.day,
-        12, // 오후 12시
-        0,
-        0,
+    // 설정된 알림 시간 불러오기 (기본값 12:00)
+    final notificationTime = await NotificationTimePrefs.getNotificationTime();
+    final targetHour = hour ?? notificationTime.hour;
+    final targetMinute = minute ?? notificationTime.minute;
+
+    if (kDebugMode) {
+      // 디버그 모드: 릴리즈와 동일한 로직으로, 현재 시간 기준 10초 뒤로 예약
+      final nowIn10Seconds = now.add(const Duration(seconds: 10));
+      scheduledDate = tz.TZDateTime(
+        tz.local,
+        nowIn10Seconds.year,
+        nowIn10Seconds.month,
+        nowIn10Seconds.day,
+        nowIn10Seconds.hour,
+        nowIn10Seconds.minute,
+        nowIn10Seconds.second,
       );
-      tzDateTime = tz.TZDateTime.from(localDateTime, tz.local);
-
-      debugPrint('🔔 예약 시간 (toString): $tzDateTime');
-      debugPrint('🔔 예약 시간 (toLocal): ${tzDateTime.toLocal()}');
-      debugPrint('🔔 예약 시간 (timeZoneName): ${tzDateTime.timeZoneName}');
-      debugPrint('🔔 예약 시간 (ISO): ${tzDateTime.toIso8601String()}');
+    } else {
+      // 릴리즈 모드: D-day(days) 후의 날짜, 설정된 시간(targetHour:targetMinute)으로 예약
+      scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day + days, targetHour, targetMinute);
     }
 
-    debugPrint("🔔 알림 예약 시도: id=$id, title=$title, body=$body, scheduledDate=$tzDateTime");
+    // 예약하려는 시간이 이미 과거인지 최종 확인
+    if (scheduledDate.isBefore(now)) {
+      debugPrint("❌ 알림 예약 실패: 계산된 예약 시간($scheduledDate)이 현재 시간($now)보다 과거입니다. 하루 뒤로 조정합니다.");
+      // 만약 계산된 시간이 과거이면 (예: 정오가 이미 지났는데 days=0인 경우), 다음 날로 설정
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
+    }
+
+    debugPrint('🔔 예약 시간 (timeZoneName): ${scheduledDate.timeZoneName}');
+    debugPrint("🔔 알림 예약 시도: id=$id, title=$title, body=$body, scheduledDate=$scheduledDate");
 
     try {
       await flutterLocalNotificationsPlugin.zonedSchedule(
         id,
         title,
         body,
-        tzDateTime,
-        NotificationDetails(
+        scheduledDate,
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             'watering_channel_id',
             '물주기 알림',

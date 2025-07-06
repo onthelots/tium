@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:tium/data/models/user/user_model.dart';
 
 abstract class UserPlantEvent {}
@@ -35,4 +36,10 @@ class WaterPlant extends UserPlantEvent {
   final bool hasPermission;
 
   WaterPlant(this.plant, {this.hasPermission = false});
+}
+
+/// 모든 알림 시간 업데이트
+class UpdateAllNotificationTimes extends UserPlantEvent {
+  final TimeOfDay newTime;
+  UpdateAllNotificationTimes(this.newTime);
 }

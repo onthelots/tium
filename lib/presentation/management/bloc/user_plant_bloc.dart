@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -14,6 +15,7 @@ class UserPlantBloc extends Bloc<UserPlantEvent, UserPlantState> {
     on<DeletePlant>(_onDeletePlant);
     on<ToggleReminder>(_onToggleReminder);
     on<WaterPlant>(_onWaterPlant);
+    on<UpdateAllNotificationTimes>(_onUpdateAllNotificationTimes);
   }
 
   /// 유저 정보 불러오기
@@ -76,13 +78,11 @@ class UserPlantBloc extends Bloc<UserPlantEvent, UserPlantState> {
     final notificationId = event.plant.notificationId ?? event.plant.id.hashCode;
 
     if (event.isOn) {
-      print("알림 예약을 등록했어요. 다음 물주기 알림은 알림은 ${DateTime.now().add(Duration(days: event.plant.wateringIntervalDays))}");
       await LocalNotificationService().scheduleNotification(
         id: notificationId,
         title: '물주기 알림',
         body: '${event.plant.name} 식물에 물 줄 시간이에요 💧',
-        scheduledDate: DateTime.now().add(Duration(days: event.plant.wateringIntervalDays)),
-        isTestMode: false,
+        days: event.plant.wateringIntervalDays,
       );
     } else {
       await LocalNotificationService().cancelNotification(notificationId);
@@ -116,15 +116,11 @@ class UserPlantBloc extends Bloc<UserPlantEvent, UserPlantState> {
 
     if (event.hasPermission && updatedPlant.isWateringNotificationOn) {
       print("알림 허용되어있고, 알림 켜져있으니 알림 다시 예약");
-      final nextNotificationDate = now.add(Duration(days: updatedPlant.wateringIntervalDays));
-      debugPrint('현재 tz.local: ${tz.local}');
-      debugPrint('tz.local timezone name: ${tz.local.name}');
       await LocalNotificationService().scheduleNotification(
         id: notificationId,
         title: '물주기 알림',
         body: '${updatedPlant.name} 식물에 물 줄 시간이에요 💧',
-        scheduledDate: nextNotificationDate,
-        isTestMode: false,
+        days: updatedPlant.wateringIntervalDays,
       );
     } else {
       print("알림 권한 없음 혹은 알림 꺼져있음, 알림 예약 안함");
@@ -138,5 +134,30 @@ class UserPlantBloc extends Bloc<UserPlantEvent, UserPlantState> {
     final updatedUser = currentState.user.copyWith(indoorPlants: updatedPlants);
     await UserPrefs.saveUser(updatedUser);
     emit(UserPlantLoaded(updatedUser));
+  }
+
+  /// 모든 알림 시간 업데이트 및 재설정
+  Future<void> _onUpdateAllNotificationTimes(UpdateAllNotificationTimes event, Emitter<UserPlantState> emit) async {
+    if (state is! UserPlantLoaded) return;
+    final currentState = state as UserPlantLoaded;
+
+    // 1. 기존 알림 모두 취소
+    await LocalNotificationService().cancelAll();
+
+    // 2. 모든 식물에 대해 알림 재설정
+    for (final plant in currentState.user.indoorPlants) {
+      if (plant.isWateringNotificationOn) {
+        final notificationId = plant.notificationId ?? plant.id.hashCode;
+        await LocalNotificationService().scheduleNotification(
+          id: notificationId,
+          title: '물주기 알림',
+          body: '${plant.name} 식물에 물 줄 시간이에요 💧',
+          days: plant.wateringIntervalDays,
+          hour: event.newTime.hour,
+          minute: event.newTime.minute,
+        );
+      }
+    }
+    // 상태는 변경되지 않으므로 emit은 필요 없음 (UI 갱신은 MyPageScreen에서 처리)
   }
 }
