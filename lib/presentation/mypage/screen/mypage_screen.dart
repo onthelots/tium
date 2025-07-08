@@ -15,6 +15,7 @@ class MyPageScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         appBar: AppBar(
@@ -79,13 +80,31 @@ class MyPageScreen extends StatelessWidget {
                     }
                   },
                 ),
+
                 _buildListTile(
                   context: context,
                   title: '위치 설정',
-                  onTap: () {
-                    showLocationChoiceDialog(
-                      context,
-                    );
+                  onTap: () async {
+                    final user = await UserPrefs.getUser();
+
+                    if (user != null) {
+                      showLocationChoiceDialog(
+                        context,
+                      );
+                    } else {
+                      await showPlatformAlertDialog(
+                        context: context,
+                        title: '아직 준비가 필요해요 🌱',
+                        content: '내 식물을 함께 키우려면, 먼저 몇 가지 정보를 간단히 알려주세요.\n기본 정보 입력 화면으로 이동할까요?',
+                        confirmText: '온보딩 시작',
+                        cancelText: '취소',
+                        onConfirm: () {
+                          Navigator.pushNamed(
+                              context, Routes.onboarding, arguments: true);
+                        },
+                        onCancel: () {},
+                      );
+                    }
                   },
                 ),
                 Divider(

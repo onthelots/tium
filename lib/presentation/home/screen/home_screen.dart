@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Image.asset(AppAsset.icon.icon_circle, height: 28),
                       const SizedBox(width: 10),
-                      Text("TIUM", style: theme.textTheme.titleMedium),
+                      Text("TIUM", style: theme.textTheme.headlineSmall),
                       const Spacer(),
                       if (_user != null)
                       IconButton(
