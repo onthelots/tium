@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tium/components/image_utils.dart'; // Import the new utility file
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/management/bloc/user_plant_bloc.dart';
@@ -102,17 +103,27 @@ class _ManagementScreenState extends State<ManagementScreen> {
               ),
               child: (() {
                 if (plant.imagePath != null) {
-                  final file = File(plant.imagePath!);
-                  if (file.existsSync()) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.file(file, fit: BoxFit.cover),
-                    );
-                  } else {
-                    return const Icon(Icons.local_florist, size: 32, color: Colors.white);
-                  }
+                  return FutureBuilder<File>(
+                    future: getImageFileFromRelativePath(plant.imagePath!),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                        debugPrint('✅ ManagementScreen: Image file exists at ${snapshot.data!.path}');
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.file(snapshot.data!, fit: BoxFit.cover),
+                        );
+                      } else if (snapshot.hasError) {
+                        debugPrint('❌ ManagementScreen: Error loading image: ${snapshot.error}');
+                        return buildImagePlaceholder(context);
+                      } else {
+                        debugPrint('ℹ️ ManagementScreen: Loading image...');
+                        return const Center(child: CircularProgressIndicator());
+                      }
+                    },
+                  );
                 } else {
-                  return const Icon(Icons.local_florist, size: 32, color: Colors.white);
+                  debugPrint('ℹ️ ManagementScreen: imagePath is null');
+                  return buildImagePlaceholder(context);
                 }
               })(),
             ),

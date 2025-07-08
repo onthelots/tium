@@ -211,23 +211,22 @@ class UserLocation {
 @HiveType(typeId: 3)
 enum UserType {
   @HiveField(0)
-  sunnyLover,          // 🌞 햇살러버형
+  sunnyLover,          // 1. 햇살을 사랑하는 당신
   @HiveField(1)
-  quietCompanion,      // 💤 조용한 쉼표형
+  quietCompanion,      // 2. 조용한 방의 동반자
   @HiveField(2)
-  growthSeeker,        // 🌿 성장동행형
+  smartSaver,          // 3. 스마트하게 돌보는 사람
   @HiveField(3)
-  smartSaver,          // 💰 똑똑한 소비자형
+  bloomingWatcher,     // 4. 꽃을 기다리는 사람
   @HiveField(4)
-  growthExplorer,      // 🪴 생육연구자형
+  growthSeeker,        // 5. 성장에 집중하는 사람
   @HiveField(5)
-  bloomingWatcher,     // 🌸 꽃을 기다리는 사람형
+  seasonalRomantic,    // 6. 계절을 타는 로맨티스트
   @HiveField(6)
-  calmObserver,        // 🧘 느긋한 정원사형
+  plantMaster,         // 7. 식물 마스터
   @HiveField(7)
-  plantMaster,         // 🔥 도전왕 플랜테리어형
+  calmObserver,        // 8. 가성비를 중시하는 관찰자
   @HiveField(8)
-  casualPlanterior,    // 🧑‍🌾 초보 플랜테리어러형
-  @HiveField(9)
-  seasonalRomantic,    // 🌼 사계절 감성러형
+  growthExplorer,      // 9. 성장을 탐험하는 사람
 }
+

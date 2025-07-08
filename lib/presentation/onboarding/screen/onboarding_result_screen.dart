@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/core/routes/routes.dart';
-import 'package:tium/data/models/user/user_model.dart';
-import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_bloc.dart';
-import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_event.dart';
-import 'package:tium/presentation/onboarding/utils/user_type_info.dart';
+import 'package:tium/data/models/user/user_type_model.dart';
 
-class OnboardingResultScreen extends StatefulWidget {
+class OnboardingResultScreen extends StatelessWidget {
   final bool isFirstRun;
-  final UserType userType;
+  final UserTypeModel userType;
 
   const OnboardingResultScreen({
     super.key,
@@ -17,25 +13,8 @@ class OnboardingResultScreen extends StatefulWidget {
   });
 
   @override
-  State<OnboardingResultScreen> createState() => _OnboardingResultScreenState();
-}
-
-class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      if (!mounted) return;
-      context.read<RecommendationBloc>().add(
-        LoadUserRecommendations(userType: widget.userType),
-      );
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final info = userTypeInfo[widget.userType]!;
 
     return Scaffold(
       appBar: AppBar(
@@ -65,7 +44,7 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
                 ),
                 child: ClipOval(
                   child: Image.asset(
-                    info.imageAsset,
+                    userType.imageAsset, // UserTypeModel에서 직접 가져옴
                     width: 150,
                     height: 150,
                     fit: BoxFit.cover,
@@ -77,7 +56,7 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
 
               // 유저 타입 제목
               Text(
-                info.title,
+                userType.typeName, // UserTypeModel에서 직접 가져옴
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.primary,
@@ -117,7 +96,7 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      info.description,
+                      userType.description, // UserTypeModel에서 직접 가져옴
                       style: theme.textTheme.bodyMedium?.copyWith(
                         height: 1.6,
                         color: theme.colorScheme.onSurface.withOpacity(0.85),
@@ -132,108 +111,91 @@ class _OnboardingResultScreenState extends State<OnboardingResultScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: !widget.isFirstRun ? null : Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 30), // 하단만 여백
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 10), // 하단만 여백
         child: SafeArea(
           minimum: const EdgeInsets.only(bottom: 0),
-          child: SizedBox(
-            width: double.infinity,
-            height: 52, // 더 얇게
-            child: ElevatedButton(
-              onPressed: () {
-                if (widget.isFirstRun) {
-                  Navigator.pushNamedAndRemoveUntil(
-                    context, Routes.main, (route) => false,
-                  );
-                } else {
-                  Navigator.pop(context);
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: 52, // 더 얇게
+                child: ElevatedButton(
+                  onPressed: () {
+
+                    // 첫 구동일 경우
+                    if (isFirstRun) {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context, Routes.main, (route) => false,
+                      );
+                    } else {
+
+                      // Home 혹은 MyPage에서 진입한 경우
+                      Navigator.pop(context);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: Colors.white,
+                    elevation: 4,
+                    padding: EdgeInsets.zero,
+                  ),
+                  child: const Text(
+                    '홈으로 이동하기',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.6,
+                    ),
+                  ),
                 ),
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: Colors.white,
-                elevation: 4,
-                padding: EdgeInsets.zero,
               ),
-              child: const Text(
-                '홈으로 이동하기',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.6,
+
+              // Home 혹은 MyPage에서 진입한 경우
+              if (!isFirstRun) ...[
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: OutlinedButton(
+                    onPressed: () async {
+                      if (context.mounted) {
+
+                        // 온보딩 재 진입
+                        Navigator.pushNamed(
+                          context, Routes.onboarding,
+                          arguments: true, // 온보딩 화면으로 이동 시 isHomePushed 전달
+                        );
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      side: BorderSide(color: theme.primaryColor), // 테두리 색상
+                      foregroundColor: theme.primaryColor, // 텍스트 색상
+                      elevation: 0,
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: const Text(
+                      '다시 설정하기',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.6,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
-            ),
+              ],
+            ],
           ),
         ),
       ),
     );
   }
 }
-
-
-/// 추천 식물리스트 (좀 필터링을 줄이자)
-/*
-// 추천 식물 리스트
-              BlocBuilder<RecommendationBloc, RecommendationState>(
-                builder: (context, state) {
-                  if (state is RecommendationLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is RecommendationLoaded) {
-                    if (state.plants.isEmpty) {
-                      return Text(
-                        "추천 식물이 없습니다.",
-                        style: theme.textTheme.bodyMedium,
-                      );
-                    }
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: state.plants.length,
-                      separatorBuilder: (_, __) => const Divider(height: 24),
-                      itemBuilder: (context, index) {
-                        final plant = state.plants[index];
-                        final imageUrl = plant.highResImageUrl ?? plant.imageUrl;
-
-                        return ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: buildCachedImage(imageUrl),
-                          ),
-                          title: Text(
-                            plant.name,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          trailing: const Icon(Icons.chevron_right),
-                          onTap: () {
-                            Navigator.pushNamed(
-                              context,
-                              Routes.plantDetail,
-                              arguments: {
-                                'id': plant.id,
-                                'category': plant.category,
-                                'imageUrl': imageUrl,
-                                'name': plant.name,
-                              },
-                            );
-                          },
-                        );
-                      },
-                    );
-                  } else if (state is RecommendationError) {
-                    return Text(
-                      '추천 실패: ${state.message}',
-                      style: theme.textTheme.bodyMedium?.copyWith(color: Colors.red),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                },
-              ),
- */

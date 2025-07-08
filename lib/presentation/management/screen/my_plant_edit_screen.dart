@@ -1,14 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/components/custom_scaffold.dart';
-import 'package:tium/core/services/Image_storage_service.dart';
+import 'package:tium/components/image_utils.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/management/bloc/user_plant_bloc.dart';
 import 'package:tium/presentation/management/bloc/user_plant_event.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:tium/presentation/management/utils/image_picker_helper.dart';
 
 class MyPlantEditScreen extends StatefulWidget {
@@ -26,13 +24,14 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
   late List<String> _selectedLocations;
 
   bool _isNameValid = true;
-  File? _pickedImageFile;
+  String? _pickedImageRelativePath; // File? -> String? (상대 경로)
 
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.initialPlant.name);
     _selectedLocations = List.from(widget.initialPlant.locations);
+    _pickedImageRelativePath = widget.initialPlant.imagePath; // 기존 이미지 경로 초기화
 
     _nameController.addListener(() {
       final isValid = _nameController.text.trim().isNotEmpty;
@@ -67,7 +66,7 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
     final updated = widget.initialPlant.copyWith(
       name: name,
       locations: _selectedLocations,
-      imagePath: _pickedImageFile?.path ?? widget.initialPlant.imagePath,
+      imagePath: _pickedImageRelativePath, // 상대 경로 사용
     );
 
     context.read<UserPlantBloc>().add(UpdatePlant(updated));
@@ -112,8 +111,8 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
               final size = constraints.maxWidth;
 
               return GestureDetector(
-                onTap: () => pickImageFromGallery(context, (file) {
-                  setState(() => _pickedImageFile = file);
+                onTap: () => pickImageFromGallery(context, (relativePath) {
+                  setState(() => _pickedImageRelativePath = relativePath);
                 }),
                 child: Stack(
                   children: [
@@ -128,15 +127,19 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: (() {
-                          if (_pickedImageFile != null) {
-                            return Image.file(_pickedImageFile!, fit: BoxFit.cover);
-                          } else if (widget.initialPlant.imagePath != null) {
-                            final file = File(widget.initialPlant.imagePath!);
-                            if (file.existsSync()) {
-                              return Image.file(file, fit: BoxFit.cover);
-                            } else {
-                              return const Center(child: Icon(Icons.camera_alt_outlined, size: 40));
-                            }
+                          if (_pickedImageRelativePath != null) {
+                            return FutureBuilder<File>(
+                              future: getImageFileFromRelativePath(_pickedImageRelativePath!),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                                  return Image.file(snapshot.data!, fit: BoxFit.cover);
+                                } else if (snapshot.hasError) {
+                                  return const Center(child: Icon(Icons.camera_alt_outlined, size: 40));
+                                } else {
+                                  return const Center(child: CircularProgressIndicator());
+                                }
+                              },
+                            );
                           } else {
                             return const Center(child: Icon(Icons.camera_alt_outlined, size: 40));
                           }
@@ -192,7 +195,7 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
               children: _allLocations.map((loc) {
                 final isSelected = _selectedLocations.contains(loc);
                 final backgroundColor = isSelected ? theme.colorScheme.primary : theme.cardColor;
-                final textColor = isSelected ? Colors.white : Colors.black;
+                final textColor = isSelected ? Colors.white : Colors.grey;
                 final fontWeight = isSelected ? FontWeight.bold : FontWeight.normal;
 
                 return GestureDetector(

@@ -2,10 +2,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/components/custom_scaffold.dart';
+import 'package:tium/components/image_utils.dart';
 import 'package:tium/core/notification/local_notification_service.dart';
 import 'package:tium/core/routes/routes.dart';
+import 'package:tium/core/services/check_my_plant_detail.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/management/bloc/user_plant_bloc.dart';
 import 'package:tium/presentation/management/bloc/user_plant_event.dart';
@@ -21,6 +25,8 @@ class MyPlantDetailScreen extends StatefulWidget {
 
 class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
     with SingleTickerProviderStateMixin {
+  static String? _currentViewingPlantId; // 현재 보고 있는 식물의 ID
+
   late UserPlant _plant;
   bool _isButtonDisabled = false;
   bool _hasNotificationPermission = true;
@@ -32,8 +38,19 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
   void initState() {
     super.initState();
     _plant = widget.plant;
+    _currentViewingPlantId = _plant.id; // 식물 ID 설정
+    CheckMyPlantDetail().setCurrentPlantId(_currentViewingPlantId);
     _checkWateringCooldown(); // 물주기 여부 확인 (today)
     _checkNotificationPermission(); // 알림 허용여부 확인
+
+    // 현재 식물에 대한 알림이 있다면 취소
+    if (_plant.notificationId != null) {
+      print("현재 내 식물의 notification_id가 존재합니다 ${_plant.notificationId}");
+      LocalNotificationService().cancelNotification(_plant.notificationId!); // 알림 삭제
+      debugPrint("🔔 식물 상세 화면 진입: 알림 ID ${_plant.notificationId} 삭제");
+    } else {
+      print("현재 식물의 알림이 없음");
+    }
 
     _waterDropController = AnimationController(
       vsync: this,
@@ -52,7 +69,9 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
 
   @override
   void dispose() {
+    CheckMyPlantDetail().clear();
     _waterDropController.dispose();
+    _currentViewingPlantId = null; // 식물 ID 해제
     super.dispose();
   }
 
@@ -252,7 +271,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
             });
           }
         },
-        child: Text('수정하기',
+        child: Text('수정',
             style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.hintColor, fontWeight: FontWeight.w300)),
       ),
@@ -292,23 +311,39 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
                 borderRadius: BorderRadius.circular(16),
                 child: (() {
                   if (_plant.imagePath != null) {
-                    final file = File(_plant.imagePath!);
-                    if (file.existsSync()) {
-                      return Image.file(
-                        file,
-                        height: 260,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      );
-                    } else {
-                      return Container(
-                        height: 260,
-                        width: double.infinity,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.local_florist, size: 100, color: Colors.white),
-                      );
-                    }
+                    debugPrint('🔍 MyPlantDetailScreen: imagePath = ${_plant.imagePath}');
+                    return FutureBuilder<File>(
+                      future: getImageFileFromRelativePath(_plant.imagePath!),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                          debugPrint('✅ MyPlantDetailScreen: Image file exists at ${snapshot.data!.path}');
+                          return Image.file(
+                            snapshot.data!,
+                            height: 260,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        } else if (snapshot.hasError) {
+                          debugPrint('❌ MyPlantDetailScreen: Error loading image: ${snapshot.error}');
+                          return Container(
+                            height: 260,
+                            width: double.infinity,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.local_florist, size: 100, color: Colors.white),
+                          );
+                        } else {
+                          debugPrint('ℹ️ MyPlantDetailScreen: Loading image...');
+                          return Container(
+                            height: 260,
+                            width: double.infinity,
+                            color: Colors.grey[300],
+                            child: const Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                      },
+                    );
                   } else {
+                    debugPrint('ℹ️ MyPlantDetailScreen: imagePath is null');
                     return Container(
                       height: 260,
                       width: double.infinity,

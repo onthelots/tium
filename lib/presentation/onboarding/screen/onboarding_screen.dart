@@ -6,13 +6,12 @@ import 'package:tium/components/custom_scaffold.dart';
 import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/core/services/shared_preferences_helper.dart';
-import 'package:tium/domain/entities/onboarding/onboarding_question_entity.dart';
+import 'package:tium/data/models/onboarding/onboarding_question_model.dart';
 import 'package:tium/presentation/management/bloc/user_plant_bloc.dart';
 import 'package:tium/presentation/management/bloc/user_plant_event.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_bloc.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_event.dart';
 import 'package:tium/presentation/onboarding/bloc/onboarding_bloc/onboarding_state.dart';
-import 'package:tium/presentation/onboarding/screen/onboarding_result_screen.dart';
 import 'package:tium/presentation/onboarding/utils/question_option_icon_mapping.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -36,10 +35,10 @@ class OnboardingView extends StatefulWidget {
 class _OnboardingViewState extends State<OnboardingView> {
   final PageController _pageController = PageController();
 
-  String experienceLevel = '';
-  String locationPreference = '';
-  String careTime = '';
-  String interestTags = '';
+  int? experienceLevel;
+  int? locationPreference;
+  int? careTime;
+  int? interestTags;
 
   int get currentPage => (_pageController.hasClients ? _pageController.page?.round() : 0) ?? 0;
   final int totalPages = 4;
@@ -49,10 +48,10 @@ class _OnboardingViewState extends State<OnboardingView> {
       _pageController.nextPage(duration: const Duration(milliseconds: 350), curve: Curves.easeInOut);
     } else {
       context.read<OnboardingBloc>().add(SaveOnboardingAnswers({
-        'experience_level': experienceLevel,
-        'location_preference': locationPreference,
-        'care_time': careTime,
-        'interest_tags': interestTags,
+        'experience_level': experienceLevel!,
+        'location_preference': locationPreference!,
+        'care_time': careTime!,
+        'interest_tags': interestTags!,
       }));
     }
   }
@@ -60,13 +59,13 @@ class _OnboardingViewState extends State<OnboardingView> {
   bool get isCurrentSelectionValid {
     switch (currentPage) {
       case 0:
-        return experienceLevel.isNotEmpty;
+        return experienceLevel != null;
       case 1:
-        return locationPreference.isNotEmpty;
+        return locationPreference != null;
       case 2:
-        return careTime.isNotEmpty;
+        return careTime != null;
       case 3:
-        return interestTags.isNotEmpty;
+        return interestTags != null;
       default:
         return false;
     }
@@ -121,7 +120,7 @@ class _OnboardingViewState extends State<OnboardingView> {
               context,
               Routes.userType,
               arguments: {
-                'userType': state.userType,
+                'userType': state.userTypeModel,
                 'isFirstRun': true,
               },
                   (_) => false,
@@ -145,23 +144,23 @@ class _OnboardingViewState extends State<OnboardingView> {
                     children: [
                       _buildVerticalOptions(
                         question: state.questions[0],
-                        selectedList: experienceLevel.isEmpty ? [] : [experienceLevel],
-                        onChanged: (list) => setState(() => experienceLevel = list.isNotEmpty ? list.first : ''),
+                        selectedId: experienceLevel,
+                        onChanged: (id) => setState(() => experienceLevel = id),
                       ),
                       _buildVerticalOptions(
                         question: state.questions[1],
-                        selectedList: locationPreference.isEmpty ? [] : [locationPreference],
-                        onChanged: (list) => setState(() => locationPreference = list.isNotEmpty ? list.first : ''),
+                        selectedId: locationPreference,
+                        onChanged: (id) => setState(() => locationPreference = id),
                       ),
                       _buildVerticalOptions(
                         question: state.questions[2],
-                        selectedList: careTime.isEmpty ? [] : [careTime],
-                        onChanged: (list) => setState(() => careTime = list.isNotEmpty ? list.first : ''),
+                        selectedId: careTime,
+                        onChanged: (id) => setState(() => careTime = id),
                       ),
                       _buildVerticalOptions(
                         question: state.questions[3],
-                        selectedList: interestTags.isEmpty ? [] : [interestTags],
-                        onChanged: (list) => setState(() => interestTags = list.isNotEmpty ? list.first : ''),
+                        selectedId: interestTags,
+                        onChanged: (id) => setState(() => interestTags = id),
                       ),
                     ],
                   ),
@@ -177,10 +176,9 @@ class _OnboardingViewState extends State<OnboardingView> {
   }
 
   Widget _buildVerticalOptions({
-    required OnboardingQuestion question,
-    required List<String> selectedList,
-
-    required Function(List<String>) onChanged,
+    required OnboardingQuestionModel question,
+    required int? selectedId,
+    required Function(int?) onChanged,
   }) {
     final theme = Theme.of(context);
 
@@ -205,21 +203,23 @@ class _OnboardingViewState extends State<OnboardingView> {
           child: ListView.separated(
             physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
-            itemCount: question.options.length,
+            itemCount: question.answers.length,
             separatorBuilder: (_, __) => const SizedBox(height: 16),
             itemBuilder: (context, index) {
-              final option = question.options[index];
-              final selected = selectedList.contains(option);
-              final iconData = getOptionIcon(question.key, option);
+              final option = question.answers[index];
+              final selected = selectedId == option.id;
+              final iconData = getOptionIcon(
+                currentPage == 0 ? 'experience_level' :
+                currentPage == 1 ? 'location_preference' :
+                currentPage == 2 ? 'care_time' :
+                'interest_tags',
+                option.answerText,
+              );
 
               return InkWell(
                 borderRadius: BorderRadius.circular(16),
                 onTap: () {
-                  final newSelected = List<String>.from(selectedList);
-                  newSelected
-                    ..clear()
-                    ..add(option);
-                  onChanged(newSelected);
+                  onChanged(option.id);
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -246,7 +246,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                       const SizedBox(width: 20),
                       Expanded(
                         child: Text(
-                          option,
+                          option.answerText,
                           style: theme.textTheme.titleMedium?.copyWith(
                             color: selected ? theme.primaryColor : theme
                                 .hintColor,

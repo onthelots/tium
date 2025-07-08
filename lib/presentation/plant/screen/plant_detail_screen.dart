@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/core/di/locator.dart';
+import 'package:tium/core/services/check_my_plant_detail.dart';
 import 'package:tium/data/models/plant/plant_detail_model.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_bloc.dart';
@@ -26,17 +27,22 @@ class PlantDetailScreen extends StatelessWidget {
   void _showRegisterModal(BuildContext context, PlantDetail plant) {
     showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // 키보드 올라오는걸 위해 true
-      enableDrag: false,        // 드래그해서 모달 닫기 비활성화
-      isDismissible: true,      // 바깥 탭하면 닫히도록
+      isScrollControlled: true,
+      enableDrag: false,
+      isDismissible: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        // 키보드 높이만큼 padding 줘서 텍스트 필드 가려지지 않도록
-        return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: PlantRegisterModal(plant: plant),
+        final screenHeight = MediaQuery.of(context).size.height;
+        final modalHeight = screenHeight * 0.8; // 화면 높이의 60%
+
+        return SizedBox(
+          height: modalHeight,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+            child: PlantRegisterModal(plant: plant),
+          ),
         );
       },
     );
@@ -67,7 +73,7 @@ class PlantDetailScreen extends StatelessWidget {
               final plant = state.plant;
 
               print("식물 이름 : ${plant.name}");
-              print("식물 이름 : ${plant.id}");
+              print("식물 Id : ${plant.id}");
 
               return CustomScrollView(
                 physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
@@ -83,7 +89,7 @@ class PlantDetailScreen extends StatelessWidget {
 
                     actions: [
                       Container(
-                        margin: const EdgeInsets.only(top: 10, right: 15),
+                        margin: const EdgeInsets.only(right: 15,),
                         decoration: BoxDecoration(
                           color: theme.disabledColor,
                           shape: BoxShape.circle,
@@ -92,7 +98,7 @@ class PlantDetailScreen extends StatelessWidget {
                           onTap: () => Navigator.of(context).pop(),
                           child: const Padding(
                             padding: EdgeInsets.all(5), // 아이콘 주변 여백 조절
-                            child: Icon(Icons.close, color: Colors.white, size: 20),
+                            child: Icon(Icons.close, color: Colors.white, size: 25),
                           ),
                         ),
                       ),
@@ -215,15 +221,33 @@ class PlantDetailScreen extends StatelessWidget {
         floatingActionButton: BlocBuilder<PlantDetailBloc, PlantDetailState>(
           builder: (context, state) {
             if (state is PlantDetailLoaded) {
-              return FloatingActionButton(
-                onPressed: () {
-                  _showRegisterModal(context, state.plant);
-                },
-                backgroundColor: Colors.white.withOpacity(0.7), // 약간 투명한 흰색 배경
-                child: const Icon(Icons.add, color: Colors.black), // 아이콘 색상은 배경에 맞게 조정
+              return Material(
+                color: theme.primaryColor.withOpacity(0.2), // 연한 primary 컬러 배경
+                borderRadius: BorderRadius.circular(30), // 캡슐 모양 둥글게
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(30),
+                  onTap: () {
+                    _showRegisterModal(context, state.plant);
+                  },
+                  splashColor: theme.primaryColor.withOpacity(0.3),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.add, color: theme.primaryColor, size: 24),
+                        SizedBox(width: 8),
+                        Text(
+                          '식물 등록',
+                          style: theme.textTheme.labelMedium
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               );
             }
-            return const SizedBox.shrink(); // 로딩 중엔 안 보임
+            return const SizedBox.shrink();
           },
         ),
       ),

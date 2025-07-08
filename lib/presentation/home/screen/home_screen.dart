@@ -3,17 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/core/constants/app_asset.dart';
+import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/helper/lat_lng_grid_converter.dart';
 import 'package:tium/core/notification/local_notification_service.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/data/models/user/user_model.dart';
+import 'package:tium/data/models/user/user_type_model.dart';
+import 'package:tium/domain/usecases/onboarding/get_user_type_model_from_enum_usecase.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_event.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_state.dart';
 import 'package:tium/presentation/home/bloc/plant_section/plant_section_bloc.dart';
 import 'package:tium/presentation/home/bloc/plant_section/plant_section_event.dart';
 import 'package:tium/presentation/home/bloc/plant_section/plant_section_state.dart';
+import 'package:tium/presentation/home/bloc/user_type/user_type_cubit.dart'; // UserTypeCubit 임포트
 import 'package:tium/presentation/home/bloc/weather/weather_bloc.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_event.dart';
 import 'package:tium/presentation/home/widgets/home_search_header_delegate.dart';
@@ -93,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _user = _user?.copyWith(location: userLocation);
             _loading = true;
           });
+          // 유저 정보 저장 (+ 위치정보)
           await UserPrefs.saveUser(_user!);
           await _fetchAll();
         } else if (state is LocationLoadFailure) {
@@ -122,16 +127,30 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       Image.asset(AppAsset.icon.icon_circle, height: 28),
                       const SizedBox(width: 10),
-                      Text("TIUM", style: theme.textTheme.titleMedium),
+                      Text("TIUM", style: theme.textTheme.headlineSmall),
                       const Spacer(),
                       if (_user != null)
                       IconButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, Routes.userType,
-                            arguments: {
-                              'userType': _user?.userType,
-                              'isFirstRun': false,
-                            },);
+                        onPressed: () async {
+                          if (_user!.userType != null) {
+                            context.read<UserTypeCubit>().loadUserTypeModel(_user!.userType);
+                            final UserTypeState resultState = await context.read<UserTypeCubit>().stream.firstWhere(
+                              (state) => state is UserTypeLoaded || state is UserTypeError,
+                            );
+
+                            if (resultState is UserTypeLoaded) {
+                              Navigator.pushNamed(context, Routes.userType,
+                                arguments: {
+                                  'userType': resultState.userTypeModel,
+                                  'isFirstRun': false,
+                                },
+                              );
+                            } else if (resultState is UserTypeError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(resultState.message)),
+                              );
+                            }
+                          }
                         },
                         icon: const Icon(Icons.account_circle),
                       ),
@@ -139,9 +158,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 titleSpacing: 0, // 이건 0으로 맞춰두는 것이 좋음
-
               ),
-          
+
               /// 날씨
               if (_user != null)
               SliverPersistentHeader(
@@ -237,46 +255,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       showLocationChoiceDialog(
         context,
-        onUseCurrent: () => _getCurrentLocationAndUpdate(context),
-      );
-    }
-  }
-
-  /// GPS 기반 위치정보 (location 전체 로직)
-  Future<void> _getCurrentLocationAndUpdate(BuildContext ctx) async {
-    try {
-      if (!await Geolocator.isLocationServiceEnabled()) {
-        if (!ctx.mounted) return;
-        ScaffoldMessenger.of(ctx).showSnackBar(
-          const SnackBar(content: Text('휴대폰 위치 서비스(GPS)가 꺼져 있습니다.')),
-        );
-        return;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        permission = await Geolocator.requestPermission();
-        if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
-          if (!ctx.mounted) return;
-          ScaffoldMessenger.of(ctx).showSnackBar(
-            const SnackBar(content: Text('위치 권한이 거부되었습니다.')),
-          );
-          return;
-        }
-      }
-
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-      );
-
-      if (!ctx.mounted) return;
-      ctx.read<LocationBloc>().add(
-        LocationByLatLngRequested(position.latitude, position.longitude),
-      );
-    } catch (e) {
-      if (!ctx.mounted) return;
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(content: Text('위치 정보를 가져오지 못했습니다: $e')),
       );
     }
   }
