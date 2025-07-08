@@ -195,21 +195,19 @@ class UserTypeAdapter extends TypeAdapter<UserType> {
       case 1:
         return UserType.quietCompanion;
       case 2:
-        return UserType.growthSeeker;
-      case 3:
         return UserType.smartSaver;
-      case 4:
-        return UserType.growthExplorer;
-      case 5:
+      case 3:
         return UserType.bloomingWatcher;
-      case 6:
-        return UserType.calmObserver;
-      case 7:
-        return UserType.plantMaster;
-      case 8:
-        return UserType.casualPlanterior;
-      case 9:
+      case 4:
+        return UserType.growthSeeker;
+      case 5:
         return UserType.seasonalRomantic;
+      case 6:
+        return UserType.plantMaster;
+      case 7:
+        return UserType.calmObserver;
+      case 8:
+        return UserType.growthExplorer;
       default:
         return UserType.sunnyLover;
     }
@@ -224,29 +222,26 @@ class UserTypeAdapter extends TypeAdapter<UserType> {
       case UserType.quietCompanion:
         writer.writeByte(1);
         break;
-      case UserType.growthSeeker:
+      case UserType.smartSaver:
         writer.writeByte(2);
         break;
-      case UserType.smartSaver:
+      case UserType.bloomingWatcher:
         writer.writeByte(3);
         break;
-      case UserType.growthExplorer:
+      case UserType.growthSeeker:
         writer.writeByte(4);
         break;
-      case UserType.bloomingWatcher:
+      case UserType.seasonalRomantic:
         writer.writeByte(5);
         break;
-      case UserType.calmObserver:
+      case UserType.plantMaster:
         writer.writeByte(6);
         break;
-      case UserType.plantMaster:
+      case UserType.calmObserver:
         writer.writeByte(7);
         break;
-      case UserType.casualPlanterior:
+      case UserType.growthExplorer:
         writer.writeByte(8);
-        break;
-      case UserType.seasonalRomantic:
-        writer.writeByte(9);
         break;
     }
   }

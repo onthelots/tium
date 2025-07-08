@@ -86,7 +86,7 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
       children: _allLocations.map((loc) {
         final isSelected = _selectedLocations.contains(loc);
         final backgroundColor = isSelected ? theme.colorScheme.primary : theme.cardColor;
-        final textColor = isSelected ? Colors.white : Colors.black;
+        final textColor = isSelected ? Colors.white : Colors.grey;
         final fontWeight = isSelected ? FontWeight.bold : FontWeight.normal;
 
         return GestureDetector(

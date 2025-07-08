@@ -1,100 +1,66 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tium/core/constants/constants.dart';
-import 'package:tium/core/services/hive/hive_prefs.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
-import 'package:tium/core/services/shared_preferences_helper.dart';
+import 'package:tium/data/models/onboarding/onboarding_question_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
-import 'package:tium/domain/usecases/onboarding/onboarding_usecase.dart';
+import 'package:tium/domain/usecases/onboarding/determine_user_type_usecase.dart';
+import 'package:tium/domain/usecases/onboarding/get_onboarding_questions_usecase.dart';
 import 'onboarding_event.dart';
 import 'onboarding_state.dart';
 
 class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
-  final GetOnboardingQuestions getQuestions;
+  final GetOnboardingQuestionsUseCase getQuestionsUseCase;
+  final DetermineUserTypeUseCase determineUserTypeUseCase;
 
-  OnboardingBloc(this.getQuestions) : super(OnboardingInitial()) {
-    // 1) 질문 로딩 -----------------------------------------
+  List<OnboardingQuestionModel> _questions = []; // 질문 목록을 저장할 변수
+
+  OnboardingBloc({
+    required this.getQuestionsUseCase,
+    required this.determineUserTypeUseCase,
+  }) : super(OnboardingInitial()) {
     on<LoadOnboardingQuestions>((event, emit) async {
       emit(OnboardingLoading());
       try {
-        final questions = await getQuestions();
-        emit(OnboardingLoaded(questions));
+        _questions = await getQuestionsUseCase(); // 질문 로드 후 저장
+        emit(OnboardingLoaded(_questions));
       } catch (e) {
         emit(OnboardingError(e.toString()));
       }
     });
 
-    // 2) 답변 저장 ------------------------------------------
+    // 유저타입 저장 -> HIVE (UserType / enum 타입)
     on<SaveOnboardingAnswers>((event, emit) async {
       try {
-        final experienceText = event.answers['experience_level'] as String;
-        final locationText = event.answers['location_preference'] as String;
-        final careText = event.answers['care_time'] as String;
-        final interestText = event.answers['interest_tags'] as String;
+        // 1. 서버로 답변 ID들을 보내 사용자 유형 결정 요청
+        final answerIds = event.answers.values.cast<int>().toList();
+        final userTypeModel = await determineUserTypeUseCase(answerIds);
 
-        final experience = experienceMap[experienceText] ?? 'beginner';
-        final location = locationMap[locationText] ?? 'anywhere';
-        final care = careTimeMap[careText] ?? 'moderate';
-        final interest = interestMap[interestText] ?? 'shape';
-
-        final userType = determineUserType(
-          experienceLevel: experience,
-          locationPreference: location,
-          careTime: care,
-          interestTags: interest,
-        );
+        // 2. UserModel에 저장할 문자열 값 찾기
+        String getAnswerTextById(int answerId) {
+          for (var question in _questions) {
+            for (var answer in question.answers) {
+              if (answer.id == answerId) {
+                return answer.answerText;
+              }
+            }
+          }
+          return ''; // 찾지 못하면 빈 문자열 반환 (오류 방지)
+        }
 
         final user = UserModel(
-          experienceLevel: experience,
-          locationPreference: location,
-          careTime: care,
-          interestTags: interest, // 이제 단일 선택이므로
-          userType: userType,
+          experienceLevel: getAnswerTextById(event.answers['experience_level'] as int),
+          locationPreference: getAnswerTextById(event.answers['location_preference'] as int),
+          careTime: getAnswerTextById(event.answers['care_time'] as int),
+          interestTags: getAnswerTextById(event.answers['interest_tags'] as int),
+          userType: userTypeModel.toEnum(),
           indoorPlants: const [],
           outdoorPlants: const [],
         );
 
-        await UserPrefs.saveUser(user);
-        emit(OnboardingSaved(userType));
+        await UserPrefs.saveUser(user); // HIVE 저장
+        emit(OnboardingSaved(userTypeModel)); // 저장 시, Server에서 상세 내용 받아오고, 저장하기
       } catch (e) {
         emit(OnboardingError(e.toString()));
       }
     });
   }
-}
-
-// user type 설정
-UserType determineUserType({
-  required String experienceLevel,
-  required String locationPreference,
-  required String careTime,
-  required String interestTags,
-}) {
-  if (experienceLevel == 'beginner') {
-    if (locationPreference == 'window' && careTime == 'short' && interestTags == 'flower') {
-      return UserType.sunnyLover;
-    } else if (locationPreference == 'bedroom' && careTime == 'short') {
-      return UserType.quietCompanion;
-    } else {
-      return UserType.smartSaver;
-    }
-  }
-
-  if (experienceLevel == 'intermediate') {
-    if (interestTags == 'flower') return UserType.bloomingWatcher;
-    if (interestTags == 'shape') return UserType.growthSeeker;
-    return UserType.seasonalRomantic;
-  }
-
-  if (experienceLevel == 'expert') {
-    if (careTime == 'plenty' && locationPreference == 'window') {
-      return UserType.plantMaster;
-    } else if (interestTags == 'price') {
-      return UserType.calmObserver;
-    } else {
-      return UserType.growthExplorer;
-    }
-  }
-
-  // fallback
-  return UserType.smartSaver;
 }

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 IconData getOptionIcon(String key, String option) {
   switch (key) {
     case 'experience_level':
-      if (option.contains('어색')) return Icons.spa_outlined;
-      if (option.contains('조금')) return Icons.eco_outlined;
-      if (option.contains('통해')) return Icons.local_florist;
+      if (option.contains('초보')) return Icons.spa_outlined;
+      if (option.contains('중급')) return Icons.eco_outlined;
+      if (option.contains('상급')) return Icons.local_florist;
       return Icons.help_outline;
 
     case 'location_preference':

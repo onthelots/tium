@@ -133,3 +133,6 @@ lib/core/di/locator.dart
 # iOS SwiftPM 패키지 잠금 파일 무시
 ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
 ios/Runner.xcworkspace/xcshareddata/swiftpm/
+
+# env
+.env

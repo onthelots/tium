@@ -3,17 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/core/constants/app_asset.dart';
+import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/helper/lat_lng_grid_converter.dart';
 import 'package:tium/core/notification/local_notification_service.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/data/models/user/user_model.dart';
+import 'package:tium/data/models/user/user_type_model.dart';
+import 'package:tium/domain/usecases/onboarding/get_user_type_model_from_enum_usecase.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_event.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_state.dart';
 import 'package:tium/presentation/home/bloc/plant_section/plant_section_bloc.dart';
 import 'package:tium/presentation/home/bloc/plant_section/plant_section_event.dart';
 import 'package:tium/presentation/home/bloc/plant_section/plant_section_state.dart';
+import 'package:tium/presentation/home/bloc/user_type/user_type_cubit.dart'; // UserTypeCubit 임포트
 import 'package:tium/presentation/home/bloc/weather/weather_bloc.dart';
 import 'package:tium/presentation/home/bloc/weather/weather_event.dart';
 import 'package:tium/presentation/home/widgets/home_search_header_delegate.dart';
@@ -126,12 +130,26 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Spacer(),
                       if (_user != null)
                       IconButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, Routes.userType,
-                            arguments: {
-                              'userType': _user?.userType,
-                              'isFirstRun': false,
-                            },);
+                        onPressed: () async {
+                          if (_user!.userType != null) {
+                            context.read<UserTypeCubit>().loadUserTypeModel(_user!.userType);
+                            final UserTypeState resultState = await context.read<UserTypeCubit>().stream.firstWhere(
+                              (state) => state is UserTypeLoaded || state is UserTypeError,
+                            );
+
+                            if (resultState is UserTypeLoaded) {
+                              Navigator.pushNamed(context, Routes.userType,
+                                arguments: {
+                                  'userType': resultState.userTypeModel,
+                                  'isFirstRun': false,
+                                },
+                              );
+                            } else if (resultState is UserTypeError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(resultState.message)),
+                              );
+                            }
+                          }
                         },
                         icon: const Icon(Icons.account_circle),
                       ),
@@ -141,7 +159,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 titleSpacing: 0, // 이건 0으로 맞춰두는 것이 좋음
 
               ),
-          
+
               /// 날씨
               if (_user != null)
               SliverPersistentHeader(

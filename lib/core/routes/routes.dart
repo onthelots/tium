@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/core/di/locator.dart';
 import 'package:tium/data/models/plant/plant_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
+import 'package:tium/data/models/user/user_type_model.dart';
+import 'package:tium/domain/usecases/onboarding/get_user_type_model_from_enum_usecase.dart';
 import 'package:tium/presentation/home/screen/home_screen.dart';
 import 'package:tium/presentation/home/screen/plant_section/plant_section_list_screen.dart';
 import 'package:tium/presentation/home/screen/weather/juso_search_screen.dart';
@@ -83,17 +85,12 @@ class AppRouter {
 
       case Routes.userType:
         final args = settings.arguments as Map<String, dynamic>;
-        final userType = args['userType'] as UserType;
+        final userTypeModel = args['userType'] as UserTypeModel;
         final isFirstRun = args['isFirstRun'] as bool;
         return MaterialPageRoute(
-          builder: (_) => BlocProvider(
-            create: (_) => locator<RecommendationBloc>()..add(
-              LoadUserRecommendations(userType: userType),
-            ),
-            child: OnboardingResultScreen(
-              userType: userType,
-              isFirstRun: isFirstRun,
-            ),
+          builder: (_) => OnboardingResultScreen(
+            userType: userTypeModel,
+            isFirstRun: isFirstRun,
           ),
         );
 
@@ -121,6 +118,7 @@ class AppRouter {
         final args = settings.arguments as Map<String, dynamic>;
         final plant = args['plant'] as UserPlant;
         return MaterialPageRoute(
+          settings: RouteSettings(name: Routes.myPlantDetail),
           builder: (_) => MyPlantDetailScreen(plant: plant),
         );
 

@@ -6,6 +6,7 @@ import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/components/custom_scaffold.dart';
 import 'package:tium/core/notification/local_notification_service.dart';
 import 'package:tium/core/routes/routes.dart';
+import 'package:tium/core/services/check_my_plant_detail.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/management/bloc/user_plant_bloc.dart';
 import 'package:tium/presentation/management/bloc/user_plant_event.dart';
@@ -21,6 +22,8 @@ class MyPlantDetailScreen extends StatefulWidget {
 
 class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
     with SingleTickerProviderStateMixin {
+  static String? _currentViewingPlantId; // 현재 보고 있는 식물의 ID
+
   late UserPlant _plant;
   bool _isButtonDisabled = false;
   bool _hasNotificationPermission = true;
@@ -32,8 +35,19 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
   void initState() {
     super.initState();
     _plant = widget.plant;
+    _currentViewingPlantId = _plant.id; // 식물 ID 설정
+    CheckMyPlantDetail().setCurrentPlantId(_currentViewingPlantId);
     _checkWateringCooldown(); // 물주기 여부 확인 (today)
     _checkNotificationPermission(); // 알림 허용여부 확인
+
+    // 현재 식물에 대한 알림이 있다면 취소
+    if (_plant.notificationId != null) {
+      print("현재 내 식물의 notification_id가 존재합니다 ${_plant.notificationId}");
+      LocalNotificationService().cancelNotification(_plant.notificationId!); // 알림 삭제
+      debugPrint("🔔 식물 상세 화면 진입: 알림 ID ${_plant.notificationId} 삭제");
+    } else {
+      print("현재 식물의 알림이 없음");
+    }
 
     _waterDropController = AnimationController(
       vsync: this,
@@ -52,7 +66,9 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
 
   @override
   void dispose() {
+    CheckMyPlantDetail().clear();
     _waterDropController.dispose();
+    _currentViewingPlantId = null; // 식물 ID 해제
     super.dispose();
   }
 
@@ -252,7 +268,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
             });
           }
         },
-        child: Text('수정하기',
+        child: Text('수정',
             style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.hintColor, fontWeight: FontWeight.w300)),
       ),
