@@ -5,7 +5,9 @@ import 'package:tium/core/app_info/app_info_cubit.dart';
 import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
+import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/home/bloc/user_type/user_type_cubit.dart';
+import 'package:tium/presentation/home/widgets/location_choice_dialog.dart';
 
 class MyPageScreen extends StatelessWidget {
   const MyPageScreen({super.key});
@@ -75,6 +77,15 @@ class MyPageScreen extends StatelessWidget {
                         onCancel: () {},
                       );
                     }
+                  },
+                ),
+                _buildListTile(
+                  context: context,
+                  title: '위치 설정',
+                  onTap: () {
+                    showLocationChoiceDialog(
+                      context,
+                    );
                   },
                 ),
                 Divider(

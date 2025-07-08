@@ -19,6 +19,18 @@ class _JusoSearchScreenState extends State<JusoSearchScreen> {
   final _controller = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    context.read<JusoSearchCubit>().clearSearch();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.clear();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return CustomScaffold(
@@ -28,8 +40,7 @@ class _JusoSearchScreenState extends State<JusoSearchScreen> {
       body: BlocListener<LocationBloc, LocationState>(
         listener: (context, state) {
           if (state is LocationLoadSuccess) {
-            print("state : ${state.location.dong}");
-            Navigator.pop(context); // 위치 반환 후 pop
+            Navigator.pop(context, state.location); // 위치 반환 후 pop
           } else if (state is LocationLoadFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),

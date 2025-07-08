@@ -46,17 +46,24 @@ class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
           return ''; // 찾지 못하면 빈 문자열 반환 (오류 방지)
         }
 
-        final user = UserModel(
+        // 기존 사용자 정보 불러오기
+        final existingUser = await UserPrefs.getUser();
+
+        final updatedUser = (existingUser ?? UserModel(
+          experienceLevel: '',
+          locationPreference: '',
+          careTime: '',
+          interestTags: '',
+          userType: UserType.sunnyLover, // 기본값, 실제로는 아래에서 덮어씀
+        )).copyWith(
           experienceLevel: getAnswerTextById(event.answers['experience_level'] as int),
           locationPreference: getAnswerTextById(event.answers['location_preference'] as int),
           careTime: getAnswerTextById(event.answers['care_time'] as int),
           interestTags: getAnswerTextById(event.answers['interest_tags'] as int),
           userType: userTypeModel.toEnum(),
-          indoorPlants: const [],
-          outdoorPlants: const [],
         );
 
-        await UserPrefs.saveUser(user); // HIVE 저장
+        await UserPrefs.saveUser(updatedUser); // HIVE 저장
         emit(OnboardingSaved(userTypeModel)); // 저장 시, Server에서 상세 내용 받아오고, 저장하기
       } catch (e) {
         emit(OnboardingError(e.toString()));

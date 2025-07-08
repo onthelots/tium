@@ -97,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _user = _user?.copyWith(location: userLocation);
             _loading = true;
           });
+          // 유저 정보 저장 (+ 위치정보)
           await UserPrefs.saveUser(_user!);
           await _fetchAll();
         } else if (state is LocationLoadFailure) {
@@ -157,7 +158,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 titleSpacing: 0, // 이건 0으로 맞춰두는 것이 좋음
-
               ),
 
               /// 날씨
@@ -255,46 +255,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } else {
       showLocationChoiceDialog(
         context,
-        onUseCurrent: () => _getCurrentLocationAndUpdate(context),
-      );
-    }
-  }
-
-  /// GPS 기반 위치정보 (location 전체 로직)
-  Future<void> _getCurrentLocationAndUpdate(BuildContext ctx) async {
-    try {
-      if (!await Geolocator.isLocationServiceEnabled()) {
-        if (!ctx.mounted) return;
-        ScaffoldMessenger.of(ctx).showSnackBar(
-          const SnackBar(content: Text('휴대폰 위치 서비스(GPS)가 꺼져 있습니다.')),
-        );
-        return;
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
-        permission = await Geolocator.requestPermission();
-        if (permission != LocationPermission.whileInUse && permission != LocationPermission.always) {
-          if (!ctx.mounted) return;
-          ScaffoldMessenger.of(ctx).showSnackBar(
-            const SnackBar(content: Text('위치 권한이 거부되었습니다.')),
-          );
-          return;
-        }
-      }
-
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
-      );
-
-      if (!ctx.mounted) return;
-      ctx.read<LocationBloc>().add(
-        LocationByLatLngRequested(position.latitude, position.longitude),
-      );
-    } catch (e) {
-      if (!ctx.mounted) return;
-      ScaffoldMessenger.of(ctx).showSnackBar(
-        SnackBar(content: Text('위치 정보를 가져오지 못했습니다: $e')),
       );
     }
   }

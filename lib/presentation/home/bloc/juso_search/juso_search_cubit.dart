@@ -33,4 +33,8 @@ class JusoSearchCubit extends Cubit<JusoSearchState> {
       emit(JusoSearchError('검색 실패: $e'));
     }
   }
+
+  void clearSearch() {
+    emit(JusoSearchInitial());
+  }
 }
