@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:tium/components/custom_toast_message.dart';
+import 'package:tium/components/image_utils.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
 import 'package:tium/data/models/plant/plant_detail_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
@@ -34,7 +35,7 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
   bool _isNameValid = false;
   bool _isDuplicateName = false;
 
-  File? _pickedImageFile;
+  String? _pickedImageRelativePath; // File? -> String? (상대 경로)
 
   @override
   void initState() {
@@ -116,6 +117,7 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
 
     final user = await UserPrefs.getUser();
     if (user == null) {
+      if (!mounted) return; // mounted 체크 추가
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('사용자 정보를 불러올 수 없습니다.')),
       );
@@ -133,8 +135,6 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
       return;
     }
 
-    final imageFileName = _pickedImageFile;
-
     final newPlant = UserPlant(
       id: Uuid().v4(),
       name: name,
@@ -146,7 +146,7 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
       lastWateredDate: DateTime.now(),
       wateringIntervalDays: widget.plant.wateringInfo.minDays,
       notificationId: null,
-      imagePath: imageFileName?.path,
+      imagePath: _pickedImageRelativePath, // 상대 경로 할당
       locations: _selectedLocations,
       cntntsNo: widget.plant.id,
     );
@@ -155,20 +155,6 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
     Navigator.of(context).pop();
 
     showToastMessage(message: '등록이 완료되었습니다.');
-  }
-
-  Widget _buildPlaceholder() {
-    final theme = Theme.of(context);
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.camera_alt_outlined, size: 36, color: theme.colorScheme.primary),
-          const SizedBox(height: 8),
-          Text('사진 선택', style: theme.textTheme.bodyMedium),
-        ],
-      ),
-    );
   }
 
   @override
@@ -198,8 +184,8 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
                       ),
                       const SizedBox(height: 28),
                       GestureDetector(
-                        onTap: () => pickImageFromGallery(context, (file) {
-                          setState(() => _pickedImageFile = file);
+                        onTap: () => pickImageFromGallery(context, (relativePath) {
+                          setState(() => _pickedImageRelativePath = relativePath);
                         }),
                         child: Container(
                           height: 160,
@@ -208,12 +194,23 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
                             border: Border.all(color: theme.colorScheme.primary, width: 1.5),
                             color: theme.colorScheme.surfaceVariant.withOpacity(0.1),
                           ),
-                          child: _pickedImageFile != null
-                              ? ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.file(_pickedImageFile!, fit: BoxFit.cover),
-                          )
-                              : _buildPlaceholder(),
+                          child: _pickedImageRelativePath != null
+                              ? FutureBuilder<File>(
+                                  future: getImageFileFromRelativePath(_pickedImageRelativePath!),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                                      return ClipRRect(
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: Image.file(snapshot.data!, fit: BoxFit.cover),
+                                      );
+                                    } else if (snapshot.hasError) {
+                                      return buildImagePlaceholder(context);
+                                    } else {
+                                      return const Center(child: CircularProgressIndicator());
+                                    }
+                                  },
+                                )
+                              : buildImagePlaceholder(context),
                         ),
                       ),
                       const SizedBox(height: 28),

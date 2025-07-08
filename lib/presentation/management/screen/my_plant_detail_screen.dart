@@ -2,8 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/components/custom_scaffold.dart';
+import 'package:tium/components/image_utils.dart';
 import 'package:tium/core/notification/local_notification_service.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/core/services/check_my_plant_detail.dart';
@@ -308,23 +311,39 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
                 borderRadius: BorderRadius.circular(16),
                 child: (() {
                   if (_plant.imagePath != null) {
-                    final file = File(_plant.imagePath!);
-                    if (file.existsSync()) {
-                      return Image.file(
-                        file,
-                        height: 260,
-                        width: double.infinity,
-                        fit: BoxFit.cover,
-                      );
-                    } else {
-                      return Container(
-                        height: 260,
-                        width: double.infinity,
-                        color: Colors.grey[300],
-                        child: const Icon(Icons.local_florist, size: 100, color: Colors.white),
-                      );
-                    }
+                    debugPrint('🔍 MyPlantDetailScreen: imagePath = ${_plant.imagePath}');
+                    return FutureBuilder<File>(
+                      future: getImageFileFromRelativePath(_plant.imagePath!),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                          debugPrint('✅ MyPlantDetailScreen: Image file exists at ${snapshot.data!.path}');
+                          return Image.file(
+                            snapshot.data!,
+                            height: 260,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        } else if (snapshot.hasError) {
+                          debugPrint('❌ MyPlantDetailScreen: Error loading image: ${snapshot.error}');
+                          return Container(
+                            height: 260,
+                            width: double.infinity,
+                            color: Colors.grey[300],
+                            child: const Icon(Icons.local_florist, size: 100, color: Colors.white),
+                          );
+                        } else {
+                          debugPrint('ℹ️ MyPlantDetailScreen: Loading image...');
+                          return Container(
+                            height: 260,
+                            width: double.infinity,
+                            color: Colors.grey[300],
+                            child: const Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                      },
+                    );
                   } else {
+                    debugPrint('ℹ️ MyPlantDetailScreen: imagePath is null');
                     return Container(
                       height: 260,
                       width: double.infinity,
