@@ -19,11 +19,7 @@ class PlantDetailBloc extends Bloc<PlantDetailEvent, PlantDetailState> {
     try {
       final detail = await getPlantDetail(
         id: event.id,
-        category: event.category,
-        name: event.name,
       );
-
-      print("detail : ${detail.wateringInfo}");
 
       emit(PlantDetailLoaded(detail));
     } catch (e, stack) {
@@ -33,4 +29,3 @@ class PlantDetailBloc extends Bloc<PlantDetailEvent, PlantDetailState> {
     }
   }
 }
-

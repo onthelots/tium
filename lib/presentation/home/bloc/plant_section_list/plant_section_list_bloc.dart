@@ -15,6 +15,7 @@ class FilteredPlantListBloc extends Bloc<FilteredPlantListEvent, FilteredPlantLi
 
     try {
       final plants = await getPlantsByFilter(event.filter, size: event.limit);
+      print("나타나는 식물 갯수 : ${plants.length}");
       emit(FilteredPlantListLoaded(plants));
     } catch (e) {
       emit(FilteredPlantListError('식물 정보를 불러오지 못했습니다.'));

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tium/components/custom_scaffold.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/data/models/user/user_type_model.dart';
 
@@ -16,14 +17,9 @@ class OnboardingResultScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: theme.dividerColor,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        centerTitle: true,
-        title: Text('내 식물 케어 유형', style: theme.textTheme.labelLarge,),
-      ),
+    return CustomScaffold(
+      appBarVisible: true,
+      title: '내 식물 케어 유형',
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
         child: SingleChildScrollView(

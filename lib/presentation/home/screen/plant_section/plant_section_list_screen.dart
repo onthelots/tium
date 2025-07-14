@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/components/custom_cached_image.dart';
+import 'package:tium/components/custom_scaffold.dart';
 import 'package:tium/core/routes/routes.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 import 'package:tium/presentation/home/bloc/plant_section_list/plant_section_list_bloc.dart';
 import 'package:tium/presentation/home/bloc/plant_section_list/plant_section_list_event.dart';
 import 'package:tium/presentation/home/bloc/plant_section_list/plant_section_list_state.dart';
@@ -15,7 +16,7 @@ class PlantSectionListScreen extends StatefulWidget {
   const PlantSectionListScreen({
     required this.title,
     required this.filter,
-    this.limit = 20,
+    required this.limit,
     super.key,
   });
 
@@ -39,14 +40,9 @@ class _PlantSectionListScreenState extends State<PlantSectionListScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: theme.dividerColor,
-        scrolledUnderElevation: 0,
-        elevation: 0,
-        centerTitle: true,
-        title: Text(widget.title, style: theme.textTheme.labelLarge,),
-      ),
+    return CustomScaffold(
+      appBarVisible: true,
+      title: widget.title,
       body: BlocBuilder<FilteredPlantListBloc, FilteredPlantListState>(
         builder: (context, state) {
           if (state is FilteredPlantListLoading) {
@@ -71,7 +67,6 @@ class _PlantSectionListScreenState extends State<PlantSectionListScreen> {
             }
 
             return ListView.separated(
-              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
               itemCount: plants.length,
               separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
@@ -90,7 +85,7 @@ class _PlantSectionListScreenState extends State<PlantSectionListScreen> {
 
 
 class _PlantListTile extends StatelessWidget {
-  final PlantSummary plant;
+  final PlantSummaryApiModel plant;
 
   const _PlantListTile({required this.plant});
 
@@ -100,27 +95,27 @@ class _PlantListTile extends StatelessWidget {
     final imageUrl = plant.highResImageUrl ?? plant.imageUrl;
     return InkWell(
       onTap: () {
+        print("plant id : ${plant.id}");
         Navigator.pushNamed(
           context,
           Routes.plantDetail,
           arguments: {
             'id': plant.id,
+            'name': plant.name,
             'category': plant.category,
             'imageUrl': plant.highResImageUrl ?? plant.imageUrl,
-            'name': plant.name,
           },
         );
       },
-      borderRadius: BorderRadius.circular(12),
       child: Ink(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
               child: SizedBox(
-                width: 80,
-                height: 80,
+                width: 50,
+                height: 50,
                 child: buildCachedImage(imageUrl, fit: BoxFit.cover),
               ),
             ),
@@ -129,7 +124,6 @@ class _PlantListTile extends StatelessWidget {
               child: Text(
                 plant.name,
                 style: theme.textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
                   letterSpacing: -0.5,
                 ),
                 maxLines: 1,
@@ -137,7 +131,6 @@ class _PlantListTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            const Icon(Icons.arrow_forward_ios, size: 16),
           ],
         ),
       ),

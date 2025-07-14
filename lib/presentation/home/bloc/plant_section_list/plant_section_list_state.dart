@@ -1,4 +1,4 @@
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 
 abstract class FilteredPlantListState {}
 
@@ -7,7 +7,7 @@ class FilteredPlantListInitial extends FilteredPlantListState {}
 class FilteredPlantListLoading extends FilteredPlantListState {}
 
 class FilteredPlantListLoaded extends FilteredPlantListState {
-  final List<PlantSummary> plants;
+  final List<PlantSummaryApiModel> plants;
 
   FilteredPlantListLoaded(this.plants);
 }

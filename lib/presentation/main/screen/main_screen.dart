@@ -25,7 +25,6 @@ class _MainScreenState extends State<MainScreen> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    context.read<SearchBloc>().add(SearchLoadedRequested());
 
     // 초기 알림 페이로드가 있는지 확인하고 처리
     final initialPlantId = LocalNotificationService()

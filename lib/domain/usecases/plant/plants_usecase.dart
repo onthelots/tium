@@ -1,48 +1,24 @@
-import 'package:tium/data/datasources/plant/dry_garden_remote_datasource.dart';
 import 'package:tium/data/datasources/plant/garden_remote_datasource.dart';
-import 'package:tium/data/models/plant/plant_detail_model.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_detail_api_model.dart'; // Import new API model
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 import 'package:tium/data/models/plant_preference/plant_preference.dart';
-import 'package:tium/domain/repositories/plant/plant_repository.dart';
 
-class GetDryGardenPlants {
-  final PlantRepository repo;
-  GetDryGardenPlants(this.repo);
-  Future<List<PlantSummary>> call() => repo.dryGardenPlants();
-}
+import 'package:tium/domain/repositories/plant/plant_repository.dart';
 
 class GetIndoorGardenPlants {
   final PlantRepository repo;
   GetIndoorGardenPlants(this.repo);
-  Future<List<PlantSummary>> call() => repo.indoorGardenPlants();
+  Future<List<PlantSummaryApiModel>> call() => repo.indoorGardenPlants();
 }
 
 class GetPlantDetail {
   GetPlantDetail(this._repo);
   final PlantRepository _repo;
 
-  Future<PlantDetail> call({
+  Future<PlantDetailApiModel> call({ // Change return type
     required String id,
-    required PlantCategory category,
-    required String name, // 👈 추가
   }) {
-    return _repo.detail(id, category, name: name); // 👈 전달
-  }
-}
-
-class GetRecommendedPlants {
-  final PlantRepository repo;
-  GetRecommendedPlants(this.repo);
-
-  Future<List<PlantSummary>> call(UserPlantPreference pref) {
-    return repo.getPlantsFiltered(
-      lightChkVal: pref.lightChkVal,
-      lefcolrChkVal: pref.lefcolrChkVal,
-      grwhstleChkVal: pref.grwhstleChkVal,
-      ignSeasonChkVal: pref.ignSeasonChkVal,
-      priceType: pref.priceType,
-      waterCycleSel: pref.waterCycleSel,
-    );
+    return _repo.detail(id);
   }
 }
 
@@ -50,7 +26,7 @@ class GetRecommendedPlantsByFilter {
   final PlantRepository repo;
   GetRecommendedPlantsByFilter(this.repo);
 
-  Future<List<PlantSummary>> call(Map<String, String> filter, {int size = 10}) {
+  Future<List<PlantSummaryApiModel>> call(Map<String, String> filter, {int size = 10}) {
     return repo.getPlantsFiltered(
       lightChkVal: filter['lightChkVal'],
       lefcolrChkVal: filter['lefcolrChkVal'],

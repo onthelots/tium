@@ -1,62 +1,43 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:tium/components/custom_toast_message.dart';
 import 'package:tium/core/di/locator.dart';
-import 'package:tium/core/services/check_my_plant_detail.dart';
-import 'package:tium/data/models/plant/plant_detail_model.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
+import 'package:tium/data/models/plant/plant_category_model.dart';
+import 'package:tium/data/models/plant/plant_detail_api_model.dart'; // New API model
 import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_bloc.dart';
 import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_event.dart';
 import 'package:tium/presentation/plant/bloc/plant_detail_bloc/plant_detail_state.dart';
 import 'package:tium/presentation/plant/screen/plant_register_modal.dart';
+import 'package:tium/presentation/plant/utils/plant_detail_utils.dart';
+import 'package:tium/presentation/plant/utils/plant_tag_utils.dart';
+import 'package:tium/presentation/plant/widgets/plant_detail_info_section.dart';
+import 'package:tium/presentation/plant/widgets/plant_grid_info_card.dart';
 
 class PlantDetailScreen extends StatelessWidget {
-  final String plantId;
+  final String name; // 식물 이름 (상세보기에는 없음)
+  final String id; // 코드
   final PlantCategory category;
-  final String imageUrl;
-  final String name;
+  final String imageUrl; // 이미지
 
   const PlantDetailScreen({
     Key? key,
-    required this.plantId,
+    required this.name,
+    required this.id,
     required this.category,
     required this.imageUrl,
-    required this.name,
   }) : super(key: key);
 
-  void _showRegisterModal(BuildContext context, PlantDetail plant) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      enableDrag: false,
-      isDismissible: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        final screenHeight = MediaQuery.of(context).size.height;
-        final modalHeight = screenHeight * 0.8; // 화면 높이의 60%
-
-        return SizedBox(
-          height: modalHeight,
-          child: Padding(
-            padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-            child: PlantRegisterModal(plant: plant),
-          ),
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return BlocProvider(
-      create: (_) => locator<PlantDetailBloc>()
+      create: (_) =>
+      locator<PlantDetailBloc>()
         ..add(PlantDetailRequested(
-          id: plantId,
-          category: category,
-          name: name,
+          id: id,
         )),
       child: Scaffold(
         body: BlocBuilder<PlantDetailBloc, PlantDetailState>(
@@ -70,23 +51,24 @@ class PlantDetailScreen extends StatelessWidget {
             }
 
             if (state is PlantDetailLoaded) {
-              final plant = state.plant;
+              final PlantDetailApiModel plant = state.plant;
 
-              print("식물 이름 : ${plant.name}");
-              print("식물 Id : ${plant.id}");
+              // 특징 태그 생성
+              final featureTags = PlantTagUtils.generateTags(plant);
+
+              // 특별관리 정보
+              final hasSpecialManageInfo = (plant.speclmanageInfo ?? '')
+                  .isNotEmpty;
 
               return CustomScrollView(
-                physics: const BouncingScrollPhysics(parent: AlwaysScrollableScrollPhysics()),
                 slivers: [
                   SliverAppBar(
-                    automaticallyImplyLeading: false, // ← 기본 백버튼 제거
-                    pinned: true,
-                    stretch: true,
-                    stretchTriggerOffset: 100,
                     expandedHeight: 300,
-                    backgroundColor: theme.scaffoldBackgroundColor,
+                    pinned: true,
+                    automaticallyImplyLeading: false, // 백버튼 제거
+                    stretchTriggerOffset: 100,
+                    backgroundColor: theme.primaryColor,
                     leading: null, // 기본 자동 생기지 않음
-
                     actions: [
                       Container(
                         margin: const EdgeInsets.only(right: 15,),
@@ -103,112 +85,261 @@ class PlantDetailScreen extends StatelessWidget {
                         ),
                       ),
                     ],
-
                     flexibleSpace: FlexibleSpaceBar(
                       stretchModes: const [
                         StretchMode.zoomBackground,
                         StretchMode.fadeTitle,
                       ],
-                      titlePadding: const EdgeInsets.only(left: 16, bottom: 16),
-                      title: Text(
-                        plant.name,
-                        textAlign: TextAlign.left,
-                        style: theme.textTheme.titleLarge?.copyWith(
-                          color: Colors.white,
-                          shadows: const [
-                            Shadow(
-                              blurRadius: 8,
-                              color: Colors.black54,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                      ),
-                      background: Hero(
-                        tag: plant.id,
-                        child: Stack(
-                          fit: StackFit.expand,
-                          children: [
-                            if (imageUrl.isNotEmpty)
-                              CachedNetworkImage(
-                                imageUrl: imageUrl,
-                                fit: BoxFit.cover,
-                                placeholder: (context, url) => Container(
-                                  color: Colors.grey[300],
-                                  child: const Center(child: CircularProgressIndicator()),
-                                ),
-                                errorWidget: (context, url, error) => const Icon(
-                                  Icons.broken_image,
-                                  size: 100,
-                                  color: Colors.grey,
-                                ),
-                              )
-                            else
-                              Container(color: Colors.grey[300]),
-                            // 그라데이션 추가
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.black.withOpacity(0.65),
-                                    Colors.black.withOpacity(0.35),
-                                    Colors.black.withOpacity(0.15),
-                                    Colors.black.withOpacity(0.05),
-                                    Colors.black.withOpacity(0.4),
-                                  ],
-                                  stops: [0.0, 0.2, 0.5, 0.8, 1.0],
-                                  tileMode: TileMode.clamp,
-                                ),
+                      background: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          if (imageUrl.isNotEmpty)
+                            CachedNetworkImage(
+                              imageUrl: imageUrl,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                color: Colors.grey[300],
+                                child: const Center(child: CircularProgressIndicator()),
+                              ),
+                              errorWidget: (context, url, error) => const Icon(
+                                Icons.broken_image,
+                                size: 100,
+                                color: Colors.grey,
+                              ),
+                            )
+                          else
+                            Container(color: Colors.grey[300]),
+                          // 그라데이션 추가
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: [
+                                  Colors.black.withOpacity(0.4),
+                                  Colors.black.withOpacity(0.3),
+                                  Colors.black.withOpacity(0.15),
+                                  Colors.black.withOpacity(0.4),
+                                  Colors.black.withOpacity(0.5),
+                                ],
+                                stops: [0.0, 0.2, 0.5, 0.8, 1.0],
+                                tileMode: TileMode.clamp,
                               ),
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                      centerTitle: false,
+                      titlePadding: const EdgeInsets.only(left: 16, bottom: 12),
+                      title: SafeArea(
+                        bottom: false,
+                        child: OverflowBox(
+                          alignment: Alignment.bottomLeft,
+                          maxHeight: double.infinity,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                name,
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                  height: 1.2,
+                                  color: Colors.white,
+                                  shadows: const [
+                                    Shadow(blurRadius: 8, color: Colors.black54, offset: Offset(0, 2)),
+                                  ],
+                                ),
+                              ),
+                              Text(
+                                plant.plntbneNm ?? '',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontSize: 14,
+                                  height: 1.2,
+                                  color: Colors.white70,
+                                  shadows: const [
+                                    Shadow(blurRadius: 8, color: Colors.black54, offset: Offset(0, 2)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        Text(
-                          '기본 정보',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                        ),
 
-                        const SizedBox(height: 15),
-                        // 기본 정보 박스
-                        _HighlightInfoRow(
-                          difficulty: difficultyLevelToString(plant.difficultyLevel),
-                          watering: "${plant.wateringInfo.minDays}일 ~ ${plant.wateringInfo.maxDays}일",
-                        ),
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
 
-                        const SizedBox(height: 25),
+                          // 특징 태그
+                          if (featureTags.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+                              child: Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: featureTags.map((tag) {
+                                  return Chip(
+                                    label: Text(
+                                      tag.label,
+                                      style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey[600])
+                                    ),
+                                    backgroundColor: Colors.grey[200],
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(50),
+                                      side: BorderSide(color: theme.dividerColor, width: 0.5),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                  );
+                                }).toList(),
+                              )
+                            ),
 
-                        Text(
-                          '상세 정보',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                        ),
+                          // 간단한 정보글
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+                            child: Text(
+                              PlantUtils.generateBriefInfo(plant),
+                              style: theme.textTheme.titleMedium,
+                            ),
+                          ),
 
-                        const SizedBox(height: 15),
+                          // 특별 관리 정보 (접기/펴기)
+                          if (hasSpecialManageInfo)
+                          // 특별 관리 정보 (접기/펴기)
+                            if (hasSpecialManageInfo)
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                                child: Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  elevation: 0,
+                                  child: Theme(
+                                    data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                                    child: ExpansionTile(
+                                      childrenPadding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+                                      title: Row(
+                                        children: [
+                                          Icon(Icons.info_rounded, color: theme.hintColor,),
+                                          SizedBox(width: 10.0,),
+                                          Text(
+                                            '관리 Tip',
+                                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                          ),
+                                        ],
+                                      ),
+                                      collapsedShape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      backgroundColor: theme.colorScheme.secondary.withOpacity(0.1),
+                                      collapsedBackgroundColor: theme.cardColor,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                                          child: Text(
+                                            plant.speclmanageInfo ?? "",
+                                            style: theme.textTheme.labelMedium,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
 
-                        // 상세 정보 박스
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _InfoCard(label: '잘 자라는 온도 및 특징', value: parseHtmlBreaks(plant.growthInfo), icon: Icons.eco),
-                            const SizedBox(height: 10),
-                            _InfoCard(label: '키우는 방법', value: parseHtmlBreaks(plant.propagationMethod), icon: Icons.grass),
-                            const SizedBox(height: 10),
-                            _InfoCard(label: '빛을 어떻게, 얼마나 봐야해요?', value: mapSunlightInfo(plant.sunlightInfo), icon: Icons.wb_sunny),
-                            const SizedBox(height: 10),
-                            _InfoCard(label: '물은 얼마나 자주줘야 해요?', value: parseHtmlBreaks(plant.wateringInfo.description), icon: Icons.water_drop),
-                            const SizedBox(height: 10),
-                            _InfoCard(label: '얼마나 빨리 자라나요?', value: growthSpeedToString(plant.growthSpeed), icon: Icons.speed),
-                          ],
-                        ),
-                      ]),
+                          // 상세 내용
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                            child: GridView.count(
+                              padding: EdgeInsets.zero,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              childAspectRatio: 1.2, // 카드 높이 확보용
+                              // Adjust as needed
+                              children: [
+                                PlantGridInfoCard(
+                                  title: '물주기',
+                                  value: PlantUtils
+                                      .mapWaterCycleCodeToDescription(
+                                      PlantUtils.getCurrentSeasonWaterCycleCode(
+                                          plant)),
+                                  icon: Icons.water_drop,
+                                  onTap: (){},
+                                ),
+                                PlantGridInfoCard(
+                                  title: '광도',
+                                  value: PlantUtils.mapLightDemandNames(
+                                      plant.lighttdemanddoCodeNm),
+                                  icon: Icons.wb_sunny,
+                                  onTap: (){},
+                                ),
+                                PlantGridInfoCard(
+                                  title: '관리 수준',
+                                  value: PlantUtils.mapManageDemandLevel(
+                                      plant.managedemanddoCodeNm),
+                                  icon: Icons.star_half,
+                                  onTap: (){},
+                                ),
+                                PlantGridInfoCard(
+                                  title: '생육 온도',
+                                  value: plant.grwhTpCodeNm ?? '정보 없음',
+                                  icon: Icons.thermostat,
+                                  onTap: (){},
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          Divider(
+                            height: 20.0,
+                            thickness: 10.0,
+                            color: theme.dividerColor,
+                          ),
+
+                          const SizedBox(height: 10),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                            child: Column(
+                              children: [
+                                PlantDetailInfoSection(
+                                  title: '원산지',
+                                  value: plant.orgplceInfo ?? '정보 없음',
+                                  icon: Icons.location_on,
+                                ),
+                                PlantDetailInfoSection(
+                                  title: '과명',
+                                  value: plant.fmlCodeNm ?? '정보 없음',
+                                  icon: Icons.category,
+                                ),
+                                PlantDetailInfoSection(
+                                  title: '생육 형태',
+                                  value: PlantUtils.mapGrowthStyleNames(
+                                      plant.grwhstleCodeNm) ?? '정보 없음',
+                                  icon: Icons.nature,
+                                ),
+                                PlantDetailInfoSection(
+                                  title: '습도',
+                                  value: plant.hdCodeNm ?? '정보 없음',
+                                  icon: Icons.opacity,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -222,24 +353,30 @@ class PlantDetailScreen extends StatelessWidget {
           builder: (context, state) {
             if (state is PlantDetailLoaded) {
               return Material(
-                color: theme.primaryColor.withOpacity(0.2), // 연한 primary 컬러 배경
+                color: Colors.black.withOpacity(0.8), // 연한 primary 컬러 배경
                 borderRadius: BorderRadius.circular(30), // 캡슐 모양 둥글게
                 child: InkWell(
                   borderRadius: BorderRadius.circular(30),
-                  onTap: () {
-                    _showRegisterModal(context, state.plant);
+                  onTap: () async {
+                    final user = await UserPrefs.getUser();
+                    if (user != null) {
+                      _showRegisterModal(context, state.plant);
+                    } else {
+                      showToastMessage(message: "유저 정보가 없어, 식물을 저장할 수 없어요");
+                    }
                   },
                   splashColor: theme.primaryColor.withOpacity(0.3),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 15),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.add, color: theme.primaryColor, size: 24),
+                        Icon(Icons.add, color: Colors.white, size: 24),
                         SizedBox(width: 8),
                         Text(
-                          '식물 등록',
-                          style: theme.textTheme.labelMedium
+                            '식물 등록',
+                            style: theme.textTheme.labelMedium?.copyWith(color: Colors.white)
                         ),
                       ],
                     ),
@@ -253,230 +390,56 @@ class PlantDetailScreen extends StatelessWidget {
       ),
     );
   }
-}
 
-class _InfoCard extends StatelessWidget {
-  final String label;
-  final String? value;
-  final IconData? icon;
-
-  const _InfoCard({
-    required this.label,
-    required this.value,
-    this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    if (value == null || value!.isEmpty) return const SizedBox.shrink();
-    final theme = Theme.of(context);
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (icon != null)
-            Padding(
-              padding: const EdgeInsets.only(right: 12.0),
-              child: Icon(icon, color: theme.focusColor, size: 24),
+  // 다이얼로그 표시 함수
+  void _showInfoDialog(BuildContext context, String title, String content) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('닫기'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
             ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.focusColor,
-                    letterSpacing: -0.2,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  value!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-String parseHtmlBreaks(String? input) {
-  if (input == null) return '';
-  return input.replaceAll(RegExp(r'<br\s*/?>', caseSensitive: false), '\n');
-}
-
-String difficultyLevelToString(DifficultyLevel level) {
-  switch (level) {
-    case DifficultyLevel.beginner:
-      return '초보자';
-    case DifficultyLevel.intermediate:
-      return '중급자';
-    case DifficultyLevel.advanced:
-      return '전문가';
-    default:
-      return '중급자';
-  }
-}
-
-String mapSunlightInfo(String? sunlightInfo) {
-  if (sunlightInfo == null || sunlightInfo.trim().isEmpty) return '광량 정보가 없습니다.';
-
-  final normalized = sunlightInfo.replaceAll(RegExp(r'\s+'), ''); // 공백 제거
-  // 각각 포함 여부 체크
-  final hasLow = normalized.contains('낮은광도(300~800Lux)');
-  final hasMid = normalized.contains('중간광도(800~1,500Lux)');
-  final hasHigh = normalized.contains('높은광도(1,500~10,000Lux)');
-
-  // 미리 정의한 조합에 따라 친숙한 문구 반환
-  if (hasLow && hasMid && hasHigh) {
-    return '어두운 곳부터 밝은 곳까지 모두 잘 자라요';
-  }
-  if (!hasLow && hasMid && hasHigh) {
-    return '밝은 실내와 햇빛 좋은 곳에서 잘 자라요';
-  }
-  if (hasLow && hasMid && !hasHigh) {
-    return '햋빛 상관없이 모든 환경에서 잘 자라요';
-  }
-  if (hasLow && !hasMid && hasHigh) {
-    return '햋빛 상관없이 모든 환경에서 잘 자라요';
-  }
-  if (hasLow && !hasMid && !hasHigh) {
-    return '어두운 실내에서도 잘 자라요';
-  }
-  if (!hasLow && hasMid && !hasHigh) {
-    return '밝은 실내가 좋아요';
-  }
-  if (!hasLow && !hasMid && hasHigh) {
-    return '햇빛이 잘 드는 곳이 필요해요';
-  }
-
-  // 그 외에는 원본 텍스트 그대로, 줄바꿈 처리만 함
-  return parseHtmlBreaks(sunlightInfo);
-}
-
-
-String growthSpeedToString(GrowthSpeed speed) {
-  switch (speed) {
-    case GrowthSpeed.slow:
-      return '느림';
-    case GrowthSpeed.medium:
-      return '보통';
-    case GrowthSpeed.fast:
-      return '빠름';
-    default:
-      return '정보 없음';
-  }
-}
-
-// 광도
-class LuxDescriptionHelper {
-  static String fromLightDemandCodes(List<String> codes) {
-    final hasLow = codes.contains('055001');
-    final hasMid = codes.contains('055002');
-    final hasHigh = codes.contains('055003');
-
-    // --- 3개 다 있는 경우
-    if (hasLow && hasMid && hasHigh) {
-      return "어두운 곳부터 햇빛 잘 드는 곳까지 모두 잘 자라요 🌥️☀️";
-    }
-
-    // --- 중 + 고
-    if (!hasLow && hasMid && hasHigh) {
-      return "밝은 실내나 햇빛 좋은 곳이 좋아요 🌤️☀️";
-    }
-
-    // --- 저 + 중
-    if (hasLow && hasMid && !hasHigh) {
-      return "어두운 실내부터 밝은 실내까지 잘 자라요 🌥️🌤️";
-    }
-
-    // --- 고 + 저
-    if (hasLow && !hasMid && hasHigh) {
-      return "다양한 환경에서 잘 자라요 🌥️☀️";
-    }
-
-    // --- 단일
-    if (hasLow && !hasMid && !hasHigh) {
-      return "어두운 실내에서도 잘 자라요 🌥️";
-    }
-
-    if (!hasLow && hasMid && !hasHigh) {
-      return "밝은 실내가 좋아요 🌤️";
-    }
-
-    if (!hasLow && !hasMid && hasHigh) {
-      return "햇빛이 잘 드는 곳이 필요해요 ☀️";
-    }
-
-    // fallback
-    return "광량 정보가 부족해요 🌫️";
-  }
-}
-
-
-class _HighlightInfoRow extends StatelessWidget {
-  final String difficulty;
-  final String watering;
-
-  const _HighlightInfoRow({required this.difficulty, required this.watering});
-
-  @override
-  Widget build(BuildContext context) {
-
-    return Container(
-      child: Row(
-        children: [
-          _HighlightBox(label: '난이도', value: difficulty),
-          _HighlightBox(label: '물주기', value: watering),
-        ],
-      ),
-    );
-  }
-}
-
-class _HighlightBox extends StatelessWidget {
-  final String label;
-  final String value;
-
-  const _HighlightBox({
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-        margin: const EdgeInsets.symmetric(horizontal: 5),
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(label, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 6),
-            Text(value, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
           ],
-        ),
+        );
+      },
+    );
+  }
+
+  // 식물 등록 모달
+  void _showRegisterModal(BuildContext context, PlantDetailApiModel plant) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      enableDrag: false,
+      isDismissible: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
+      builder: (context) {
+        final screenHeight = MediaQuery
+            .of(context)
+            .size
+            .height;
+        final modalHeight = screenHeight * 0.8; // 화면 높이의 60%
+
+        return SizedBox(
+          height: modalHeight,
+          child: Padding(
+            padding: EdgeInsets.only(bottom: MediaQuery
+                .of(context)
+                .viewInsets
+                .bottom),
+            child: PlantRegisterModal(plant: plant),
+          ),
+        );
+      },
     );
   }
 }
-
