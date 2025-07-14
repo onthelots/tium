@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tium/core/routes/routes.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 import 'package:tium/domain/entities/plant/plant_section.dart';
 import 'package:tium/presentation/home/screen/plant_section/plant_section_card_large.dart';
 import 'package:tium/presentation/home/screen/plant_section/plant_section_card_small.dart';
@@ -81,9 +81,9 @@ class PlantSectionScreen extends StatelessWidget {
                         Routes.plantDetail,
                         arguments: {
                           'id': plant.id,
+                          'name': plant.name,
                           'category': plant.category,
                           'imageUrl': plant.highResImageUrl ?? plant.imageUrl,
-                          'name': plant.name,
                         },
                       );
                     },);
@@ -105,9 +105,10 @@ class PlantSectionScreen extends StatelessWidget {
                             Routes.plantDetail,
                             arguments: {
                               'id': plant.id,
-                              'category': plant.category,
-                              'imageUrl': plant.highResImageUrl ?? plant.imageUrl,
                               'name': plant.name,
+                              'category': plant.category,
+                              'imageUrl': plant.highResImageUrl ??
+                                  plant.imageUrl,
                             },
                           );
                         },);

@@ -19,11 +19,10 @@ class PlantDetailBloc extends Bloc<PlantDetailEvent, PlantDetailState> {
     try {
       final detail = await getPlantDetail(
         id: event.id,
-        category: event.category,
-        name: event.name,
       );
 
-      print("detail : ${detail.wateringInfo}");
+      // print("detail : ${detail.wateringInfo}"); // Removed or changed as PlantDetailApiModel does not have wateringInfo directly
+      print("detail name: ${detail.plntzrNm}"); // Example: print plant name
 
       emit(PlantDetailLoaded(detail));
     } catch (e, stack) {
@@ -33,4 +32,3 @@ class PlantDetailBloc extends Bloc<PlantDetailEvent, PlantDetailState> {
     }
   }
 }
-

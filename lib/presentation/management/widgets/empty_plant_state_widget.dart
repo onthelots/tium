@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 import 'package:tium/presentation/management/bloc/user_plant_bloc.dart';
 import 'package:tium/presentation/management/bloc/user_plant_event.dart';
 import 'package:tium/presentation/management/bloc/user_plant_state.dart';
@@ -76,13 +76,9 @@ class EmptyPlantStateWidget extends StatelessWidget {
   }
 
   void _onRegisterButtonPressed(BuildContext context) {
-    final allPlants = context.read<SearchBloc>().state is SearchLoaded
-        ? (context.read<SearchBloc>().state as SearchLoaded).indoorGarden
-        : <PlantSummary>[];
-
     showSearch(
       context: context,
-      delegate: PlantSearchDelegate(allPlants),
+      delegate: PlantSearchDelegate(),
     ).then((_) {
       context.read<UserPlantBloc>().add(LoadUserPlant());
     });

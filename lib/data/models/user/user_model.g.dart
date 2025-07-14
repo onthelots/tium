@@ -85,13 +85,18 @@ class UserPlantAdapter extends TypeAdapter<UserPlant> {
       cntntsNo: fields[12] as String,
       notificationId: fields[8] as int?,
       imagePath: fields[9] as String?,
+      waterCycleSpring: fields[13] as String?,
+      waterCycleSummer: fields[14] as String?,
+      waterCycleAutumn: fields[15] as String?,
+      waterCycleWinter: fields[16] as String?,
+      manageLevel: fields[17] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserPlant obj) {
     writer
-      ..writeByte(13)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.name)
       ..writeByte(1)
@@ -117,7 +122,17 @@ class UserPlantAdapter extends TypeAdapter<UserPlant> {
       ..writeByte(11)
       ..write(obj.id)
       ..writeByte(12)
-      ..write(obj.cntntsNo);
+      ..write(obj.cntntsNo)
+      ..writeByte(13)
+      ..write(obj.waterCycleSpring)
+      ..writeByte(14)
+      ..write(obj.waterCycleSummer)
+      ..writeByte(15)
+      ..write(obj.waterCycleAutumn)
+      ..writeByte(16)
+      ..write(obj.waterCycleWinter)
+      ..writeByte(17)
+      ..write(obj.manageLevel);
   }
 
   @override

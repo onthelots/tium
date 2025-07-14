@@ -3,16 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/core/constants/app_asset.dart';
-import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/helper/lat_lng_grid_converter.dart';
-import 'package:tium/core/notification/local_notification_service.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/data/models/user/user_model.dart';
-import 'package:tium/data/models/user/user_type_model.dart';
-import 'package:tium/domain/usecases/onboarding/get_user_type_model_from_enum_usecase.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
-import 'package:tium/presentation/home/bloc/location/location_search_event.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_state.dart';
 import 'package:tium/presentation/home/bloc/plant_section/plant_section_bloc.dart';
 import 'package:tium/presentation/home/bloc/plant_section/plant_section_event.dart';
@@ -24,7 +19,6 @@ import 'package:tium/presentation/home/widgets/home_search_header_delegate.dart'
 import 'package:tium/presentation/home/widgets/home_section_shimmer.dart';
 import 'package:tium/presentation/home/widgets/home_weather_header_delegate.dart';
 import 'package:tium/presentation/home/widgets/location_choice_dialog.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:tium/presentation/landing/landing_screen.dart';
 import 'plant_section/plant_section_screen.dart';
 
@@ -52,7 +46,6 @@ class _HomeScreenState extends State<HomeScreen> {
     if (_user?.location != null) {
       final loc = _user!.location!;
       final grid = LatLngGridConverter.latLngToGrid(loc.lat, loc.lng);
-      print("로드하기");
       context.read<WeatherBloc>().add(
         LoadWeather(areaCode: loc.areaCode, nx: grid.x, ny: grid.y),
       );
@@ -213,7 +206,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   arguments: {
                                     'title': title,
                                     'filter': filter,
-                                    'limit': 20,
+                                    'limit': 100,
                                   },
                                 );
                               },

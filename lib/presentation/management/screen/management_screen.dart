@@ -52,8 +52,6 @@ class _ManagementScreenState extends State<ManagementScreen> {
     final theme = Theme.of(context);
     final allPlants = user.indoorPlants;
 
-    print("allPlants : ${allPlants.length}");
-
     if (allPlants.isEmpty) {
       return const EmptyPlantStateWidget();
     }
@@ -122,8 +120,11 @@ class _ManagementScreenState extends State<ManagementScreen> {
                     },
                   );
                 } else {
-                  debugPrint('ℹ️ ManagementScreen: imagePath is null');
-                  return buildImagePlaceholder(context);
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    // TODO: - placeholder 사진
+                    child: Container(color: theme.disabledColor,),
+                  );
                 }
               })(),
             ),

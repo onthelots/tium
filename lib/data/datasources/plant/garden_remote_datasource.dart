@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:tium/core/dio/api_client.dart';
-import 'package:tium/data/models/plant/plant_detail_model.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_detail_api_model.dart'; // Import new API model
+import 'package:tium/data/models/plant/plant_summary_api_model.dart'; // Keep PlantSummary for now
 import 'package:xml2json/xml2json.dart';
 
 abstract class GardenRemoteDataSource {
-  Future<List<PlantSummary>> list({
-    int size,
+  Future<List<PlantSummaryApiModel>> list({
+    int? size,
     String? lightChkVal,
     String? lefcolrChkVal,
     String? grwhstleChkVal,
@@ -14,7 +14,7 @@ abstract class GardenRemoteDataSource {
     String? priceType,
     String? waterCycleSel,
   });
-  Future<PlantDetail> detail(String id, {required String name});
+  Future<PlantDetailApiModel> detail(String id); // Change return type
 }
 
 class GardenRemoteDataSourceImpl implements GardenRemoteDataSource {
@@ -24,7 +24,7 @@ class GardenRemoteDataSourceImpl implements GardenRemoteDataSource {
   GardenRemoteDataSourceImpl(this.client);
 
   @override
-  Future<List<PlantSummary>> list({
+  Future<List<PlantSummaryApiModel>> list({
     int? size,
     String? lightChkVal,
     String? lefcolrChkVal,
@@ -56,37 +56,32 @@ class GardenRemoteDataSourceImpl implements GardenRemoteDataSource {
 
     final items = itemsDynamic is List ? itemsDynamic : [itemsDynamic];
 
-    final plants = <PlantSummary>[];
+    final plants = <PlantSummaryApiModel>[];
 
     for (final item in items) {
       final map = item as Map<String, dynamic>;
-      final id = PlantSummary.getValue(map['cntntsNo']) ?? '';
+      final id = PlantSummaryApiModel.getValue(map['cntntsNo']) ?? '';
       final highRes = await fetchHighResImage(id);
-      plants.add(PlantSummary.fromIndoorGardenJson(map, highResImageUrl: highRes));
+      plants.add(PlantSummaryApiModel.fromIndoorGardenJson(map, highResImageUrl: highRes));
     }
 
     return plants;
   }
 
   @override
-  Future<PlantDetail> detail(String id, {required String name}) async {
+  Future<PlantDetailApiModel> detail(String id) async {
     final res = await client.get('/garden/gardenDtl', query: {'cntntsNo': id});
     _xml2json.parse(res.data as String);
-    final jsonString = _xml2json.toGData();
+    final jsonString = _xml2json.toParker(); // 또는 toGData() 사용 시 일관성 있게 선택
 
     final jsonMap = jsonDecode(jsonString);
     final item = jsonMap['response']?['body']?['item'];
 
-    // 고화질 이미지 추가로 fetch
-    final highResImage = await fetchHighResImage(id);
+    if (item == null) {
+      throw Exception('No detail found for id: $id');
+    }
 
-    final mappedItem = Map<String, dynamic>.fromEntries(
-      item.entries.map<MapEntry<String, dynamic>>(
-            (e) => MapEntry(e.key.toString(), PlantDetail.getValue(e.value)),
-      ),
-    );
-
-    return PlantDetail.fromIndoorGardenJson(mappedItem, highResImage: highResImage, name: name);
+    return PlantDetailApiModel.fromXmlJson(item as Map<String, dynamic>);
   }
 
   Future<String?> fetchHighResImage(String id) async {

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/components/custom_cached_image.dart';
 import 'package:tium/core/routes/routes.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 import 'package:tium/presentation/home/bloc/plant_section_list/plant_section_list_bloc.dart';
 import 'package:tium/presentation/home/bloc/plant_section_list/plant_section_list_event.dart';
 import 'package:tium/presentation/home/bloc/plant_section_list/plant_section_list_state.dart';
@@ -15,7 +15,7 @@ class PlantSectionListScreen extends StatefulWidget {
   const PlantSectionListScreen({
     required this.title,
     required this.filter,
-    this.limit = 20,
+    required this.limit,
     super.key,
   });
 
@@ -90,7 +90,7 @@ class _PlantSectionListScreenState extends State<PlantSectionListScreen> {
 
 
 class _PlantListTile extends StatelessWidget {
-  final PlantSummary plant;
+  final PlantSummaryApiModel plant;
 
   const _PlantListTile({required this.plant});
 
@@ -105,9 +105,9 @@ class _PlantListTile extends StatelessWidget {
           Routes.plantDetail,
           arguments: {
             'id': plant.id,
+            'name': plant.name,
             'category': plant.category,
             'imageUrl': plant.highResImageUrl ?? plant.imageUrl,
-            'name': plant.name,
           },
         );
       },

@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as path;
-import 'package:path_provider/path_provider.dart';
 import 'package:tium/components/custom_toast_message.dart';
 import 'package:tium/components/image_utils.dart';
 import 'package:tium/core/services/hive/onboarding/onboarding_prefs.dart';
-import 'package:tium/data/models/plant/plant_detail_model.dart';
+import 'package:tium/data/models/plant/plant_detail_api_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/presentation/management/bloc/user_plant_bloc.dart';
 import 'package:tium/presentation/management/bloc/user_plant_event.dart';
 import 'package:tium/presentation/management/utils/image_picker_helper.dart';
-import 'package:tium/presentation/plant/screen/plant_detail_screen.dart';
+import 'package:tium/presentation/plant/utils/plant_detail_utils.dart';
 import 'dart:io';
 import 'package:uuid/uuid.dart';
 
 class PlantRegisterModal extends StatefulWidget {
-  final PlantDetail plant;
+  final PlantDetailApiModel plant;
 
   const PlantRegisterModal({
     super.key,
@@ -40,7 +38,7 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
   @override
   void initState() {
     super.initState();
-    _nameController.text = widget.plant.name;
+    _nameController.text = widget.plant.plntzrNm ?? ''; // Use plntzrNm
     _checkNameValid(_nameController.text);
 
     _nameController.addListener(() {
@@ -138,17 +136,24 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
     final newPlant = UserPlant(
       id: Uuid().v4(),
       name: name,
-      scientificName: widget.plant.name,
-      difficulty: difficultyLevelToString(widget.plant.difficultyLevel),
-      wateringCycle: "${widget.plant.wateringInfo.minDays}~${widget.plant.wateringInfo.maxDays}일",
+      scientificName: widget.plant.plntbneNm ?? '',
+      // 기존 필드 유지 (PlantDetailApiModel에서 파생)
+      difficulty: widget.plant.managelevelCodeNm ?? '정보 없음', // managelevelCodeNm 사용
+      wateringCycle: PlantUtils.getCurrentSeasonWaterCycle(widget.plant), // 새로운 헬퍼 함수 사용
       isWateringNotificationOn: false,
       registeredDate: DateTime.now(),
       lastWateredDate: DateTime.now(),
-      wateringIntervalDays: widget.plant.wateringInfo.minDays,
+      wateringIntervalDays: PlantUtils.getWateringIntervalDays(PlantUtils.getCurrentSeasonWaterCycle(widget.plant)), // Use current season's water code
       notificationId: null,
       imagePath: _pickedImageRelativePath, // 상대 경로 할당
       locations: _selectedLocations,
-      cntntsNo: widget.plant.id,
+      cntntsNo: widget.plant.cntntsNo ?? '',
+      // 새로 추가된 필드들
+      waterCycleSpring: widget.plant.watercycleSprngCodeNm,
+      waterCycleSummer: widget.plant.watercycleSummerCodeNm,
+      waterCycleAutumn: widget.plant.watercycleAutumnCodeNm,
+      waterCycleWinter: widget.plant.watercycleWinterCodeNm,
+      manageLevel: widget.plant.managelevelCodeNm,
     );
 
     context.read<UserPlantBloc>().add(AddPlant(newPlant));

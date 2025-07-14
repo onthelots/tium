@@ -15,6 +15,7 @@ import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/bloc/user_type/user_type_cubit.dart';
 import 'package:tium/presentation/home/screen/weather/juso_search_screen.dart';
 import 'package:tium/presentation/main/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
+import 'package:tium/presentation/plant/bloc/plant_data/plant_data_bloc.dart';
 import 'package:tium/presentation/main/screen/main_screen.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
 import 'core/di/locator.dart';
@@ -65,12 +66,12 @@ Future<void> main() async {
   // 초기 화면 분기처리
   // 알림으로 앱이 시작된 경우 무조건 MainScreen으로 이동
   final isFirstRun = await SharedPreferencesHelper.getFirstRun();
-  final String initialRoute = (initialPlantIdFromNotification != null) ? Routes.main : (isFirstRun ? Routes.intro : Routes.main);
+  final String initialRoute = Routes.splash; // Always start with splash screen
 
   // 초기화가 모두 끝난 후 스플래시 제거
   FlutterNativeSplash.remove();
 
-  runApp(MyApp(initialRoute: initialRoute));
+  runApp(MyApp(initialRoute: initialRoute, initialPayload: initialPlantIdFromNotification));
 }
 
 Future<void> initTimeZone() async {
@@ -80,8 +81,9 @@ Future<void> initTimeZone() async {
 
 class MyApp extends StatefulWidget {
   final String initialRoute;
+  final String? initialPayload; // Add initialPayload
 
-  MyApp({super.key, required this.initialRoute});
+  MyApp({super.key, required this.initialRoute, this.initialPayload}); // Update constructor
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -111,6 +113,11 @@ class _MyAppState extends State<MyApp> {
 
         BlocProvider(
           create: (context) => BottomNavBloc()
+        ),
+
+        // 전역 식물 데이터 Bloc
+        BlocProvider(
+          create: (_) => locator<PlantDataBloc>()..add(LoadAllPlantsEvent()),
         ),
 
         // 날씨 정보 Bloc
