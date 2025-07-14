@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/core/di/locator.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_category_model.dart';
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 import 'package:tium/data/models/user/user_model.dart';
 import 'package:tium/data/models/user/user_type_model.dart';
 import 'package:tium/domain/usecases/onboarding/get_user_type_model_from_enum_usecase.dart';
@@ -16,13 +17,12 @@ import 'package:tium/presentation/mypage/screen/license/oss_license_screen.dart'
 import 'package:tium/presentation/mypage/screen/mypage_screen.dart';
 import 'package:tium/presentation/mypage/screen/notification/notification_time_setting_screen.dart';
 import 'package:tium/presentation/mypage/screen/theme/theme_screen.dart';
-import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_bloc.dart';
-import 'package:tium/presentation/onboarding/bloc/recommendation/recommend_plant_event.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_intro_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_result_screen.dart';
 import 'package:tium/presentation/onboarding/screen/onboarding_screen.dart';
 import 'package:tium/presentation/plant/screen/plant_detail_screen.dart';
 import 'package:tium/presentation/search/screen/search_screen.dart';
+import 'package:tium/presentation/splash/splash_screen.dart';
 import 'package:tium/presentation/web/screen/web_view_screen.dart';
 
 /// Screen Routes
@@ -67,6 +67,12 @@ class WebRoutes {
 class AppRouter {
   Route? onGenerateRoute(RouteSettings settings) {
     switch (settings.name) {
+      case Routes.splash:
+        final initialPayload = settings.arguments as String?;
+        return MaterialPageRoute(
+          builder: (_) => SplashScreen(initialPayload: initialPayload),
+        );
+
       case Routes.main:
         return MaterialPageRoute(
           builder: (_) => MainScreen(),
@@ -145,16 +151,16 @@ class AppRouter {
 
       case Routes.plantDetail:
         final args = settings.arguments as Map<String, dynamic>;
-        final plantId = args['id'] as String;
+        final name = args['name'] as String;
+        final id = args['id'] as String;
         final category = args['category'] as PlantCategory;
         final imageUrl = args['imageUrl'] as String;
-        final name = args['name'] as String;
         return MaterialPageRoute(
           builder: (_) => PlantDetailScreen(
-            plantId: plantId,
+            name: name,
+            id: id,
             category: category,
             imageUrl: imageUrl,
-            name: name,
           ),
         );
       case Routes.mypage:

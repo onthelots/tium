@@ -78,7 +78,7 @@ class AppAssetAvatar {
   final String sunnyLover = 'assets/avatar/sunny_lover.png';
   final String quietCompanion = 'assets/avatar/quiet_companion.png';
   final String smartSaver = 'assets/avatar/smart_saver.png';
-  final String bloomingWatcher = 'assets/avatar/blomming_watcher.png';
+  final String bloomingWatcher = 'assets/avatar/blooming_watcher.png';
   final String growthSeeker = 'assets/avatar/grow_seeker.png';
   final String seasonalRomantic = 'assets/avatar/seasonal_romantic.png';
   final String plantMaster = 'assets/avatar/plant_master.png';

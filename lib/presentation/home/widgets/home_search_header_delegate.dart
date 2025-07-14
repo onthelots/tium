@@ -13,7 +13,7 @@ class SearchBarHeaderDelegate extends SliverPersistentHeaderDelegate {
         onTap: () {
           showSearch(
             context: context,
-            delegate: PlantSearchDelegate([]),
+            delegate: PlantSearchDelegate(),
           );
         },
         child: Container(

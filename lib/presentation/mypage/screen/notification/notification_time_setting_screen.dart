@@ -43,7 +43,7 @@ class _NotificationTimeSettingScreenState extends State<NotificationTimeSettingS
             return ListTile(
               title: Text(
                 '알림 시간',
-                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w400),
+                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
               trailing: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -97,19 +97,26 @@ class _NotificationTimeSettingScreenState extends State<NotificationTimeSettingS
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Divider(
+                  height: 20.0,
+                  indent: 16.0,
+                  endIndent: 16.0,
+                  color: theme.dividerColor,
+                  thickness: 0.5,
+                ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Text(
-                    '알림 시간을 변경하면 예약된 모든 물주기 알림이 새 시간으로 업데이트됩니다.',
-                    style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
+                    '알림 시간을 변경하면 예약된 모든 물주기 알림이\n새로운 시간으로 업데이트됩니다.',
+                    style: theme.textTheme.bodyMedium,
                   ),
                 ),
 
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                   child: Text(
-                    '단, 이미 알림 시간이 이미 지났을 경우 변경되지 않습니다.',
-                    style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
+                    '(단, 이미 알림 시간이 이미 지났을 경우 변경되지 않습니다)',
+                    style: theme.textTheme.bodyMedium,
                   ),
                 ),
               ],

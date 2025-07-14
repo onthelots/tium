@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/components/custom_platform_alert_dialog.dart';
+import 'package:tium/components/custom_toast_message.dart';
 import 'package:tium/core/app_info/app_info_cubit.dart';
 import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/routes/routes.dart';
@@ -33,51 +34,45 @@ class MyPageScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 _buildSectionTitle(context: context, title: '사용자 메뉴'),
-                _buildListTile(
-                  context: context,
-                  title: '내 식물케어 유형',
-                  onTap: () async {
-                    final user = await UserPrefs.getUser();
+                BlocBuilder<UserTypeCubit, UserTypeState>(
+                  builder: (context, state) {
+                    return _buildListTile(
+                      context: context,
+                      title: '내 식물케어 유형',
+                      onTap: () async {
+                        final user = await UserPrefs.getUser();
 
-                    // 1. 유저 정보가 있을 경우
-                    if (user != null) {
-                      context.read<UserTypeCubit>().loadUserTypeModel(
-                          user.userType);
-                      final UserTypeState resultState = await context
-                          .read<UserTypeCubit>()
-                          .stream
-                          .firstWhere(
-                            (state) =>
-                        state is UserTypeLoaded || state is UserTypeError,
-                      );
-
-                      if (resultState is UserTypeLoaded) {
-                        Navigator.pushNamed(context, Routes.userType,
-                          arguments: {
-                            'userType': resultState.userTypeModel,
-                            'isFirstRun': false,
-                          },
-                        );
-                      } else if (resultState is UserTypeError) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(resultState.message)),
-                        );
-                      }
-                    } else {
-                      // 2. 유저 정보가 없을 경우
-                      await showPlatformAlertDialog(
-                        context: context,
-                        title: '아직 준비가 필요해요 🌱',
-                        content: '내 식물을 함께 키우려면, 먼저 몇 가지 정보를 간단히 알려주세요.\n기본 정보 입력 화면으로 이동할까요?',
-                        confirmText: '온보딩 시작',
-                        cancelText: '취소',
-                        onConfirm: () {
-                          Navigator.pushNamed(
-                              context, Routes.onboarding, arguments: true);
-                        },
-                        onCancel: () {},
-                      );
-                    }
+                        // 1. 유저 정보가 있을 경우
+                        if (user != null) {
+                          if (state is UserTypeLoaded) {
+                            Navigator.pushNamed(context, Routes.userType,
+                              arguments: {
+                                'userType': state.userTypeModel,
+                                'isFirstRun': false,
+                              },
+                            );
+                          } else if (state is UserTypeError) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(state.message)),
+                            );
+                          }
+                        } else {
+                          // 2. 유저 정보가 없을 경우
+                          await showPlatformAlertDialog(
+                            context: context,
+                            title: '아직 준비가 필요해요 🌱',
+                            content: '내 식물을 함께 키우려면, 먼저 몇 가지 정보를 간단히 알려주세요.\n기본 정보 입력 화면으로 이동할까요?',
+                            confirmText: '온보딩 시작',
+                            cancelText: '취소',
+                            onConfirm: () {
+                              Navigator.pushNamed(
+                                  context, Routes.onboarding, arguments: true);
+                            },
+                            onCancel: () {},
+                          );
+                        }
+                      },
+                    );
                   },
                 ),
 
@@ -183,7 +178,8 @@ class MyPageScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSectionTitle({required String title, required BuildContext context}) {
+  Widget _buildSectionTitle(
+      {required String title, required BuildContext context}) {
     final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(

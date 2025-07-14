@@ -71,10 +71,10 @@ class UserPlant {
   final String scientificName; // 실제 식물 명칭 - 임시 사용
 
   @HiveField(2)
-  final String difficulty;
+  final String difficulty; // 기존 필드 유지
 
   @HiveField(3)
-  final String wateringCycle;
+  final String wateringCycle; // 기존 필드 유지
 
   @HiveField(4)
   final bool isWateringNotificationOn; // 알림 등록 여부
@@ -103,12 +103,24 @@ class UserPlant {
   @HiveField(12)
   final String cntntsNo;  // 농사로 API 조회 시 컨텐츠 번호
 
+  // 새로 추가되는 필드들 (기존 필드 다음 번호부터 할당)
+  @HiveField(13)
+  final String? waterCycleSpring;
+  @HiveField(14)
+  final String? waterCycleSummer;
+  @HiveField(15)
+  final String? waterCycleAutumn;
+  @HiveField(16)
+  final String? waterCycleWinter;
+  @HiveField(17)
+  final String? manageLevel;
+
 
   UserPlant({
     required this.name,
     required this.scientificName,
-    required this.difficulty,
-    required this.wateringCycle,
+    required this.difficulty, // 기존 필드 유지
+    required this.wateringCycle, // 기존 필드 유지
     required this.isWateringNotificationOn,
     required this.registeredDate,
     required this.lastWateredDate,
@@ -118,6 +130,12 @@ class UserPlant {
     required this.cntntsNo,
     this.notificationId,
     this.imagePath,
+    // 새로 추가되는 필드들은 nullable로 선언
+    this.waterCycleSpring,
+    this.waterCycleSummer,
+    this.waterCycleAutumn,
+    this.waterCycleWinter,
+    this.manageLevel,
   });
 
   UserPlant copyWith({
@@ -134,6 +152,11 @@ class UserPlant {
     List<String>? locations,
     String? id,
     String? cntntsNo,
+    String? waterCycleSpring,
+    String? waterCycleSummer,
+    String? waterCycleAutumn,
+    String? waterCycleWinter,
+    String? manageLevel,
   }) {
     return UserPlant(
       name: name ?? this.name,
@@ -149,6 +172,11 @@ class UserPlant {
       locations: locations ?? this.locations,
       id: id ?? this.id,
       cntntsNo: cntntsNo ?? this.cntntsNo,
+      waterCycleSpring: waterCycleSpring ?? this.waterCycleSpring,
+      waterCycleSummer: waterCycleSummer ?? this.waterCycleSummer,
+      waterCycleAutumn: waterCycleAutumn ?? this.waterCycleAutumn,
+      waterCycleWinter: waterCycleWinter ?? this.waterCycleWinter,
+      manageLevel: manageLevel ?? this.manageLevel,
     );
   }
 }
@@ -229,4 +257,3 @@ enum UserType {
   @HiveField(8)
   growthExplorer,      // 9. 성장을 탐험하는 사람
 }
-

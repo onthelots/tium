@@ -3,14 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tium/components/custom_cached_image.dart';
 import 'package:tium/components/custom_loading_indicator.dart';
 import 'package:tium/core/routes/routes.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_state.dart';
 
 class PlantSearchDelegate extends SearchDelegate {
-  PlantSearchDelegate(this.allPlants);
-
-  final List<PlantSummary> allPlants;
+  PlantSearchDelegate();
 
   @override
   String get searchFieldLabel => '이름을 입력해주세요';
@@ -48,9 +46,9 @@ class PlantSearchDelegate extends SearchDelegate {
     }
 
     final results = query.isEmpty
-        ? (List<PlantSummary>.from(blocState.dryGarden + blocState.indoorGarden)
+        ? (List<PlantSummaryApiModel>.from(blocState.plants)
       ..sort((a, b) => a.name.compareTo(b.name)))
-        : (blocState.dryGarden + blocState.indoorGarden)
+        : (blocState.plants)
         .where((p) => p.name.toLowerCase().contains(query.toLowerCase()))
         .toList();
 
@@ -93,9 +91,9 @@ class PlantSearchDelegate extends SearchDelegate {
                 Routes.plantDetail,
                 arguments: {
                   'id': plant.id,
+                  'name': plant.name,
                   'category': plant.category,
                   'imageUrl': plant.highResImageUrl ?? plant.imageUrl,
-                  'name': plant.name,
                 },
               );
             },

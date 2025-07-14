@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:tium/components/custom_scaffold.dart';
+import 'package:tium/components/custom_toast_message.dart';
 import 'package:tium/core/di/locator.dart';
 import 'package:tium/presentation/home/bloc/juso_search/juso_search_cubit.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
@@ -41,6 +42,7 @@ class _JusoSearchScreenState extends State<JusoSearchScreen> {
         listener: (context, state) {
           if (state is LocationLoadSuccess) {
             Navigator.pop(context, state.location); // 위치 반환 후 pop
+            showToastMessage(message: '위치 설정이 완료되었습니다');
           } else if (state is LocationLoadFailure) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.message)),

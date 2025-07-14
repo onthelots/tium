@@ -4,7 +4,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:tium/components/custom_loading_indicator.dart';
 import 'package:tium/core/di/locator.dart';
 import 'package:tium/core/routes/routes.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_event.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_state.dart';
@@ -49,8 +49,7 @@ class SearchScreen extends StatelessWidget {
 }
 
 class PlantSearchDelegateWithQuery extends PlantSearchDelegate {
-  PlantSearchDelegateWithQuery({required String initialQuery})
-      : super([]) {
+  PlantSearchDelegateWithQuery({required String initialQuery}) {
     query = initialQuery;
   }
 }

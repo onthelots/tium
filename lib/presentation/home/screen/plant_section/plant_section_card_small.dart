@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:tium/components/custom_cached_image.dart';
-import 'package:tium/data/models/plant/plant_model.dart';
+import 'package:tium/data/models/plant/plant_summary_api_model.dart';
 
 class SmallPlantCard extends StatelessWidget {
-  final PlantSummary plant;
+  final PlantSummaryApiModel plant;
   final VoidCallback? onTap;
 
   const SmallPlantCard({required this.plant, this.onTap, super.key});
