@@ -133,17 +133,21 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
       return;
     }
 
+    print("현재 날짜에 따른 계절별 물주기 : ${PlantUtils.getCurrentSeasonWaterCycleCode(widget.plant)}");
+    print("물주기 - 주기는? : ${PlantUtils.getWateringIntervalDays(PlantUtils.getCurrentSeasonWaterCycleCode(widget.plant))}");
+
+
     final newPlant = UserPlant(
       id: Uuid().v4(),
       name: name,
       scientificName: widget.plant.plntbneNm ?? '',
       // 기존 필드 유지 (PlantDetailApiModel에서 파생)
       difficulty: widget.plant.managelevelCodeNm ?? '정보 없음', // managelevelCodeNm 사용
-      wateringCycle: PlantUtils.getCurrentSeasonWaterCycle(widget.plant), // 새로운 헬퍼 함수 사용
+      wateringCycle: PlantUtils.getCurrentSeasonWaterCycleCode(widget.plant), // 새로운 헬퍼 함수 사용
       isWateringNotificationOn: false,
       registeredDate: DateTime.now(),
       lastWateredDate: DateTime.now(),
-      wateringIntervalDays: PlantUtils.getWateringIntervalDays(PlantUtils.getCurrentSeasonWaterCycle(widget.plant)), // Use current season's water code
+      wateringIntervalDays: PlantUtils.getWateringIntervalDays(PlantUtils.getCurrentSeasonWaterCycleCode(widget.plant)), // Use current season's water code
       notificationId: null,
       imagePath: _pickedImageRelativePath, // 상대 경로 할당
       locations: _selectedLocations,

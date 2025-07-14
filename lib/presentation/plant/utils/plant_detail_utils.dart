@@ -1,25 +1,71 @@
 import 'package:tium/data/models/plant/plant_detail_api_model.dart';
 
 class PlantUtils {
-  static String generateBriefInfo(PlantDetailApiModel plant) {
-    final origin = plant.orgplceInfo ?? '알 수 없는';
-    final growthStyle = plant.grwhstleCodeNm ?? '정보 없음';
-    final temp = plant.grwhTpCodeNm ?? '적정 온도 정보 없음';
-    final manageLevel = plant.managelevelCodeNm ?? '정보 없음';
 
-    return "이 식물은 $origin 출신으로, $growthStyle이며 $temp에서 잘 자라고 $manageLevel에게 적합합니다.";
+  // 간단 정보
+  static String generateBriefInfo(PlantDetailApiModel plant) {
+    final origin = plant.orgplceInfo?.trim();
+    final manage = mapManageDemandLevel(plant.managedemanddoCodeNm);
+    final growth = mapGrowthStyleNames(plant.grwhstleCodeNm);
+    final temp = plant.grwhTpCodeNm ?? '';
+    final light = mapLightDemandNames(plant.lighttdemanddoCodeNm);
+    final code = PlantUtils.getCurrentSeasonWaterCycleCode(plant);
+    final wateringDesc = PlantUtils.mapWaterCycleCodeToDescription(code);
+
+
+    List<String> sentences = [];
+
+    if (origin != null && origin.isNotEmpty) {
+      sentences.add('이 식물은 ${origin}에서 유래했어요.');
+    }
+
+    if (growth != '알 수 없음') {
+      sentences.add('성장 형태는 ${growth}이며 관리 난이도는 ${manage}.');
+    } else if (manage != '정보 없음') {
+      sentences.add('${manage} 식물이에요.');
+    }
+
+    if (temp.isNotEmpty && temp != '정보 없음') {
+      sentences.add('적정 온도는 ${temp}이며, 물은 ${wateringDesc}');
+    } else {
+      sentences.add('물은 ${wateringDesc}');
+    }
+
+    if (light != '광량 정보가 부족해요 🌫️') {
+      sentences.add('빛은 ${light}');
+    }
+
+    // 문장 4개까지만
+    return sentences.take(4).join(' ');
   }
 
-  // 물주기
-  static String getCurrentSeasonWaterCycle(PlantDetailApiModel plant) {
+
+  // 물주기 (계절별) - 코드
+  static String getCurrentSeasonWaterCycleCode(PlantDetailApiModel plant) {
     final month = DateTime.now().month;
-    if (month >= 3 && month <= 5) return plant.watercycleSprngCodeNm ?? '정보 없음';
-    if (month >= 6 && month <= 8) return plant.watercycleSummerCodeNm ?? '정보 없음';
-    if (month >= 9 && month <= 11) return plant.watercycleAutumnCodeNm ?? '정보 없음';
+    if (month >= 3 && month <= 5) return plant.watercycleSprngCode ?? '정보 없음';
+    if (month >= 6 && month <= 8) return plant.watercycleSummerCode ?? '정보 없음';
+    if (month >= 9 && month <= 11) return plant.watercycleAutumnCode ?? '정보 없음';
     return plant.watercycleWinterCodeNm ?? '정보 없음';
   }
 
-  // Helper to get watering interval days from water cycle code
+  // 물주기 (계절별) - description
+  static String mapWaterCycleCodeToDescription(String? waterCycleCode) {
+    switch (waterCycleCode) {
+      case '053001':
+        return '물에 잠길정도로 항상 흙을 축축하게 유지해주세요';
+      case '053002':
+        return '흙을 촉촉하게 유지해주세요';
+      case '053003':
+        return '토양 표면이 말랐을 때 충분히 물을 주세요.';
+      case '053004':
+        return '화분의 흙 대부분이 말랐을 때 충분히 물을 주세요';
+      default:
+        return '적절한 물주기 정보를 확인해주세요.';
+    }
+  }
+
+  // 물주기 - 주기
   static int getWateringIntervalDays(String? waterCycleCode) {
     switch (waterCycleCode) {
       case '053001': // 항상 흙을 축축하게 유지함 (물에 잠김)
@@ -43,13 +89,13 @@ class PlantUtils {
     final hasMid = parts.any((s) => s.contains('중간 광도'));
     final hasHigh = parts.any((s) => s.contains('높은 광도'));
 
-    if (hasLow && hasMid && hasHigh) return "어두운 곳부터 햇빛 잘 드는 곳까지 모두 잘 자라요 🌥️☀️";
-    if (!hasLow && hasMid && hasHigh) return "밝은 실내나 햇빛 좋은 곳이 좋아요 🌤️☀️";
-    if (hasLow && hasMid && !hasHigh) return "어두운 실내부터 밝은 실내까지 잘 자라요 🌥️🌤️";
-    if (hasLow && !hasMid && hasHigh) return "다양한 환경에서 잘 자라요 🌥️☀️";
-    if (hasLow && !hasMid && !hasHigh) return "어두운 실내에서도 잘 자라요 🌥️";
-    if (!hasLow && hasMid && !hasHigh) return "밝은 실내가 좋아요 🌤️";
-    if (!hasLow && !hasMid && hasHigh) return "햇빛이 잘 드는 곳이 필요해요 ☀️";
+    if (hasLow && hasMid && hasHigh) return "어두운 곳부터 햇빛 잘 드는 곳까지 모두 잘 자라요";
+    if (!hasLow && hasMid && hasHigh) return "밝은 실내나 햇빛 좋은 곳이 좋아요";
+    if (hasLow && hasMid && !hasHigh) return "어두운 실내부터 밝은 실내까지 잘 자라요";
+    if (hasLow && !hasMid && hasHigh) return "다양한 환경에서 잘 자라요";
+    if (hasLow && !hasMid && !hasHigh) return "어두운 실내에서도 잘 자라요";
+    if (!hasLow && hasMid && !hasHigh) return "밝은 실내가 좋아요";
+    if (!hasLow && !hasMid && hasHigh) return "햇빛이 잘 드는 곳이 필요해요";
 
     return "광량 정보가 부족해요 🌫️";
   }
@@ -73,11 +119,11 @@ class PlantUtils {
     if (demandLevelNm == null || demandLevelNm.trim().isEmpty) return '정보 없음';
     final value = demandLevelNm.trim();
 
-    if (value.contains('낮음')) return '관리가 거의 필요 없어요 💪';
-    if (value.contains('보통')) return '기본적인 관리만으로 충분해요 🙂';
-    if (value.contains('필요')) return '꾸준한 관리가 필요해요 🔧';
-    if (value.contains('특별')) return '세심한 관리가 필요해요 🧤';
-    if (value.contains('기타')) return '관리 정보가 명확하지 않아요 🤔';
+    if (value.contains('낮음')) return '관리가 거의 필요 없어요';
+    if (value.contains('보통')) return '기본적인 관리만으로 충분해요';
+    if (value.contains('필요')) return '꾸준한 관리가 필요해요';
+    if (value.contains('특별')) return '세심한 관리가 필요해요';
+    if (value.contains('기타')) return '관리 정보가 명확하지 않아요';
 
     return value;
   }

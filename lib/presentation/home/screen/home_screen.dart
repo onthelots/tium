@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:tium/components/custom_platform_alert_dialog.dart';
 import 'package:tium/core/constants/app_asset.dart';
 import 'package:tium/core/helper/lat_lng_grid_converter.dart';
@@ -51,11 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
 
-    // userType 기반 추천 식물 섹션 로드 이벤트 추가
+    // userType 기반 로드
     if (_user?.userType != null) {
+      
+      // 추천식물 섹션 로드
       context.read<RecommendationSectionBloc>().add(
         LoadUserRecommendationsSections(userType: _user!.userType),
       );
+      
+      // 유저 타입 로드
+      context.read<UserTypeCubit>().loadUserTypeModel(
+          _user!.userType);
     }
 
     setState(() => _loading = false);
@@ -123,30 +128,27 @@ class _HomeScreenState extends State<HomeScreen> {
                       Text("TIUM", style: theme.textTheme.headlineSmall),
                       const Spacer(),
                       if (_user != null)
-                      IconButton(
-                        onPressed: () async {
-                          if (_user!.userType != null) {
-                            context.read<UserTypeCubit>().loadUserTypeModel(_user!.userType);
-                            final UserTypeState resultState = await context.read<UserTypeCubit>().stream.firstWhere(
-                              (state) => state is UserTypeLoaded || state is UserTypeError,
+                        BlocBuilder<UserTypeCubit, UserTypeState>(
+                          builder: (context, state) {
+                            return IconButton(
+                              onPressed: () async {
+                                if (state is UserTypeLoaded) {
+                                  Navigator.pushNamed(context, Routes.userType,
+                                    arguments: {
+                                      'userType': state.userTypeModel,
+                                      'isFirstRun': false,
+                                    },
+                                  );
+                                } else if (state is UserTypeError) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text(state.message)),
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.account_circle),
                             );
-
-                            if (resultState is UserTypeLoaded) {
-                              Navigator.pushNamed(context, Routes.userType,
-                                arguments: {
-                                  'userType': resultState.userTypeModel,
-                                  'isFirstRun': false,
-                                },
-                              );
-                            } else if (resultState is UserTypeError) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(resultState.message)),
-                              );
-                            }
-                          }
-                        },
-                        icon: const Icon(Icons.account_circle),
-                      ),
+                          },
+                        ),
                     ],
                   ),
                 ),

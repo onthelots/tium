@@ -21,9 +21,6 @@ class PlantDetailBloc extends Bloc<PlantDetailEvent, PlantDetailState> {
         id: event.id,
       );
 
-      // print("detail : ${detail.wateringInfo}"); // Removed or changed as PlantDetailApiModel does not have wateringInfo directly
-      print("detail name: ${detail.plntzrNm}"); // Example: print plant name
-
       emit(PlantDetailLoaded(detail));
     } catch (e, stack) {
       debugPrint('PlantDetailBloc Error: $e');

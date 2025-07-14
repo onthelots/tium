@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:tium/components/custom_toast_message.dart';
 import 'package:tium/core/routes/routes.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_bloc.dart';
 import 'package:tium/presentation/home/bloc/location/location_search_event.dart';
@@ -98,6 +99,8 @@ Future<void> _getCurrentLocationAndUpdate(BuildContext ctx) async {
     ctx.read<LocationBloc>().add(
       LocationByLatLngRequested(position.latitude, position.longitude),
     );
+
+    showToastMessage(message: '위치 설정이 완료되었습니다');
   } catch (e) {
     if (!ctx.mounted) return;
     ScaffoldMessenger.of(ctx).showSnackBar(

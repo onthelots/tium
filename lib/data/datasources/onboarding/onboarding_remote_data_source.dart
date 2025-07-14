@@ -54,13 +54,11 @@ class OnboardingRemoteDataSourceImpl implements OnboardingRemoteDataSource {
   @override
   Future<UserTypeModel> getUserTypeModelById(int id) async {
     try {
-      print('Supabase: Fetching user type model for ID: $id');
       final response = await supabaseClient
           .from('user_types')
           .select('*')
           .eq('id', id)
           .single();
-      print('Supabase: Received response for ID $id: $response');
       return UserTypeModel.fromJson(response);
     } catch (e) {
       print('Supabase Error fetching user type model by ID $id: $e');

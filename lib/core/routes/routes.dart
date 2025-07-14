@@ -152,13 +152,13 @@ class AppRouter {
       case Routes.plantDetail:
         final args = settings.arguments as Map<String, dynamic>;
         final name = args['name'] as String;
-        final plantId = args['id'] as String;
+        final id = args['id'] as String;
         final category = args['category'] as PlantCategory;
         final imageUrl = args['imageUrl'] as String;
         return MaterialPageRoute(
           builder: (_) => PlantDetailScreen(
             name: name,
-            plantId: plantId,
+            id: id,
             category: category,
             imageUrl: imageUrl,
           ),

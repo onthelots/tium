@@ -8,6 +8,7 @@ import 'package:tium/presentation/management/bloc/user_plant_bloc.dart';
 import 'package:tium/presentation/management/bloc/user_plant_event.dart';
 import 'package:tium/presentation/management/bloc/user_plant_state.dart';
 import 'package:tium/presentation/management/widgets/empty_plant_state_widget.dart';
+import 'package:tium/presentation/search/screen/search_delegate.dart';
 
 class ManagementScreen extends StatefulWidget {
   const ManagementScreen({super.key});
@@ -34,7 +35,18 @@ class _ManagementScreenState extends State<ManagementScreen> {
         scrolledUnderElevation: 0,
         elevation: 0,
         centerTitle: false,
-        title: Text('식물관리', style: theme.textTheme.labelLarge),
+        title: Row(
+          children: [
+            Text('식물관리', style: theme.textTheme.labelLarge),
+            const Spacer(),
+            IconButton(
+              onPressed: () async {
+                showSearch(context: context, delegate: PlantSearchDelegate());
+              },
+              icon: const Icon(Icons.search),
+            ),
+          ]
+        ),
       ),
       body: switch (userState) {
         UserPlantLoading _ => const Center(child: CircularProgressIndicator()),
@@ -105,16 +117,13 @@ class _ManagementScreenState extends State<ManagementScreen> {
                     future: getImageFileFromRelativePath(plant.imagePath!),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                        debugPrint('✅ ManagementScreen: Image file exists at ${snapshot.data!.path}');
                         return ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.file(snapshot.data!, fit: BoxFit.cover),
                         );
                       } else if (snapshot.hasError) {
-                        debugPrint('❌ ManagementScreen: Error loading image: ${snapshot.error}');
                         return buildImagePlaceholder(context);
                       } else {
-                        debugPrint('ℹ️ ManagementScreen: Loading image...');
                         return const Center(child: CircularProgressIndicator());
                       }
                     },
