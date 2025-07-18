@@ -48,18 +48,18 @@ class _ManagementScreenState extends State<ManagementScreen> {
           ]
         ),
       ),
+
+      // 유저 상태에 따른 화면 분기
       body: switch (userState) {
-        UserPlantLoading _ => const Center(child: CircularProgressIndicator()),
-
-        UserPlantError() => EmptyPlantStateWidget(),
-
-        UserPlantLoaded(:final user) => _buildLoadedBody(user),
-
-        _ => const SizedBox.shrink(),
+        UserPlantLoading _ => const Center(child: CircularProgressIndicator()), // 로딩 중
+        UserPlantError() => EmptyPlantStateWidget(), // 등록하기 (유저 온보딩 이동)
+        UserPlantLoaded(:final user) => _buildLoadedBody(user), // 유저 정보 로딩 완료
+        _ => const SizedBox.shrink(), // else
       },
     );
   }
 
+  // 유저 정보 로딩 완료
   Widget _buildLoadedBody(UserModel user) {
     final theme = Theme.of(context);
     final allPlants = user.indoorPlants;
@@ -69,6 +69,7 @@ class _ManagementScreenState extends State<ManagementScreen> {
     }
 
     final locationCounts = <String, int>{};
+
     for (var loc in locations.where((e) => e != '전체')) {
       locationCounts[loc] = allPlants.where((p) => p.locations.contains(loc)).length;
     }
@@ -131,8 +132,7 @@ class _ManagementScreenState extends State<ManagementScreen> {
                 } else {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    // TODO: - placeholder 사진
-                    child: Container(color: theme.disabledColor,),
+                    child: const Icon(Icons.local_florist, size: 25, color: Colors.white)
                   );
                 }
               })(),
@@ -181,7 +181,7 @@ class _ManagementScreenState extends State<ManagementScreen> {
           ],
         ),
         subtitle: Text(
-          '다음 물주기: ${_formatNextWateringText(plant, todayOnly)}',
+          '${_formatNextWateringText(plant, todayOnly)}',
           style: theme.textTheme.bodySmall,
         ),
         trailing: isOverdue
@@ -226,11 +226,11 @@ class _ManagementScreenState extends State<ManagementScreen> {
       if (widgets.isEmpty) {
         widgets.add(
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
-            child: Center(
+            height: MediaQuery.of(context).size.height - 200, // AppBar, padding 등 보정
+            child: const Center(
               child: Padding(
-                padding: const EdgeInsets.all(32.0),
-                child: Text('등록된 식물이 없습니다.', style: theme.textTheme.bodyMedium),
+                padding: EdgeInsets.all(32.0),
+                child: Text('등록된 식물이 없습니다'),
               ),
             ),
           ),
@@ -242,6 +242,8 @@ class _ManagementScreenState extends State<ManagementScreen> {
 
     return Column(
       children: [
+
+        // 위치 선택
         Container(
           color: theme.scaffoldBackgroundColor,
           padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
@@ -275,6 +277,8 @@ class _ManagementScreenState extends State<ManagementScreen> {
             ),
           ),
         ),
+
+        // 식물 리스트
         Expanded(
           child: ListView(
             physics: const BouncingScrollPhysics(),
@@ -288,8 +292,8 @@ class _ManagementScreenState extends State<ManagementScreen> {
   String _formatNextWateringText(UserPlant plant, DateTime today) {
     final nextWateringDate = plant.lastWateredDate.add(Duration(days: plant.wateringIntervalDays));
     final diff = nextWateringDate.difference(today).inDays;
-    if (diff < 0) return '물주기가 필요해요!';
-    if (diff == 0) return '오늘 물주세요!';
+    if (diff < 0) return '물이 필요해요!';
+    if (diff == 0) return 'D-DAY';
     return 'D-$diff';
   }
 }

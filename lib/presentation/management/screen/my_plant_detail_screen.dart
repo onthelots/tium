@@ -97,15 +97,30 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
     });
   }
 
-  String _nextWateringShortText() {
-    final nextDate =
-    _plant.lastWateredDate.add(Duration(days: _plant.wateringIntervalDays));
+  Widget _nextWateringWidget() {
+    final nextDate = _plant.lastWateredDate.add(Duration(days: _plant.wateringIntervalDays));
     final now = DateTime.now();
     final diff = nextDate.difference(DateTime(now.year, now.month, now.day)).inDays;
 
-    if (diff < 0) return '⚠️';
-    if (diff == 0) return 'D-Day';
-    return 'D-$diff';
+    if (diff < 0) {
+      // ✅ 지났을 때 아이콘
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(Icons.warning, color: Colors.white, size: 20),
+        ],
+      );
+    } else if (diff == 0) {
+      return const Text(
+        'D-DAY',
+        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      );
+    } else {
+      return Text(
+        'D-$diff',
+        style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+      );
+    }
   }
 
   /// 다음 물주기 일정
@@ -121,7 +136,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
         title: const Text('다음 물주기 예정'),
         content: Text(
           '예정일: ${DateFormat('yyyy.MM.dd').format(nextDate)}\n'
-              '남은 일수: ${diff < 0 ? '지났어요!' : 'D-$diff'}',
+              '${diff < 0 ? '이미 지났어요!' : 'D-$diff'}',
         ),
         actions: [
           TextButton(
@@ -464,10 +479,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
                     child: CircleAvatar(
                       radius: 32,
                       backgroundColor: theme.hintColor,
-                      child: Text(
-                        _nextWateringShortText(),
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      child: _nextWateringWidget(),
                     ),
                   ),
                 ),
