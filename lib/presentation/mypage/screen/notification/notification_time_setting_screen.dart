@@ -59,6 +59,7 @@ class _NotificationTimeSettingScreenState extends State<NotificationTimeSettingS
               onTap: () {
                 Navigator.of(context).push(
                   showPicker(
+                    backgroundColor: theme.scaffoldBackgroundColor,
                     context: context,
                     value: Time(
                       hour: _notificationTime.hour,
