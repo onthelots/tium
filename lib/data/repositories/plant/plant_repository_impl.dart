@@ -20,7 +20,7 @@ class PlantRepositoryImpl implements PlantRepository {
     try {
       final remotePlants = await gardenRemote
           .list(size: 300)
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 4));
       return remotePlants;
     } on TimeoutException {
       print('⏰ Timeout: remote API 실패 → Supabase 캐시 사용');
