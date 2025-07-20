@@ -63,10 +63,8 @@ Future<void> main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform); // firebase 초기화
   await setupLocator(); // locator 주입
 
-  // 초기 화면 분기처리
-  // 알림으로 앱이 시작된 경우 무조건 MainScreen으로 이동
-  final isFirstRun = await SharedPreferencesHelper.getFirstRun();
-  final String initialRoute = Routes.splash; // Always start with splash screen
+  // 초기화면 (Splash)
+  final String initialRoute = Routes.splash;
 
   // 초기화가 모두 끝난 후 스플래시 제거
   FlutterNativeSplash.remove();
