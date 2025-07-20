@@ -267,7 +267,7 @@ class LocalNotificationService {
             presentSound: true,
           ),
         ),
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         payload: plantId, // payload 설정
       );
       debugPrint("🎉 알림 예약 성공!");
