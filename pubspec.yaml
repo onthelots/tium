@@ -1,7 +1,7 @@
 name: tium
 description: "Plant Companion & Daily Green"
 publish_to: 'none'
-version: 1.0.7+9
+version: 1.0.8+11
 
 environment:
   sdk: ^3.8.0-231.0.dev
