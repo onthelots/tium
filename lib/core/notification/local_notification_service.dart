@@ -131,39 +131,49 @@ class LocalNotificationService {
 
   /// 알림 권한 요청 및 확인 (사용자가 알림 켤 때만 호출)
   Future<bool> requestPermissionIfNeeded(BuildContext context) async {
-
     if (Platform.isIOS) {
       final settings = await _messaging.requestPermission(
         alert: true,
         badge: false, // 뱃지 권한 비활성화
         sound: true,
       );
-
       debugPrint("🔐 iOS 권한 상태: ${settings.authorizationStatus}");
-
-      if (settings.authorizationStatus == AuthorizationStatus.authorized) return true;
-
+      if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+        return true;
+      }
       _showPermissionDialog(context);
       return false;
     }
 
     if (Platform.isAndroid) {
-      final status = await Permission.notification.status;
-      if (status.isGranted) return true;
-
-      final result = await Permission.notification.request();
-      if (result.isGranted) {
-        await flutterLocalNotificationsPlugin
-            .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-            ?.requestNotificationsPermission(); // 추가
-        return true;
+      // 1. 일반 알림 권한 요청
+      var status = await Permission.notification.request();
+      if (!status.isGranted) {
+        _showPermissionDialog(context);
+        return false;
       }
 
-      _showPermissionDialog(context);
-      return false;
+      // 2. 정확한 알람 권한 요청 (Android 12 이상)
+      status = await Permission.scheduleExactAlarm.request();
+      if (!status.isGranted) {
+        _showExactAlarmPermissionDialog(context); // 별도의 안내 다이얼로그 표시
+        return false;
+      }
+      return true;
     }
-
     return false; // 기타 플랫폼
+  }
+
+  /// 정확한 알람 권한 안내 다이얼로그
+  void _showExactAlarmPermissionDialog(BuildContext context) {
+    showPlatformAlertDialog(
+      context: context,
+      title: '정확한 알림 권한이 필요해요',
+      content: '물주기 시간을 정확하게 알려드리기 위해 \'알람 및 리마인더\' 권한을 허용해주세요. 설정 화면으로 이동하여 권한을 활성화할 수 있습니다.',
+      confirmText: '설정으로 이동',
+      cancelText: '닫기',
+      onConfirm: () async => openAppSettings(),
+    );
   }
 
   /// 알림 권한 상태 확인 (권한 요청 없이)
@@ -218,20 +228,17 @@ class LocalNotificationService {
     final targetMinute = minute ?? notificationTime.minute;
 
     if (kDebugMode) {
-      // 디버그 모드: 릴리즈와 동일한 로직으로, 현재 시간 기준 10초 뒤로 예약
-      final nowIn10Seconds = now.add(const Duration(seconds: 10));
+      scheduledDate = now.add(const Duration(seconds: 10));
+    } else {
+      final targetDay = now.add(Duration(days: days));
       scheduledDate = tz.TZDateTime(
         tz.local,
-        nowIn10Seconds.year,
-        nowIn10Seconds.month,
-        nowIn10Seconds.day,
-        nowIn10Seconds.hour,
-        nowIn10Seconds.minute,
-        nowIn10Seconds.second,
+        targetDay.year,
+        targetDay.month,
+        targetDay.day,
+        targetHour,
+        targetMinute,
       );
-    } else {
-      // 릴리즈 모드: D-day(days) 후의 날짜, 설정된 시간(targetHour:targetMinute)으로 예약
-      scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day + days, targetHour, targetMinute);
     }
 
     // 예약하려는 시간이 이미 과거인지 최종 확인
