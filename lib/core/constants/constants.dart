@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 /// App Colors
 class AppColors {
+  static const Color signature = Color(0xFF263238);
+
   static const Color lightPrimary = Color(0xff3BA272);
   static const Color lightSecondary = Color(0xffAFE9C0);
   static const Color lightTertiary = Color(0xffDEF4E2);

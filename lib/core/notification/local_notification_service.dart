@@ -267,6 +267,7 @@ class LocalNotificationService {
             playSound: true,
             enableVibration: true,
             ticker: 'ticker',
+            icon: 'ic_notification'
           ),
           iOS: DarwinNotificationDetails(
             presentAlert: true,
