@@ -1,7 +1,7 @@
 name: tium
 description: "Plant Companion & Daily Green"
 publish_to: 'none'
-version: 1.0.8+11
+version: 1.0.9+12
 
 environment:
   sdk: ^3.8.0-231.0.dev
@@ -95,15 +95,15 @@ flutter_native_splash:
   android: true
   ios: true
   web: true
-  image: "assets/splash/splash_image.png"
-  image_dark: "assets/splash/splash_image.png"
-  background_image: "assets/splash/splash_background_image.png"
-  background_image_dark: "assets/splash/splash_background_image.png"
+  image: "assets/icon/icon.png"
+  image_dark: "assets/icon/icon.png"
+  background_image: "assets/icon/background.png"
+  background_image_dark: "assets/icon/background.png"
   android_12:
-    color: "#3BA272"
-    color_dark: "#3BA272"
-    image: "assets/splash/splash_image_android.png"
-    image_dark: "assets/splash/splash_image_android.png"
+    color: "#263238"
+    color_dark: "#263238"
+    image: "assets/icon/splash_android.png"
+    image_dark: "assets/icon/splash_android.png"
 
 dev_dependencies:
   flutter_test:
@@ -118,7 +118,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/
-    - assets/splash/
     - assets/img/
     - assets/icon/
     - assets/avatar/
