@@ -6,7 +6,8 @@
 
 <br>
 
-![combine_light](https://github.com/user-attachments/assets/a9d40934-0abb-45c3-9e37-2c7f02b680b3)
+<img width="3238" height="821" alt="app_screenshot" src="https://github.com/user-attachments/assets/7d6b79d2-d75a-49a1-b52a-80c85367fb18" />
+
 
 <br> 
 
