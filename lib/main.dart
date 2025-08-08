@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:timezone/data/latest_10y.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -16,11 +16,9 @@ import 'package:tium/presentation/home/bloc/user_type/user_type_cubit.dart';
 import 'package:tium/presentation/home/screen/weather/juso_search_screen.dart';
 import 'package:tium/presentation/main/bloc/bottom_nav_bloc/bottom_nav_bloc.dart';
 import 'package:tium/presentation/plant/bloc/plant_data/plant_data_bloc.dart';
-import 'package:tium/presentation/main/screen/main_screen.dart';
 import 'package:tium/presentation/search/bloc/plant_search_bloc/plant_search_bloc.dart';
 import 'core/di/locator.dart';
 import 'core/routes/routes.dart';
-import 'core/services/shared_preferences_helper.dart';
 import 'core/theme/app_theme.dart';
 import 'firebase_options.dart';
 import 'presentation/home/bloc/plant_section/plant_section_bloc.dart';
@@ -55,7 +53,6 @@ Future<void> main() async {
   if (notificationAppLaunchDetails?.didNotificationLaunchApp ?? false) {
     print("앱 백그라운드 및 종료 상태에서 알림이 도착했나요? ${initialPlantIdFromNotification}");
     initialPlantIdFromNotification = notificationAppLaunchDetails!.notificationResponse?.payload;
-    print("initialPlantIdFromNotification에 뭘 저장하는거죠..? ${initialPlantIdFromNotification}");
   }
 
   // 초기화 로직
@@ -74,7 +71,9 @@ Future<void> main() async {
 
 Future<void> initTimeZone() async {
   tz_data.initializeTimeZones();
-  tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
+  final String timeZoneName = await FlutterTimezone.getLocalTimezone();
+  tz.setLocalLocation(tz.getLocation(timeZoneName));
+  debugPrint('Local timezone set to $timeZoneName');
 }
 
 class MyApp extends StatefulWidget {
