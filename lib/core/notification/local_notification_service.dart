@@ -228,7 +228,15 @@ class LocalNotificationService {
     final targetMinute = minute ?? notificationTime.minute;
 
     if (kDebugMode) {
-      scheduledDate = now.add(const Duration(seconds: 10));
+      final debugTargetDay = now.add(Duration(days: 0));
+      scheduledDate = tz.TZDateTime(
+        tz.local,
+        debugTargetDay.year,
+        debugTargetDay.month,
+        debugTargetDay.day,
+        targetHour,
+        targetMinute,
+      );
     } else {
       final targetDay = now.add(Duration(days: days));
       scheduledDate = tz.TZDateTime(
@@ -244,12 +252,8 @@ class LocalNotificationService {
     // 예약하려는 시간이 이미 과거인지 최종 확인
     if (scheduledDate.isBefore(now)) {
       debugPrint("❌ 알림 예약 실패: 계산된 예약 시간($scheduledDate)이 현재 시간($now)보다 과거입니다. 하루 뒤로 조정합니다.");
-      // 만약 계산된 시간이 과거이면 (예: 정오가 이미 지났는데 days=0인 경우), 다음 날로 설정
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
-
-    debugPrint('🔔 예약 시간 (timeZoneName): ${scheduledDate.timeZoneName}');
-    debugPrint("🔔 알림 예약 시도: id=$id, title=$title, body=$body, scheduledDate=$scheduledDate, payload=$plantId");
 
     try {
       await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -259,15 +263,15 @@ class LocalNotificationService {
         scheduledDate,
         const NotificationDetails(
           android: AndroidNotificationDetails(
-            'watering_channel_id',
-            '물주기 알림',
-            channelDescription: '식물 리마인더 알림',
-            importance: Importance.max,
-            priority: Priority.high,
-            playSound: true,
-            enableVibration: true,
-            ticker: 'ticker',
-            icon: 'ic_notification'
+              'watering_channel_id',
+              '물주기 알림',
+              channelDescription: '식물 리마인더 알림',
+              importance: Importance.max,
+              priority: Priority.high,
+              playSound: true,
+              enableVibration: true,
+              ticker: 'ticker',
+              icon: 'ic_notification'
           ),
           iOS: DarwinNotificationDetails(
             presentAlert: true,
