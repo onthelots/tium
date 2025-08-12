@@ -1,6 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -186,6 +187,18 @@ class _MyAppState extends State<MyApp> {
             navigatorObservers: [routeObserver],
             initialRoute: widget.initialRoute,
             onGenerateRoute: _router.onGenerateRoute,
+
+            builder: (context, child) {
+              final brightness = Theme.of(context).brightness;
+              final overlayStyle = brightness == Brightness.dark
+                  ? SystemUiOverlayStyle.light
+                  : SystemUiOverlayStyle.dark;
+
+              return AnnotatedRegion<SystemUiOverlayStyle>(
+                value: overlayStyle,
+                child: child!,
+              );
+            },
           );
         },
       ),
