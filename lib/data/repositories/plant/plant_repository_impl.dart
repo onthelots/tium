@@ -17,35 +17,25 @@ class PlantRepositoryImpl implements PlantRepository {
 
   @override
   Future<List<PlantSummaryApiModel>> indoorGardenPlants() async {
-    try {
-      final remotePlants = await gardenRemote
-          .list(size: 300)
-          .timeout(const Duration(seconds: 4));
-      return remotePlants;
-    } on TimeoutException {
-      print('⏰ Timeout: remote API 실패 → Supabase 캐시 사용');
-      final cached = await plantLocalDataSource.getPlants();
-      if (cached.isNotEmpty) {
-        print('📦 Supabase fallback 데이터 사용 (총 ${cached.length}개)');
-        return cached;
-      }
+    final cached = await plantLocalDataSource.getPlants();
 
-      print('📭 Supabase도 비어 있음. 👉 최초 초기화 시도');
-      final initialized = await _initializePlantDataFromRemote();
-      if (initialized) {
-        final retry = await plantLocalDataSource.getPlants();
-        if (retry.isNotEmpty) {
-          print('🌱 초기화 후 Supabase에서 재시도 성공');
-          return retry;
-        }
-      }
-
-      throw Exception("❌ 데이터 없음: 초기화 실패. 네트워크 상태를 확인해주세요.");
-    } catch (e) {
-      print('❌ 기타 오류 발생: $e → Supabase fallback 시도');
-      final cached = await plantLocalDataSource.getPlants();
+    if (cached.isNotEmpty) {
+      await Future.delayed(const Duration(seconds: 2)); // 강제 딜레이 (Splash 이미지)
       return cached;
     }
+
+    print('📭 Supabase 데이터 비어있음 → 원격에서 초기화 시도');
+    final initialized = await _initializePlantDataFromRemote();
+
+    if (initialized) {
+      final retry = await plantLocalDataSource.getPlants();
+      if (retry.isNotEmpty) {
+        print('🌱 초기화 후 Supabase에서 재시도 성공');
+        return retry;
+      }
+    }
+
+    throw Exception("❌ 데이터 없음: 초기화 실패. 네트워크 상태를 확인해주세요.");
   }
 
   @override

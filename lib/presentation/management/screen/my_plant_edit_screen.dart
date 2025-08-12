@@ -25,6 +25,7 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
 
   bool _isNameValid = true;
   String? _pickedImageRelativePath; // File? -> String? (상대 경로)
+  Future<File>? _imageFileFuture; // Future 상태 추가
 
   @override
   void initState() {
@@ -32,6 +33,11 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
     _nameController = TextEditingController(text: widget.initialPlant.name);
     _selectedLocations = List.from(widget.initialPlant.locations);
     _pickedImageRelativePath = widget.initialPlant.imagePath; // 기존 이미지 경로 초기화
+
+    // 초기 이미지 Future 생성
+    if (_pickedImageRelativePath != null) {
+      _imageFileFuture = getImageFileFromRelativePath(_pickedImageRelativePath!);
+    }
 
     _nameController.addListener(() {
       final isValid = _nameController.text.trim().isNotEmpty;
@@ -112,7 +118,14 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
 
               return GestureDetector(
                 onTap: () => pickImageFromGallery(context, (relativePath) {
-                  setState(() => _pickedImageRelativePath = relativePath);
+                  setState(() {
+                    _pickedImageRelativePath = relativePath;
+                    if (relativePath != null) {
+                      _imageFileFuture = getImageFileFromRelativePath(relativePath);
+                    } else {
+                      _imageFileFuture = null;
+                    }
+                  });
                 }),
                 child: Stack(
                   children: [
@@ -121,29 +134,32 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
                       height: size,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: theme.colorScheme.primary, width: 1.5),
-                        color: theme.colorScheme.surfaceVariant.withOpacity(0.1),
+                        border: Border.all(
+                            color: theme.colorScheme.primary, width: 1.5),
+                        color: theme.colorScheme.surfaceVariant.withOpacity(
+                            0.1),
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: (() {
-                          if (_pickedImageRelativePath != null) {
-                            return FutureBuilder<File>(
-                              future: getImageFileFromRelativePath(_pickedImageRelativePath!),
-                              builder: (context, snapshot) {
-                                if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                                  return Image.file(snapshot.data!, fit: BoxFit.cover);
-                                } else if (snapshot.hasError) {
-                                  return const Center(child: Icon(Icons.camera_alt_outlined, size: 40));
-                                } else {
-                                  return const Center(child: CircularProgressIndicator());
-                                }
-                              },
-                            );
-                          } else {
-                            return const Center(child: Icon(Icons.camera_alt_outlined, size: 40));
-                          }
-                        })(),
+                        child: _imageFileFuture != null
+                            ? FutureBuilder<File>(
+                          future: _imageFileFuture,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.done && snapshot.hasData) {
+                              return Image.file(
+                                  snapshot.data!, fit: BoxFit.cover);
+                            } else if (snapshot.hasError) {
+                              return const Center(child: Icon(
+                                  Icons.camera_alt_outlined, size: 40));
+                            } else {
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
+                          },
+                        )
+                            : const Center(
+                            child: Icon(Icons.camera_alt_outlined, size: 40)),
                       ),
 
                     ),
@@ -151,7 +167,8 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
                       right: 12,
                       bottom: 12,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.5),
                           borderRadius: BorderRadius.circular(20),

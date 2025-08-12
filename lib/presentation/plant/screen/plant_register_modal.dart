@@ -33,17 +33,22 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
   bool _isNameValid = false;
   bool _isDuplicateName = false;
 
+  Future<File>? _imageFileFuture;  // Future<File> 상태 추가
   String? _pickedImageRelativePath; // File? -> String? (상대 경로)
 
   @override
   void initState() {
     super.initState();
-    _nameController.text = widget.plant.plntzrNm ?? ''; // Use plntzrNm
+    // _nameController.text = widget.plant.plntzrNm ?? '';
     _checkNameValid(_nameController.text);
 
     _nameController.addListener(() {
       _checkNameValid(_nameController.text);
     });
+
+    if (_pickedImageRelativePath != null) {
+      _imageFileFuture = getImageFileFromRelativePath(_pickedImageRelativePath!);
+    }
   }
 
   @override
@@ -194,7 +199,14 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
                       const SizedBox(height: 28),
                       GestureDetector(
                         onTap: () => pickImageFromGallery(context, (relativePath) {
-                          setState(() => _pickedImageRelativePath = relativePath);
+                          setState(() {
+                            _pickedImageRelativePath = relativePath;
+                            if (relativePath != null) {
+                              _imageFileFuture = getImageFileFromRelativePath(relativePath);
+                            } else {
+                              _imageFileFuture = null;
+                            }
+                          });
                         }),
                         child: Container(
                           height: 160,
@@ -203,22 +215,22 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
                             border: Border.all(color: theme.colorScheme.primary, width: 1.5),
                             color: theme.colorScheme.surfaceVariant.withOpacity(0.1),
                           ),
-                          child: _pickedImageRelativePath != null
+                          child: _imageFileFuture != null
                               ? FutureBuilder<File>(
-                                  future: getImageFileFromRelativePath(_pickedImageRelativePath!),
-                                  builder: (context, snapshot) {
-                                    if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
-                                      return ClipRRect(
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: Image.file(snapshot.data!, fit: BoxFit.cover),
-                                      );
-                                    } else if (snapshot.hasError) {
-                                      return buildImagePlaceholder(context);
-                                    } else {
-                                      return const Center(child: CircularProgressIndicator());
-                                    }
-                                  },
-                                )
+                            future: _imageFileFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.done && snapshot.hasData) {
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: Image.file(snapshot.data!, fit: BoxFit.cover),
+                                );
+                              } else if (snapshot.hasError) {
+                                return buildImagePlaceholder(context);
+                              } else {
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                            },
+                          )
                               : buildImagePlaceholder(context),
                         ),
                       ),
