@@ -1,3 +1,6 @@
+
+<img width="80" height="80" alt="splash" src="https://github.com/user-attachments/assets/37c0aa76-1188-4c4f-8429-9cd4436d537d" />
+
 # 티움 TIUM
 > 초록이 머무는 일상, 당신의 공간에 딱 맞는 식물 관리를 함께
 - 범정부 및 농림축산식품부 공공데이터를 활용한 식물 정보 및 관리 서비스입니다.
