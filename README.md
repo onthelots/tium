@@ -5,7 +5,7 @@
 > 초록이 머무는 일상, 당신의 공간에 딱 맞는 식물 관리를 함께
 - 범정부 및 농림축산식품부 공공데이터를 활용한 식물 정보 및 관리 서비스입니다.
 
-#### <a href="https://momentous-wallet-0f7.notion.site/21a1c3f0e00380b4b1f9cc830a35b448?source=copy_link"><img src="https://img.shields.io/badge/HomePage-009BD5?style=flat&logo=Notion&logoColor=white"/> <a href="https://apps.apple.com/kr/app/%ED%8B%B0%EC%9B%80-%EC%8B%9D%EB%AC%BC%EA%B3%BC-%ED%95%A8%EA%BB%98%ED%95%98%EB%8A%94-%ED%95%98%EB%A3%A8/id6747629769"><img src="https://img.shields.io/badge/AppStore-000000?style=flat&logo=AppStore&logoColor=white"/>
+#### <a href="https://momentous-wallet-0f7.notion.site/21a1c3f0e00380b4b1f9cc830a35b448?source=copy_link"><img src="https://img.shields.io/badge/HomePage-009BD5?style=flat&logo=Notion&logoColor=white"/> <a href="https://apps.apple.com/kr/app/%ED%8B%B0%EC%9B%80-%EC%8B%9D%EB%AC%BC%EA%B3%BC-%ED%95%A8%EA%BB%98%ED%95%98%EB%8A%94-%ED%95%98%EB%A3%A8/id6747629769"><img src="https://img.shields.io/badge/AppStore-000000?style=flat&logo=AppStore&logoColor=white"/> [![Google Play](https://img.shields.io/badge/Google%20Play-2E7D32?style=rounded&logo=google-play&logoColor=white)](https://play.google.com/store/apps/details?id=com.tium.tium&hl=ko)
 
 <br>
 
