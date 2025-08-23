@@ -79,6 +79,9 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
       nextWateringDate: widget.initialPlant.nextWateringDate,
     );
 
+    print("업데이트 사항 - 물주기 : ${updated.isWateringNotificationOn})");
+    print("업데이트 사항 - 이름 : ${updated.name})");
+
     // Bloc에 업데이트 이벤트 전달
     context.read<UserPlantBloc>().add(UpdatePlant(updated));
 

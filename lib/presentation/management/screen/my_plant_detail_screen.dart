@@ -156,7 +156,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
         onPressed: () async {
           final result = await Navigator.pushNamed(
               context, Routes.myPlantEdit, arguments: {
-            'initialPlant': widget.plant,
+            'initialPlant': _plant,
           });
 
           if (result == null) return;
@@ -168,6 +168,7 @@ class _MyPlantDetailScreenState extends State<MyPlantDetailScreen>
 
           if (result is UserPlant) {
             setState(() {
+              print("_plant 정보 갱신");
               _plant = result;
             });
           }
