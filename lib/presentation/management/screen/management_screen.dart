@@ -290,10 +290,9 @@ class _ManagementScreenState extends State<ManagementScreen> {
   }
 
   String _formatNextWateringText(UserPlant plant, DateTime today) {
-    final nextWateringDate = plant.lastWateredDate.add(Duration(days: plant.wateringIntervalDays));
-    final diff = nextWateringDate.difference(today).inDays;
-    if (diff < 0) return '물이 필요해요!';
-    if (diff == 0) return 'D-DAY';
-    return 'D-$diff';
+    final diff = (plant.nextWateringDate ?? DateTime.now())
+        .difference(today)
+        .inDays;
+    return diff < 0 ? '물이 필요해요!' : diff == 0 ? 'D-DAY' : 'D-$diff';
   }
 }

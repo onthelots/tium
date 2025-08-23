@@ -115,6 +115,9 @@ class UserPlant {
   @HiveField(17)
   final String? manageLevel;
 
+  // 다음 물주기 날짜 및 시간
+  @HiveField(18)
+  final DateTime? nextWateringDate; // 다음 물주기 날짜/시간
 
   UserPlant({
     required this.name,
@@ -130,12 +133,14 @@ class UserPlant {
     required this.cntntsNo,
     this.notificationId,
     this.imagePath,
+
     // 새로 추가되는 필드들은 nullable로 선언
     this.waterCycleSpring,
     this.waterCycleSummer,
     this.waterCycleAutumn,
     this.waterCycleWinter,
     this.manageLevel,
+    this.nextWateringDate,
   });
 
   UserPlant copyWith({
@@ -157,6 +162,7 @@ class UserPlant {
     String? waterCycleAutumn,
     String? waterCycleWinter,
     String? manageLevel,
+    DateTime? nextWateringDate,
   }) {
     return UserPlant(
       name: name ?? this.name,
@@ -177,6 +183,7 @@ class UserPlant {
       waterCycleAutumn: waterCycleAutumn ?? this.waterCycleAutumn,
       waterCycleWinter: waterCycleWinter ?? this.waterCycleWinter,
       manageLevel: manageLevel ?? this.manageLevel,
+      nextWateringDate: nextWateringDate ?? this.nextWateringDate,
     );
   }
 }

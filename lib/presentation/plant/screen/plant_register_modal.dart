@@ -111,6 +111,7 @@ class _PlantRegisterModalState extends State<PlantRegisterModal> {
     );
   }
 
+  /// 식물 등록
   Future<void> _register() async {
     final name = _nameController.text.trim();
 
