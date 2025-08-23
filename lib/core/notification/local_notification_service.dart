@@ -185,43 +185,15 @@ class LocalNotificationService {
     required int id,
     required String title,
     required String body,
-    required int days,
+    required tz.TZDateTime scheduledDate,
     required String plantId,
-    int? hour,
-    int? minute,
   }) async {
     final now = tz.TZDateTime.now(tz.local);
 
-    final notificationTime = await NotificationTimePrefs.getNotificationTime();
-    final targetHour = hour ?? notificationTime.hour;
-    final targetMinute = minute ?? notificationTime.minute;
-
-    tz.TZDateTime scheduledDate;
-
-    if (kDebugMode) {
-      final debugTargetDay = now.add(Duration(days: 0));
-      scheduledDate = tz.TZDateTime(
-        tz.local,
-        debugTargetDay.year,
-        debugTargetDay.month,
-        debugTargetDay.day,
-        targetHour,
-        targetMinute,
-      );
-    } else {
-      final targetDay = now.add(Duration(days: days));
-      scheduledDate = tz.TZDateTime(
-        tz.local,
-        targetDay.year,
-        targetDay.month,
-        targetDay.day,
-        targetHour,
-        targetMinute,
-      );
-    }
-
+    // 이미 지난 시간이라면, 알림을 스케쥴하지 않음
     if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+      debugPrint("❌ 예약하려는 날짜($scheduledDate)가 현재 시간($now)보다 이전이라 알림을 등록하지 않습니다.");
+      return;
     }
 
     try {
@@ -230,7 +202,7 @@ class LocalNotificationService {
         title,
         body,
         scheduledDate,
-        NotificationDetails(
+        const NotificationDetails(
           android: AndroidNotificationDetails(
             'watering_channel_id',
             '물주기 알림',
@@ -251,7 +223,7 @@ class LocalNotificationService {
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         payload: plantId,
       );
-      debugPrint("🎉 알림 예약 성공!");
+      debugPrint("🎉 알림 예약 성공! ID: $id, 시간: $scheduledDate");
     } catch (e, stack) {
       debugPrint("❌ 알림 예약 실패: $e");
       debugPrint("$stack");

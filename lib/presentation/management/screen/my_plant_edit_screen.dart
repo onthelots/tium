@@ -69,15 +69,23 @@ class _PlantEditModalState extends State<MyPlantEditScreen> {
     final name = _nameController.text.trim();
     if (name.isEmpty || _selectedLocations.isEmpty) return;
 
+    // 기존 알림 상태를 유지하도록 copyWith에 추가
     final updated = widget.initialPlant.copyWith(
       name: name,
       locations: _selectedLocations,
-      imagePath: _pickedImageRelativePath, // 상대 경로 사용
+      imagePath: _pickedImageRelativePath,
+      isWateringNotificationOn: widget.initialPlant.isWateringNotificationOn,
+      notificationId: widget.initialPlant.notificationId,
+      nextWateringDate: widget.initialPlant.nextWateringDate,
     );
 
+    // Bloc에 업데이트 이벤트 전달
     context.read<UserPlantBloc>().add(UpdatePlant(updated));
+
+    // 화면 종료
     Navigator.pop(context, updated);
   }
+
 
   Future<void> _deletePlant() async {
     await showPlatformAlertDialog(
